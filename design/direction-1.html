@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trésor — Direction 1: Editorial Noir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========== DIRECTION 1: EDITORIAL NOIR ==========
+   Stance: Chanel-editorial. Stark monochrome with a single warm gold accent.
+   Light mode = ivory gallery walls. Dark mode = black-tie gala.
+   Typography: Cormorant Garamond (serif display) + Inter (sans body).
+   Generous whitespace, thin gold rules, editorial photography treatment.
+*/
+
+:root {
+  /* Light mode — Ivory Gallery */
+  --bg: #F8F5F0;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #F0EDE8;
+  --ink: #1A1A1A;
+  --ink-secondary: #4A4A4A;
+  --ink-tertiary: #8A8A8A;
+  --border: #E0DDD8;
+  --border-subtle: #EDEAE5;
+  --accent: #C5A572;
+  --accent-soft: rgba(197, 165, 114, 0.12);
+  --status-available: #5A7D5A;
+  --status-lent: #C5A572;
+  --shadow: 0 2px 20px rgba(26, 26, 26, 0.06);
+  --shadow-hover: 0 8px 40px rgba(26, 26, 26, 0.12);
+}
+
+[data-theme="dark"] {
+  /* Dark mode — Black Tie */
+  --bg: #0A0A0A;
+  --bg-elevated: #1A1A1A;
+  --bg-subtle: #141414;
+  --ink: #F8F5F0;
+  --ink-secondary: #B0B0B0;
+  --ink-tertiary: #707070;
+  --border: #2A2A2A;
+  --border-subtle: #1E1E1E;
+  --accent: #C5A572;
+  --accent-soft: rgba(197, 165, 114, 0.15);
+  --status-available: #7AAB7A;
+  --status-lent: #D4B68A;
+  --shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+.serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+
+/* === THEME TOGGLE === */
+.theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 8px 18px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  transition: all 0.3s;
+}
+
+/* === SECTION LABEL === */
+.section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+/* === DESIGN SYSTEM PANEL === */
+.system-panel {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 40px 40px;
+}
+.system-panel h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+.system-panel .subtitle {
+  font-size: 15px;
+  color: var(--ink-secondary);
+  font-weight: 300;
+  margin-bottom: 48px;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.ds-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 60px;
+}
+
+/* Color palette */
+.palette {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.swatch {
+  width: 80px;
+  text-align: center;
+}
+.swatch .color {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border-subtle);
+}
+.swatch .label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--ink-secondary);
+}
+.swatch .hex {
+  font-size: 9px;
+  color: var(--ink-tertiary);
+  font-family: 'SF Mono', ui-monospace, monospace;
+}
+
+/* Typography sample */
+.type-sample { margin-bottom: 24px; }
+.type-sample .meta {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 6px;
+}
+.type-sample .specimen {
+  margin-bottom: 4px;
+}
+
+/* === DIVIDER === */
+.gold-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.4;
+  margin: 40px 0;
+}
+
+/* === MOCKUP FRAMES === */
+.mockup-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 40px 80px;
+}
+.mockup-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mockup-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.phone-frame {
+  width: 375px;
+  height: 812px;
+  background: var(--bg-elevated);
+  border-radius: 44px;
+  overflow: hidden;
+  box-shadow: var(--shadow-hover);
+  border: 8px solid var(--ink);
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 20px 40px;
+}
+
+/* Phone status bar */
+.status-bar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.status-bar .icons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+}
+
+/* === INVENTORY GRID SCREEN === */
+.inv-header {
+  padding: 8px 20px 16px;
+}
+.inv-header .title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.inv-header .subtitle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+.inv-header .count {
+  font-size: 13px;
+  color: var(--ink-tertiary);
+  font-weight: 400;
+}
+.inv-header .search-icon {
+  width: 20px; height: 20px;
+  color: var(--ink-secondary);
+}
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 16px;
+  overflow-x: auto;
+}
+.chip {
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  color: var(--ink-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.chip.active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.inv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 20px 100px;
+}
+.inv-card {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.inv-card:active { transform: scale(0.97); }
+.inv-card .photo {
+  width: 100%;
+  aspect-ratio: 4/5;
+  border-radius: 2px;
+  background: var(--bg-subtle);
+  margin-bottom: 8px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.inv-card .photo .placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.inv-card .photo .status-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+.inv-card .photo .status-badge.available {
+  background: rgba(90, 125, 90, 0.85);
+}
+.inv-card .photo .status-badge.lent {
+  background: rgba(197, 165, 114, 0.9);
+}
+.inv-card .brand {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.inv-card .item-name {
+  font-size: 12px;
+  color: var(--ink-secondary);
+  font-weight: 400;
+}
+.inv-card .value {
+  font-size: 11px;
+  color: var(--ink-tertiary);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bottom tab bar */
+.tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 83px;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding-top: 12px;
+}
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--ink-tertiary);
+}
+.tab-item.active { color: var(--accent); }
+.tab-item .icon {
+  width: 24px; height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tab-add {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -20px;
+  font-size: 20px;
+  font-weight: 300;
+  box-shadow: 0 4px 12px rgba(197, 165, 114, 0.4);
+}
+
+/* === ITEM DETAIL SCREEN === */
+.detail-scroll {
+  height: calc(812px - 44px);
+  overflow-y: auto;
+  padding-bottom: 100px;
+}
+.detail-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+}
+.detail-nav .back, .detail-nav .like {
+  font-size: 20px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.detail-hero {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--bg-subtle);
+  margin-bottom: 0;
+  overflow: hidden;
+  position: relative;
+}
+.detail-hero img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.detail-info {
+  padding: 28px 24px 24px;
+}
+.detail-brand {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.detail-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+.detail-spec {
+  font-size: 14px;
+  color: var(--ink-secondary);
+  margin-bottom: 24px;
+}
+.detail-meta-row {
+  display: flex;
+  gap: 32px;
+  padding: 16px 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 24px;
+}
+.detail-meta-item .label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 4px;
+}
+.detail-meta-item .value {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.detail-cta {
+  width: 100%;
+  padding: 16px;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.detail-cta:hover { background: var(--accent); }
+
+.detail-notes {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+}
+.detail-notes .label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 8px;
+}
+.detail-notes .text {
+  font-size: 14px;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+}
+
+/* Placeholder image styling */
+.img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  color: var(--ink-tertiary);
+  opacity: 0.3;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-elevated));
+}
+
+/* Owner tag */
+.owner-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.owner-tag .avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.owner-tag .name {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  font-weight: 400;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .ds-grid { grid-template-columns: 1fr; }
+  .system-panel, .mockup-section { padding-left: 20px; padding-right: 20px; }
+  .phone-frame { margin: 0 0 40px; }
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()">
+  <span class="dot"></span>
+  <span id="theme-label">Dark Mode</span>
+</button>
+
+<!-- ========== DESIGN SYSTEM ========== -->
+<div class="system-panel">
+  <div class="section-label">Visual Direction 01</div>
+  <h1 class="serif">Editorial Noir</h1>
+  <p class="subtitle">Stark monochrome inspired by Chanel's runway minimalism and Apple's whitespace discipline. A single warm gold accent — the only chromatic note in a sea of ivory and black. Cormorant Garamond lends editorial gravitas; Inter keeps the UI precise. Every surface breathes.</p>
+
+  <div class="ds-grid">
+    <!-- COLOR PALETTE -->
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Color Palette</div>
+      <div class="palette">
+        <div class="swatch">
+          <div class="color" style="background: #F8F5F0;"></div>
+          <div class="label">Ivory</div>
+          <div class="hex">#F8F5F0</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #1A1A1A;"></div>
+          <div class="label">Ink</div>
+          <div class="hex">#1A1A1A</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #C5A572;"></div>
+          <div class="label">Gold</div>
+          <div class="hex">#C5A572</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #4A4A4A;"></div>
+          <div class="label">Slate</div>
+          <div class="hex">#4A4A4A</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #E0DDD8;"></div>
+          <div class="label">Mist</div>
+          <div class="hex">#E0DDD8</div>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: var(--ink-tertiary); margin-top: 16px; line-height: 1.6;">Binary light/dark rhythm — ivory gallery walls by day, black-tie gala by night. Gold is reserved exclusively for accents, status, and the add-item button.</p>
+    </div>
+
+    <!-- TYPOGRAPHY -->
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Typography</div>
+      <div class="type-sample">
+        <div class="meta">Display — Cormorant Garamond 300</div>
+        <div class="specimen serif" style="font-size: 36px; font-weight: 300; line-height: 1.1;">Trésor</div>
+      </div>
+      <div class="type-sample">
+        <div class="meta">Headline — Cormorant Garamond 400</div>
+        <div class="specimen serif" style="font-size: 24px; font-weight: 400;">Chanel Classic Flap</div>
+      </div>
+      <div class="type-sample">
+        <div class="meta">Body — Inter 400</div>
+        <div class="specimen" style="font-size: 15px; font-weight: 400; color: var(--ink-secondary);">Black, Caviar Leather, Gold Hardware</div>
+      </div>
+      <div class="type-sample">
+        <div class="meta">Label — Inter 600, tracked</div>
+        <div class="specimen" style="font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent);">CHANEL</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="gold-rule" style="max-width: 1120px; margin: 0 auto 40px;"></div>
+
+<!-- ========== MOCKUPS ========== -->
+<div class="mockup-section">
+
+  <!-- INVENTORY GRID -->
+  <div class="mockup-label">Inventory Grid Screen</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="inv-header">
+      <div class="title serif">My Trésor</div>
+      <div class="subtitle-row">
+        <span class="count">47 pieces · 3 lent</span>
+        <span class="search-icon">⌕</span>
+      </div>
+    </div>
+    <div class="filter-chips">
+      <span class="chip active">All</span>
+      <span class="chip">Handbags</span>
+      <span class="chip">Jewelry</span>
+      <span class="chip">Shoes</span>
+      <span class="chip">Watches</span>
+    </div>
+    <div class="inv-grid">
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">C</div>
+          <span class="status-badge available">Available</span>
+        </div>
+        <div class="brand">Chanel</div>
+        <div class="item-name">Classic Flap · Medium</div>
+        <div class="value">AED 31,200</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">H</div>
+          <span class="status-badge lent">Lent</span>
+        </div>
+        <div class="brand">Hermès</div>
+        <div class="item-name">Birkin 30 · Togo</div>
+        <div class="value">AED 110,000</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">C</div>
+          <span class="status-badge available">Available</span>
+        </div>
+        <div class="brand">Cartier</div>
+        <div class="item-name">Love Bracelet · Gold</div>
+        <div class="value">AED 26,400</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">R</div>
+          <span class="status-badge available">Available</span>
+        </div>
+        <div class="brand">Rolex</div>
+        <div class="item-name">Datejust 36</div>
+        <div class="value">AED 44,000</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">D</div>
+          <span class="status-badge available">Available</span>
+        </div>
+        <div class="brand">Dior</div>
+        <div class="item-name">Lady Dior · Medium</div>
+        <div class="value">AED 18,800</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">V</div>
+          <span class="status-badge lent">Lent</span>
+        </div>
+        <div class="brand">Van Cleef</div>
+        <div class="item-name">Alhambra Bracelet</div>
+        <div class="value">AED 14,700</div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active">
+        <div class="icon">◈</div>
+        <span>Trésor</span>
+      </div>
+      <div class="tab-item">
+        <div class="icon">◯</div>
+        <span>Circle</span>
+      </div>
+      <div class="tab-add">+</div>
+      <div class="tab-item">
+        <div class="icon">♡</div>
+        <span>Wishlist</span>
+      </div>
+      <div class="tab-item">
+        <div class="icon">≡</div>
+        <span>Activity</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM DETAIL -->
+  <div class="mockup-label" style="margin-top: 20px;">Item Detail Screen</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="detail-scroll">
+      <div class="detail-nav">
+        <span class="back">‹</span>
+        <span class="like">♡</span>
+      </div>
+      <div class="detail-hero">
+        <div class="img-placeholder" style="font-size: 120px;">C</div>
+      </div>
+      <div class="detail-info">
+        <div class="detail-brand">Chanel</div>
+        <div class="detail-name serif">Classic Flap Bag</div>
+        <div class="detail-spec">Black · Caviar Leather · Gold Hardware · Medium</div>
+
+        <div class="owner-tag">
+          <div class="avatar">S</div>
+          <span class="name">Owned by Sarah M.</span>
+        </div>
+
+        <div class="detail-meta-row">
+          <div class="detail-meta-item">
+            <div class="label">Est. Value</div>
+            <div class="value">AED 31,200</div>
+          </div>
+          <div class="detail-meta-item">
+            <div class="label">Condition</div>
+            <div class="value">Excellent</div>
+          </div>
+          <div class="detail-meta-item">
+            <div class="label">Status</div>
+            <div class="value" style="color: var(--status-available);">Available</div>
+          </div>
+        </div>
+
+        <button class="detail-cta">Request to Borrow</button>
+
+        <div class="detail-notes">
+          <div class="label">Condition Notes</div>
+          <div class="text">Minor corner wear on bottom-right. Hardware shows faint surface scratches consistent with gentle use. Interior lining clean. Purchased 2022, Chanel Dubai Mall.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-label').textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
+}
+</script>
+
+</body>
+</html>

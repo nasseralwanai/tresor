@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trésor — Direction 3: Minimal Monument</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========== DIRECTION 3: MINIMAL MONUMENT ==========
+   Stance: Pure Apple Design Award aesthetic — extreme minimalism.
+   Light mode = gallery white. Dark mode = deep obsidian.
+   Typography: Inter only (multiple weights, optical sizing via weight).
+   No decorative serifs, no gradients, no warm tones. Pure monochrome
+   with a single cool accent (soft platinum/silver). Think Vercel meets
+   Apple, applied to luxury. Maximum whitespace, ultra-thin lines.
+*/
+
+:root {
+  /* Light mode — Gallery White */
+  --bg: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #F5F5F7;
+  --bg-muted: #FAFAFA;
+  --ink: #1D1D1F;
+  --ink-secondary: #6E6E73;
+  --ink-tertiary: #AEAEB2;
+  --border: #E5E5EA;
+  --border-subtle: #F0F0F2;
+  --accent: #1D1D1F;
+  --accent-secondary: #8E8E93;
+  --status-available: #34C759;
+  --status-lent: #FF9500;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-hover: 0 8px 32px rgba(0,0,0,0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+[data-theme="dark"] {
+  /* Dark mode — Deep Obsidian */
+  --bg: #000000;
+  --bg-elevated: #1C1C1E;
+  --bg-subtle: #2C2C2E;
+  --bg-muted: #1A1A1C;
+  --ink: #FFFFFF;
+  --ink-secondary: #98989F;
+  --ink-tertiary: #636366;
+  --border: #38383A;
+  --border-subtle: #2A2A2C;
+  --accent: #FFFFFF;
+  --accent-secondary: #98989F;
+  --status-available: #30D158;
+  --status-lent: #FF9F0A;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-hover: 0 8px 32px rgba(0,0,0,0.5);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.47;
+  letter-spacing: -0.01em;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* === THEME TOGGLE === */
+.theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 10px 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.theme-toggle:hover { color: var(--ink); }
+.theme-toggle .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--ink);
+}
+
+/* === SECTION LABEL === */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-tertiary);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+/* === DESIGN SYSTEM === */
+.system-panel {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 40px 40px;
+}
+.system-panel h1 {
+  font-family: 'Inter', sans-serif;
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 12px;
+}
+.system-panel .subtitle {
+  font-size: 17px;
+  color: var(--ink-secondary);
+  font-weight: 400;
+  margin-bottom: 56px;
+  max-width: 640px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+.ds-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  margin-bottom: 60px;
+}
+
+/* Palette */
+.palette {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.swatch {
+  width: 88px;
+  text-align: center;
+}
+.swatch .color {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  border: 1px solid var(--border-subtle);
+}
+.swatch .label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+.swatch .hex {
+  font-size: 10px;
+  color: var(--ink-tertiary);
+  font-family: 'SF Mono', ui-monospace, monospace;
+  letter-spacing: -0.02em;
+}
+
+/* Type */
+.type-sample { margin-bottom: 28px; }
+.type-sample .meta {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-tertiary);
+  margin-bottom: 6px;
+}
+
+/* Divider */
+.minimal-rule {
+  height: 1px;
+  background: var(--border);
+  margin: 40px auto;
+  max-width: 1120px;
+}
+
+/* === MOCKUPS === */
+.mockup-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 40px 80px;
+}
+.mockup-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-tertiary);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+
+.phone-frame {
+  width: 375px;
+  height: 812px;
+  background: var(--bg);
+  border-radius: 44px;
+  overflow: hidden;
+  box-shadow: var(--shadow-hover);
+  border: 8px solid #1D1D1F;
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 20px 40px;
+}
+
+.status-bar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.status-bar .icons {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+}
+
+/* === INVENTORY GRID === */
+.inv-header {
+  padding: 12px 20px 12px;
+}
+.inv-header .title {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.inv-header .subtitle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+.inv-header .count {
+  font-size: 15px;
+  color: var(--ink-secondary);
+  font-weight: 400;
+}
+.inv-header .view-toggle {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-subtle);
+  border-radius: 9px;
+  padding: 2px;
+}
+.inv-header .view-toggle span {
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+.inv-header .view-toggle span.active {
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  padding: 8px 20px 16px;
+  overflow-x: auto;
+}
+.chip {
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  border: none;
+  color: var(--ink-secondary);
+  background: var(--bg-subtle);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chip.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.inv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 20px 100px;
+}
+.inv-card {
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.inv-card:active { transform: scale(0.97); }
+.inv-card .photo {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  background: var(--bg-subtle);
+  margin-bottom: 8px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.inv-card .photo .status-dot {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.inv-card .photo .status-dot.available { background: var(--status-available); }
+.inv-card .photo .status-dot.lent { background: var(--status-lent); }
+
+.inv-card .brand {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-bottom: 1px;
+}
+.inv-card .item-name {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  font-weight: 400;
+  margin-bottom: 2px;
+}
+.inv-card .value {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Tab bar */
+.tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 83px;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding-top: 12px;
+  backdrop-filter: blur(20px);
+}
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ink-tertiary);
+}
+.tab-item.active { color: var(--ink); }
+.tab-item .icon {
+  width: 26px; height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.tab-add {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -24px;
+  font-size: 22px;
+  font-weight: 300;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+/* === ITEM DETAIL === */
+.detail-scroll {
+  height: calc(812px - 44px);
+  overflow-y: auto;
+  padding-bottom: 100px;
+}
+.detail-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+}
+.detail-nav .back, .detail-nav .like {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.detail-hero {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--bg-subtle);
+  overflow: hidden;
+  position: relative;
+}
+.detail-info {
+  padding: 24px 20px 24px;
+}
+.detail-brand {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--accent-secondary);
+  margin-bottom: 6px;
+}
+.detail-name {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.detail-spec {
+  font-size: 17px;
+  color: var(--ink-secondary);
+  margin-bottom: 24px;
+  font-weight: 400;
+}
+
+.detail-meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 28px;
+}
+.detail-meta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.detail-meta-item:last-child { border-bottom: none; }
+.detail-meta-item .label {
+  font-size: 15px;
+  color: var(--ink-secondary);
+  font-weight: 400;
+}
+.detail-meta-item .value {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.detail-meta-item .value.status {
+  color: var(--status-available);
+}
+
+.owner-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.owner-tag .avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.owner-tag .name {
+  font-size: 15px;
+  color: var(--ink-secondary);
+}
+
+.detail-cta {
+  width: 100%;
+  padding: 16px;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.detail-cta:hover { opacity: 0.85; }
+
+.detail-notes {
+  margin-top: 32px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 24px;
+}
+.detail-notes .label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+.detail-notes .text {
+  font-size: 15px;
+  color: var(--ink-secondary);
+  line-height: 1.5;
+}
+
+/* Placeholder */
+.img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  font-weight: 200;
+  color: var(--ink-tertiary);
+  opacity: 0.15;
+  background: var(--bg-subtle);
+}
+
+@media (max-width: 900px) {
+  .ds-grid { grid-template-columns: 1fr; }
+  .system-panel, .mockup-section { padding-left: 20px; padding-right: 20px; }
+  .phone-frame { margin: 0 0 40px; }
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()">
+  <span class="dot"></span>
+  <span id="theme-label">Dark Mode</span>
+</button>
+
+<!-- ========== DESIGN SYSTEM ========== -->
+<div class="system-panel">
+  <div class="section-label">Visual Direction 03</div>
+  <h1>Minimal Monument</h1>
+  <p class="subtitle">Pure Apple Design Award discipline. One typeface — Inter at every weight — no decorative serifs, no gradients, no warm tones. Pure monochrome with iOS-native status colors. Maximum whitespace, hairline borders, and SF-symbol precision. Gallery white by day, absolute black by night. The most restrained of the three.</p>
+
+  <div class="ds-grid">
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Color Palette</div>
+      <div class="palette">
+        <div class="swatch">
+          <div class="color" style="background: #FFFFFF;"></div>
+          <div class="label">White</div>
+          <div class="hex">#FFFFFF</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #1D1D1F;"></div>
+          <div class="label">Black</div>
+          <div class="hex">#1D1D1F</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #6E6E73;"></div>
+          <div class="label">Gray</div>
+          <div class="hex">#6E6E73</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #F5F5F7;"></div>
+          <div class="label">Light Gray</div>
+          <div class="hex">#F5F5F7</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #34C759;"></div>
+          <div class="label">Available</div>
+          <div class="hex">#34C759</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #FF9500;"></div>
+          <div class="label">Lent</div>
+          <div class="hex">#FF9500</div>
+        </div>
+      </div>
+      <p style="font-size: 14px; color: var(--ink-secondary); margin-top: 16px; line-height: 1.5;">Strictly monochrome — black and white are the entire visual vocabulary. Color appears only for iOS-native status semantics: green for available, orange for lent. No accent gold, no warm tones, no gradients. This is the most Apple-native of the three directions.</p>
+    </div>
+
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Typography</div>
+      <div class="type-sample">
+        <div class="meta">Display — Inter 700, tight tracking</div>
+        <div class="specimen" style="font-size: 42px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;">Trésor</div>
+      </div>
+      <div class="type-sample">
+        <div class="meta">Headline — Inter 700</div>
+        <div class="specimen" style="font-size: 28px; font-weight: 700; letter-spacing: -0.03em;">Classic Flap Bag</div>
+      </div>
+      <div class="type-sample">
+        <div class="meta">Body — Inter 400</div>
+        <div class="specimen" style="font-size: 17px; font-weight: 400; color: var(--ink-secondary); letter-spacing: -0.01em;">Black, Caviar Leather, Gold Hardware</div>
+      </div>
+      <div class="type-sample">
+        <div class="meta">Label — Inter 600</div>
+        <div class="specimen" style="font-size: 14px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink-secondary);">CHANEL</div>
+      </div>
+      <div class="type-sample">
+        <div class="meta">Caption — Inter 400</div>
+        <div class="specimen" style="font-size: 13px; font-weight: 400; color: var(--ink-tertiary);">47 pieces · 3 lent</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="minimal-rule"></div>
+
+<!-- ========== MOCKUPS ========== -->
+<div class="mockup-section">
+
+  <!-- INVENTORY GRID -->
+  <div class="mockup-label">Inventory Grid Screen</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="inv-header">
+      <div class="title">My Trésor</div>
+      <div class="subtitle-row">
+        <span class="count">47 pieces · 3 lent</span>
+        <div class="view-toggle">
+          <span class="active">Grid</span>
+          <span>List</span>
+        </div>
+      </div>
+    </div>
+    <div class="filter-chips">
+      <span class="chip active">All</span>
+      <span class="chip">Handbags</span>
+      <span class="chip">Jewelry</span>
+      <span class="chip">Shoes</span>
+      <span class="chip">Watches</span>
+    </div>
+    <div class="inv-grid">
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">C</div>
+          <span class="status-dot available"></span>
+        </div>
+        <div class="brand">Chanel</div>
+        <div class="item-name">Classic Flap · Medium</div>
+        <div class="value">AED 31,200</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">H</div>
+          <span class="status-dot lent"></span>
+        </div>
+        <div class="brand">Hermès</div>
+        <div class="item-name">Birkin 30 · Togo</div>
+        <div class="value">AED 110,000</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">C</div>
+          <span class="status-dot available"></span>
+        </div>
+        <div class="brand">Cartier</div>
+        <div class="item-name">Love Bracelet · Gold</div>
+        <div class="value">AED 26,400</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">R</div>
+          <span class="status-dot available"></span>
+        </div>
+        <div class="brand">Rolex</div>
+        <div class="item-name">Datejust 36</div>
+        <div class="value">AED 44,000</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">D</div>
+          <span class="status-dot available"></span>
+        </div>
+        <div class="brand">Dior</div>
+        <div class="item-name">Lady Dior · Medium</div>
+        <div class="value">AED 18,800</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">V</div>
+          <span class="status-dot lent"></span>
+        </div>
+        <div class="brand">Van Cleef</div>
+        <div class="item-name">Alhambra Bracelet</div>
+        <div class="value">AED 14,700</div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active">
+        <div class="icon">◈</div>
+        <span>Trésor</span>
+      </div>
+      <div class="tab-item">
+        <div class="icon">◯</div>
+        <span>Circle</span>
+      </div>
+      <div class="tab-add">+</div>
+      <div class="tab-item">
+        <div class="icon">♡</div>
+        <span>Wishlist</span>
+      </div>
+      <div class="tab-item">
+        <div class="icon">≡</div>
+        <span>Activity</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM DETAIL -->
+  <div class="mockup-label" style="margin-top: 20px;">Item Detail Screen</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="detail-scroll">
+      <div class="detail-nav">
+        <span class="back">‹</span>
+        <span class="like">♡</span>
+      </div>
+      <div class="detail-hero">
+        <div class="img-placeholder" style="font-size: 120px;">C</div>
+      </div>
+      <div class="detail-info">
+        <div class="detail-brand">CHANEL</div>
+        <div class="detail-name">Classic Flap Bag</div>
+        <div class="detail-spec">Black · Caviar Leather · Gold Hardware · Medium</div>
+
+        <div class="owner-tag">
+          <div class="avatar">S</div>
+          <span class="name">Owned by Sarah M.</span>
+        </div>
+
+        <div class="detail-meta-row">
+          <div class="detail-meta-item">
+            <span class="label">Estimated Value</span>
+            <span class="value">AED 31,200</span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="label">Condition</span>
+            <span class="value">Excellent</span>
+          </div>
+          <div class="detail-meta-item">
+            <span class="label">Status</span>
+            <span class="value status">Available</span>
+          </div>
+        </div>
+
+        <button class="detail-cta">Request to Borrow</button>
+
+        <div class="detail-notes">
+          <div class="label">Condition Notes</div>
+          <div class="text">Minor corner wear on bottom-right. Hardware shows faint surface scratches consistent with gentle use. Interior lining clean. Purchased 2022, Chanel Dubai Mall.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-label').textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
+}
+</script>
+
+</body>
+</html>

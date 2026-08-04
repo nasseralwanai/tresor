@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trésor — Direction 2: Warm Atelier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ========== DIRECTION 2: WARM ATELIER ==========
+   Stance: Hermès boutique warmth. Soft camel, blush, and warm taupe tones.
+   Light mode = sunlit atelier with warm wood tones.
+   Dark mode = candlelit private salon, deep espresso with bronze glow.
+   Typography: Playfair Display (high-contrast serif) + Jost (geometric sans).
+   Rounded cards, soft shadows, warm gradient accents.
+   Think Net-a-Porter editorial + Hermès silk warmth.
+*/
+
+:root {
+  /* Light mode — Sunlit Atelier */
+  --bg: #FAF7F2;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #F5F0EA;
+  --bg-warm: #F0E8DC;
+  --ink: #2B2520;
+  --ink-secondary: #6B5D50;
+  --ink-tertiary: #A09080;
+  --border: #E5DDD0;
+  --border-subtle: #EFE9E0;
+  --accent: #9B7B5A;
+  --accent-warm: #C4A87E;
+  --accent-soft: rgba(155, 123, 90, 0.1);
+  --accent-gradient: linear-gradient(135deg, #C4A87E, #9B7B5A);
+  --status-available: #6B8E5A;
+  --status-lent: #C4A87E;
+  --shadow: 0 4px 24px rgba(43, 37, 32, 0.06);
+  --shadow-hover: 0 12px 48px rgba(43, 37, 32, 0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+[data-theme="dark"] {
+  /* Dark mode — Candlelit Salon */
+  --bg: #1A1510;
+  --bg-elevated: #2A2218;
+  --bg-subtle: #221C14;
+  --bg-warm: #2E2519;
+  --ink: #F5F0E8;
+  --ink-secondary: #C4B5A0;
+  --ink-tertiary: #8A7860;
+  --border: #3A2F22;
+  --border-subtle: #2E2619;
+  --accent: #C4A87E;
+  --accent-warm: #D4BC94;
+  --accent-soft: rgba(196, 168, 126, 0.12);
+  --accent-gradient: linear-gradient(135deg, #D4BC94, #C4A87E);
+  --status-available: #8AB07A;
+  --status-lent: #D4BC94;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.6);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+.serif { font-family: 'Playfair Display', Georgia, serif; }
+
+/* === THEME TOGGLE === */
+.theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 10px 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent-gradient);
+}
+
+/* === SECTION LABEL === */
+.section-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+/* === DESIGN SYSTEM PANEL === */
+.system-panel {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 40px 40px;
+}
+.system-panel h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 52px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-bottom: 12px;
+}
+.system-panel .subtitle {
+  font-size: 15px;
+  color: var(--ink-secondary);
+  font-weight: 300;
+  margin-bottom: 48px;
+  max-width: 620px;
+  line-height: 1.7;
+}
+
+.ds-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 60px;
+}
+
+/* Color palette */
+.palette {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.swatch {
+  width: 88px;
+  text-align: center;
+}
+.swatch .color {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  border: 1px solid var(--border-subtle);
+}
+.swatch .label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--ink-secondary);
+}
+.swatch .hex {
+  font-size: 9px;
+  color: var(--ink-tertiary);
+  font-family: 'SF Mono', ui-monospace, monospace;
+}
+
+/* Typography */
+.type-sample { margin-bottom: 24px; }
+.type-sample .meta {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 6px;
+}
+
+/* === DIVIDER === */
+.warm-rule {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-warm), transparent);
+  opacity: 0.3;
+  margin: 40px 0;
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* === MOCKUP FRAMES === */
+.mockup-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 40px 80px;
+}
+.mockup-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mockup-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.phone-frame {
+  width: 375px;
+  height: 812px;
+  background: var(--bg-elevated);
+  border-radius: 44px;
+  overflow: hidden;
+  box-shadow: var(--shadow-hover);
+  border: 8px solid var(--ink);
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 20px 40px;
+}
+
+.status-bar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.status-bar .icons {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+}
+
+/* === INVENTORY GRID === */
+.inv-header {
+  padding: 8px 24px 16px;
+}
+.inv-header .greeting {
+  font-size: 13px;
+  color: var(--ink-tertiary);
+  font-weight: 400;
+}
+.inv-header .title {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-top: 2px;
+}
+.inv-header .subtitle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+.inv-header .count {
+  font-size: 13px;
+  color: var(--ink-tertiary);
+  font-weight: 400;
+}
+.inv-header .view-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-subtle);
+  border-radius: 8px;
+  padding: 3px;
+}
+.inv-header .view-toggle span {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--ink-tertiary);
+}
+.inv-header .view-toggle span.active {
+  background: var(--bg-elevated);
+  color: var(--ink);
+  font-weight: 500;
+  box-shadow: var(--shadow);
+}
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  padding: 0 24px 20px;
+  overflow-x: auto;
+}
+.chip {
+  padding: 7px 18px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  color: var(--ink-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.chip.active {
+  background: var(--accent-gradient);
+  color: #fff;
+  border-color: transparent;
+  font-weight: 500;
+}
+
+.inv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 0 24px 100px;
+}
+.inv-card {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.inv-card:active { transform: scale(0.97); }
+.inv-card .photo {
+  width: 100%;
+  aspect-ratio: 4/5;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  margin-bottom: 10px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.inv-card .photo .status-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(8px);
+  color: var(--ink-secondary);
+}
+.inv-card .photo .status-badge.available {
+  color: var(--status-available);
+}
+.inv-card .photo .status-badge.lent {
+  color: var(--accent);
+}
+.inv-card .brand {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.inv-card .item-name {
+  font-size: 12px;
+  color: var(--ink-secondary);
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+.inv-card .value {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bottom tab bar */
+.tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 83px;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding-top: 14px;
+}
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--ink-tertiary);
+}
+.tab-item.active { color: var(--accent); font-weight: 500; }
+.tab-item .icon {
+  width: 24px; height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tab-add {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -24px;
+  font-size: 22px;
+  font-weight: 300;
+  box-shadow: 0 4px 16px rgba(196, 168, 126, 0.5);
+}
+
+/* === ITEM DETAIL === */
+.detail-scroll {
+  height: calc(812px - 44px);
+  overflow-y: auto;
+  padding-bottom: 100px;
+}
+.detail-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 24px;
+}
+.detail-nav .back, .detail-nav .like {
+  font-size: 20px;
+  color: var(--ink);
+  cursor: pointer;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-subtle);
+}
+.detail-hero {
+  width: calc(100% - 48px);
+  aspect-ratio: 1;
+  background: var(--bg-warm);
+  margin: 0 24px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+}
+.detail-info {
+  padding: 24px 24px 24px;
+}
+.detail-brand {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.detail-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.detail-spec {
+  font-size: 14px;
+  color: var(--ink-secondary);
+  margin-bottom: 20px;
+}
+.owner-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+}
+.owner-tag .avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+.owner-tag .name {
+  font-size: 13px;
+  color: var(--ink-secondary);
+}
+.owner-tag .name strong { color: var(--ink); font-weight: 500; }
+
+.detail-meta-row {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  margin-bottom: 24px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.detail-meta-item {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  border-right: 1px solid var(--border-subtle);
+}
+.detail-meta-item:last-child { border-right: none; }
+.detail-meta-item .label {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 6px;
+}
+.detail-meta-item .value {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-cta {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Jost', sans-serif;
+}
+.detail-cta:hover { opacity: 0.9; }
+
+.detail-notes {
+  margin-top: 28px;
+}
+.detail-notes .label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  margin-bottom: 10px;
+}
+.detail-notes .text {
+  font-size: 14px;
+  color: var(--ink-secondary);
+  line-height: 1.7;
+  padding: 16px;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+}
+
+/* Placeholder image */
+.img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 48px;
+  color: var(--ink-tertiary);
+  opacity: 0.25;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+}
+
+@media (max-width: 900px) {
+  .ds-grid { grid-template-columns: 1fr; }
+  .system-panel, .mockup-section { padding-left: 20px; padding-right: 20px; }
+  .phone-frame { margin: 0 0 40px; }
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()">
+  <span class="dot"></span>
+  <span id="theme-label">Dark Mode</span>
+</button>
+
+<!-- ========== DESIGN SYSTEM ========== -->
+<div class="system-panel">
+  <div class="section-label">Visual Direction 02</div>
+  <h1 class="serif">Warm Atelier</h1>
+  <p class="subtitle">Inspired by Hermès leather craftsmanship and Net-a-Porter's editorial warmth. Soft camel, blush, and taupe create a sunlit boutique feel by day; candlelit espresso and bronze by night. Playfair Display brings high-contrast elegance; Jost adds modern geometric precision. Rounded cards, gradient accents, and tactile warmth throughout.</p>
+
+  <div class="ds-grid">
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Color Palette</div>
+      <div class="palette">
+        <div class="swatch">
+          <div class="color" style="background: #FAF7F2;"></div>
+          <div class="label">Cream</div>
+          <div class="hex">#FAF7F2</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #2B2520;"></div>
+          <div class="label">Espresso</div>
+          <div class="hex">#2B2520</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #9B7B5A;"></div>
+          <div class="label">Camel</div>
+          <div class="hex">#9B7B5A</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #C4A87E;"></div>
+          <div class="label">Bronze</div>
+          <div class="hex">#C4A87E</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #6B5D50;"></div>
+          <div class="label">Taupe</div>
+          <div class="hex">#6B5D50</div>
+        </div>
+        <div class="swatch">
+          <div class="color" style="background: #E5DDD0;"></div>
+          <div class="label">Sand</div>
+          <div class="hex">#E5DDD0</div>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: var(--ink-tertiary); margin-top: 16px; line-height: 1.6;">A warm, leathery palette — never cold or sterile. The camel-to-bronze gradient carries the brand accent, appearing on CTAs, active filters, and the add button. Status colors are muted greens and warm ambers, never harsh.</p>
+    </div>
+
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Typography</div>
+      <div class="type-sample">
+        <div class="meta">Display — Playfair Display 500</div>
+        <div class="specimen serif" style="font-size: 38px; font-weight: 500; line-height: 1.05;">Trésor</div>
+      </div>
+      <div class="type-sample">
+        <div class="meta">Headline — Playfair Display 500</div>
+        <div class="specimen serif" style="font-size: 26px; font-weight: 500;">Classic Flap Bag</div>
+      </div>
+      <div class="type-sample">
+        <div class="meta">Body — Jost 400</div>
+        <div class="specimen" style="font-size: 15px; font-weight: 400; color: var(--ink-secondary);">Black, Caviar Leather, Gold Hardware</div>
+      </div>
+      <div class="type-sample">
+        <div class="meta">Label — Jost 500, tracked</div>
+        <div class="specimen" style="font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">CHANEL</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== MOCKUPS ========== -->
+<div class="mockup-section">
+
+  <!-- INVENTORY GRID -->
+  <div class="mockup-label">Inventory Grid Screen</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="inv-header">
+      <div class="greeting">Good morning, Sarah</div>
+      <div class="title serif">My Trésor</div>
+      <div class="subtitle-row">
+        <span class="count">47 pieces · 3 lent</span>
+        <div class="view-toggle">
+          <span class="active">Grid</span>
+          <span>List</span>
+        </div>
+      </div>
+    </div>
+    <div class="filter-chips">
+      <span class="chip active">All</span>
+      <span class="chip">Handbags</span>
+      <span class="chip">Jewelry</span>
+      <span class="chip">Shoes</span>
+      <span class="chip">Watches</span>
+    </div>
+    <div class="inv-grid">
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">C</div>
+          <span class="status-badge available">● Available</span>
+        </div>
+        <div class="brand">Chanel</div>
+        <div class="item-name">Classic Flap · Medium</div>
+        <div class="value">AED 31,200</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">H</div>
+          <span class="status-badge lent">● Lent</span>
+        </div>
+        <div class="brand">Hermès</div>
+        <div class="item-name">Birkin 30 · Togo</div>
+        <div class="value">AED 110,000</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">C</div>
+          <span class="status-badge available">● Available</span>
+        </div>
+        <div class="brand">Cartier</div>
+        <div class="item-name">Love Bracelet · Gold</div>
+        <div class="value">AED 26,400</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">R</div>
+          <span class="status-badge available">● Available</span>
+        </div>
+        <div class="brand">Rolex</div>
+        <div class="item-name">Datejust 36</div>
+        <div class="value">AED 44,000</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">D</div>
+          <span class="status-badge available">● Available</span>
+        </div>
+        <div class="brand">Dior</div>
+        <div class="item-name">Lady Dior · Medium</div>
+        <div class="value">AED 18,800</div>
+      </div>
+      <div class="inv-card">
+        <div class="photo">
+          <div class="img-placeholder">V</div>
+          <span class="status-badge lent">● Lent</span>
+        </div>
+        <div class="brand">Van Cleef</div>
+        <div class="item-name">Alhambra Bracelet</div>
+        <div class="value">AED 14,700</div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active">
+        <div class="icon">◈</div>
+        <span>Trésor</span>
+      </div>
+      <div class="tab-item">
+        <div class="icon">◯</div>
+        <span>Circle</span>
+      </div>
+      <div class="tab-add">+</div>
+      <div class="tab-item">
+        <div class="icon">♡</div>
+        <span>Wishlist</span>
+      </div>
+      <div class="tab-item">
+        <div class="icon">≡</div>
+        <span>Activity</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM DETAIL -->
+  <div class="mockup-label" style="margin-top: 20px;">Item Detail Screen</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="detail-scroll">
+      <div class="detail-nav">
+        <span class="back">‹</span>
+        <span class="like">♡</span>
+      </div>
+      <div class="detail-hero">
+        <div class="img-placeholder" style="font-size: 120px;">C</div>
+      </div>
+      <div class="detail-info">
+        <div class="detail-brand">Chanel</div>
+        <div class="detail-name serif">Classic Flap Bag</div>
+        <div class="detail-spec">Black · Caviar Leather · Gold Hardware · Medium</div>
+
+        <div class="owner-tag">
+          <div class="avatar">S</div>
+          <div class="name">Owned by <strong>Sarah M.</strong></div>
+        </div>
+
+        <div class="detail-meta-row">
+          <div class="detail-meta-item">
+            <div class="label">Value</div>
+            <div class="value">AED 31,200</div>
+          </div>
+          <div class="detail-meta-item">
+            <div class="label">Condition</div>
+            <div class="value">Excellent</div>
+          </div>
+          <div class="detail-meta-item">
+            <div class="label">Status</div>
+            <div class="value" style="color: var(--status-available);">Available</div>
+          </div>
+        </div>
+
+        <button class="detail-cta">Request to Borrow</button>
+
+        <div class="detail-notes">
+          <div class="label">Condition Notes</div>
+          <div class="text">Minor corner wear on bottom-right. Hardware shows faint surface scratches consistent with gentle use. Interior lining clean. Purchased 2022, Chanel Dubai Mall.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-label').textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
+}
+</script>
+
+</body>
+</html>

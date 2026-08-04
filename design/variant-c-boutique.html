@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trésor — Variant C: Boutique Shelf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ========== VARIANT C: BOUTIQUE SHELF ==========
+   Warm Atelier palette + Playfair/Jost — but structurally a boutique.
+   Horizontal scroll rows by category — browsing shelves.
+   Featured carousel at top. Each row scrolls independently with peek-through.
+   Compact cards: thumbnail + brand + price.
+   Detail: stacked card with parallax photo, tabbed sections.
+*/
+
+:root {
+  --bg: #FAF7F2;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #F5F0EA;
+  --bg-warm: #F0E8DC;
+  --ink: #2B2520;
+  --ink-secondary: #6B5D50;
+  --ink-tertiary: #A09080;
+  --border: #E5DDD0;
+  --border-subtle: #EFE9E0;
+  --accent: #9B7B5A;
+  --accent-warm: #C4A87E;
+  --accent-soft: rgba(155, 123, 90, 0.1);
+  --accent-gradient: linear-gradient(135deg, #C4A87E, #9B7B5A);
+  --status-available: #6B8E5A;
+  --status-lent: #C4A87E;
+  --shadow: 0 4px 24px rgba(43, 37, 32, 0.06);
+  --shadow-hover: 0 12px 48px rgba(43, 37, 32, 0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+[data-theme="dark"] {
+  --bg: #1A1510;
+  --bg-elevated: #2A2218;
+  --bg-subtle: #221C14;
+  --bg-warm: #2E2519;
+  --ink: #F5F0E8;
+  --ink-secondary: #C4B5A0;
+  --ink-tertiary: #8A7860;
+  --border: #3A2F22;
+  --border-subtle: #2E2619;
+  --accent: #C4A87E;
+  --accent-warm: #D4BC94;
+  --accent-soft: rgba(196, 168, 126, 0.12);
+  --accent-gradient: linear-gradient(135deg, #D4BC94, #C4A87E);
+  --status-available: #8AB07A;
+  --status-lent: #D4BC94;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg); color: var(--ink);
+  -webkit-font-smoothing: antialiased; line-height: 1.5;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+.serif { font-family: 'Playfair Display', Georgia, serif; }
+
+/* === THEME TOGGLE === */
+.theme-toggle {
+  position: fixed; top: 24px; right: 24px; z-index: 100;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 100px; padding: 10px 20px; font-size: 12px; font-weight: 500;
+  letter-spacing: 0.05em; color: var(--ink-secondary); cursor: pointer;
+  transition: all 0.3s ease; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 8px;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-gradient); }
+
+.section-label { font-size: 10px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+
+/* === DESIGN SYSTEM PANEL === */
+.system-panel { max-width: 1200px; margin: 0 auto; padding: 80px 40px 40px; }
+.system-panel h1 { font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 12px; }
+.system-panel .subtitle { font-size: 15px; color: var(--ink-secondary); font-weight: 300; margin-bottom: 48px; max-width: 620px; line-height: 1.7; }
+.ds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 60px; }
+.palette { display: flex; gap: 12px; flex-wrap: wrap; }
+.swatch { width: 88px; text-align: center; }
+.swatch .color { width: 88px; height: 88px; border-radius: var(--radius-sm); margin-bottom: 8px; border: 1px solid var(--border-subtle); }
+.swatch .label { font-size: 10px; font-weight: 500; letter-spacing: 0.05em; color: var(--ink-secondary); }
+.swatch .hex { font-size: 9px; color: var(--ink-tertiary); font-family: 'SF Mono', ui-monospace, monospace; }
+.type-sample { margin-bottom: 24px; }
+.type-sample .meta { font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-tertiary); margin-bottom: 6px; }
+.warm-rule { height: 2px; background: linear-gradient(90deg, transparent, var(--accent-warm), transparent); opacity: 0.3; margin: 40px auto; max-width: 1120px; }
+
+/* === MOCKUP FRAMES === */
+.mockup-section { max-width: 1200px; margin: 0 auto; padding: 20px 40px 80px; }
+.mockup-label { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.mockup-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.phone-frame { width: 375px; height: 812px; background: var(--bg-elevated); border-radius: 44px; overflow: hidden; box-shadow: var(--shadow-hover); border: 8px solid var(--ink); position: relative; display: inline-block; vertical-align: top; margin: 0 20px 40px; }
+.status-bar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-size: 14px; font-weight: 600; color: var(--ink); }
+.status-bar .icons { display: flex; gap: 6px; font-size: 12px; }
+
+/* ========================================
+   BOUTIQUE SHELF — HORIZONTAL ROWS
+   ======================================== */
+.boutique-scroll { height: calc(812px - 44px - 83px); overflow-y: auto; overflow-x: hidden; }
+.boutique-scroll::-webkit-scrollbar { display: none; }
+
+.boutique-header { padding: 8px 24px 16px; }
+.boutique-header .greeting { font-size: 12px; color: var(--ink-tertiary); }
+.boutique-header .title { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.15; margin-top: 2px; }
+.boutique-header .count { font-size: 12px; color: var(--ink-tertiary); margin-top: 4px; }
+
+/* Featured carousel at top */
+.featured-carousel {
+  display: flex; gap: 12px; padding: 0 24px 24px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.featured-carousel::-webkit-scrollbar { display: none; }
+.featured-card {
+  flex: 0 0 260px; border-radius: var(--radius); overflow: hidden;
+  background: var(--bg-subtle); cursor: pointer; transition: transform 0.2s ease;
+  position: relative;
+}
+.featured-card:active { transform: scale(0.97); }
+.featured-card-photo {
+  height: 160px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+}
+.featured-card-photo .img-letter { font-family: 'Playfair Display', serif; font-size: 80px; color: var(--ink-tertiary); opacity: 0.2; }
+.featured-card-info { padding: 14px 16px; }
+.featured-card-info .brand { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+.featured-card-info .name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 500; line-height: 1.2; margin-bottom: 4px; }
+.featured-card-info .price { font-size: 13px; color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.featured-card .status-tag {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 9px; font-weight: 500; padding: 3px 10px; border-radius: 100px;
+  background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); color: var(--status-available);
+}
+.featured-card .status-tag.lent { color: var(--accent); }
+
+/* Category shelf row */
+.shelf { margin-bottom: 24px; }
+.shelf-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 24px 10px;
+}
+.shelf-header .name {
+  font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500;
+}
+.shelf-header .count { font-size: 11px; color: var(--ink-tertiary); }
+
+/* Horizontal scroll row with peek-through */
+.shelf-row {
+  display: flex; gap: 12px; padding: 0 24px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.shelf-row::-webkit-scrollbar { display: none; }
+
+/* Compact card — thumbnail + brand + price */
+.shelf-card {
+  flex: 0 0 130px; cursor: pointer; transition: transform 0.2s ease;
+}
+.shelf-card:active { transform: scale(0.97); }
+.shelf-card-photo {
+  width: 130px; height: 130px; border-radius: var(--radius-sm);
+  overflow: hidden; position: relative; margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+}
+.shelf-card-photo .img-letter { font-family: 'Playfair Display', serif; font-size: 44px; color: var(--ink-tertiary); opacity: 0.2; }
+.shelf-card .status-dot {
+  position: absolute; top: 8px; right: 8px;
+  width: 7px; height: 7px; border-radius: 50%;
+}
+.shelf-card .status-dot.available { background: var(--status-available); }
+.shelf-card .status-dot.lent { background: var(--accent-warm); }
+.shelf-card .brand { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; color: var(--ink); margin-bottom: 1px; }
+.shelf-card .item-name { font-size: 11px; color: var(--ink-secondary); line-height: 1.3; margin-bottom: 2px; }
+.shelf-card .price { font-size: 11px; color: var(--accent); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* Bottom tab bar */
+.tab-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 83px; background: var(--bg-elevated); border-top: 1px solid var(--border-subtle); display: flex; align-items: flex-start; justify-content: space-around; padding-top: 14px; }
+.tab-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; font-weight: 400; color: var(--ink-tertiary); }
+.tab-item.active { color: var(--accent); font-weight: 500; }
+.tab-item .icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+.tab-add { width: 48px; height: 48px; border-radius: 50%; background: var(--accent-gradient); color: #fff; display: flex; align-items: center; justify-content: center; margin-top: -24px; font-size: 22px; font-weight: 300; box-shadow: 0 4px 16px rgba(196, 168, 126, 0.5); }
+
+/* ========================================
+   BOUTIQUE DETAIL — STACKED CARD + TABS
+   ======================================== */
+.detail-stacked { height: calc(812px - 44px); overflow: hidden; position: relative; }
+.detail-stacked-scroll { height: 100%; overflow-y: auto; }
+.detail-stacked-scroll::-webkit-scrollbar { display: none; }
+
+/* Parallax photo area */
+.detail-parallax {
+  height: 300px; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  display: flex; align-items: center; justify-content: center;
+}
+.detail-parallax .img-letter { font-family: 'Playfair Display', serif; font-size: 160px; color: var(--ink-tertiary); opacity: 0.15; }
+.detail-nav-overlay {
+  position: absolute; top: 12px; left: 16px; right: 16px;
+  display: flex; justify-content: space-between; z-index: 10;
+}
+.detail-nav-overlay .btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--ink); cursor: pointer;
+}
+[data-theme="dark"] .detail-nav-overlay .btn { background: rgba(42,34,24,0.85); }
+
+/* Stacked card that overlaps the photo */
+.detail-stacked-card {
+  margin: -30px 20px 0; background: var(--bg-elevated);
+  border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow-hover); position: relative; z-index: 5;
+}
+.detail-stacked-card .brand { font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.detail-stacked-card .name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 500; line-height: 1.2; margin-bottom: 4px; }
+.detail-stacked-card .spec { font-size: 13px; color: var(--ink-secondary); margin-bottom: 14px; }
+.detail-stacked-card .price-row { display: flex; gap: 16px; margin-bottom: 16px; }
+.detail-stacked-card .price-cell .label { font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-tertiary); margin-bottom: 2px; }
+.detail-stacked-card .price-cell .value { font-size: 15px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* Tabbed sections */
+.detail-tabs { margin: 0 20px 100px; }
+.detail-tab-bar {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+}
+.detail-tab {
+  flex: 1; padding: 10px 0; text-align: center;
+  font-size: 12px; font-weight: 400; color: var(--ink-tertiary);
+  cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+}
+.detail-tab.active { color: var(--accent); font-weight: 500; border-bottom-color: var(--accent); }
+
+.detail-tab-content { display: none; }
+.detail-tab-content.active { display: block; }
+
+.detail-tab-content .info-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border-subtle);
+}
+.detail-tab-content .info-row .key { font-size: 12px; color: var(--ink-tertiary); }
+.detail-tab-content .info-row .val { font-size: 13px; color: var(--ink); font-weight: 500; }
+
+.detail-tab-content .note-box {
+  margin-top: 12px; padding: 14px; background: var(--bg-subtle);
+  border-radius: var(--radius-sm); font-size: 13px; color: var(--ink-secondary); line-height: 1.6;
+}
+
+.detail-tab-content .history-item {
+  display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle);
+}
+.detail-tab-content .history-item .avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--accent-gradient);
+  display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; flex-shrink: 0;
+}
+.detail-tab-content .history-item .info { flex: 1; }
+.detail-tab-content .history-item .info .person { font-size: 13px; font-weight: 500; color: var(--ink); }
+.detail-tab-content .history-item .info .dates { font-size: 11px; color: var(--ink-tertiary); }
+.detail-tab-content .history-item .status-pill { font-size: 9px; font-weight: 500; padding: 3px 8px; border-radius: 100px; background: var(--accent-soft); color: var(--accent); align-self: center; }
+
+.detail-cta-fixed {
+  position: absolute; bottom: 83px; left: 0; right: 0;
+  padding: 12px 20px; background: var(--bg-elevated);
+  border-top: 1px solid var(--border-subtle);
+}
+.detail-cta-fixed button {
+  width: 100%; padding: 14px; background: var(--accent-gradient); color: #fff;
+  border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
+  letter-spacing: 0.03em; cursor: pointer; font-family: 'Jost', sans-serif;
+}
+
+@media (max-width: 900px) {
+  .ds-grid { grid-template-columns: 1fr; }
+  .system-panel, .mockup-section { padding-left: 20px; padding-right: 20px; }
+  .phone-frame { margin: 0 0 40px; }
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()">
+  <span class="dot"></span>
+  <span id="theme-label">Dark Mode</span>
+</button>
+
+<!-- ========== DESIGN SYSTEM ========== -->
+<div class="system-panel">
+  <div class="section-label">Variant C · Structural Iteration</div>
+  <h1 class="serif">Boutique Shelf</h1>
+  <p class="subtitle">Warm Atelier palette and typography, restructured as a boutique browsing experience. Horizontal scroll rows by category — Handbags, Jewelry, Watches — like walking past shelves. Featured carousel at top, each row scrolls independently with peek-through of next items. Compact cards with thumbnail, brand, and price. Detail screen uses a stacked card over a parallax photo with tabbed sections for Details, History, and Lending.</p>
+
+  <div class="ds-grid">
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Color Palette</div>
+      <div class="palette">
+        <div class="swatch"><div class="color" style="background: #FAF7F2;"></div><div class="label">Cream</div><div class="hex">#FAF7F2</div></div>
+        <div class="swatch"><div class="color" style="background: #2B2520;"></div><div class="label">Espresso</div><div class="hex">#2B2520</div></div>
+        <div class="swatch"><div class="color" style="background: #9B7B5A;"></div><div class="label">Camel</div><div class="hex">#9B7B5A</div></div>
+        <div class="swatch"><div class="color" style="background: #C4A87E;"></div><div class="label">Bronze</div><div class="hex">#C4A87E</div></div>
+        <div class="swatch"><div class="color" style="background: #6B5D50;"></div><div class="label">Taupe</div><div class="hex">#6B5D50</div></div>
+        <div class="swatch"><div class="color" style="background: #E5DDD0;"></div><div class="label">Sand</div><div class="hex">#E5DDD0</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Typography</div>
+      <div class="type-sample"><div class="meta">Display — Playfair Display 500</div><div class="specimen serif" style="font-size: 38px; font-weight: 500; line-height: 1.05;">Trésor</div></div>
+      <div class="type-sample"><div class="meta">Headline — Playfair Display 500</div><div class="specimen serif" style="font-size: 26px; font-weight: 500;">Classic Flap Bag</div></div>
+      <div class="type-sample"><div class="meta">Body — Jost 400</div><div class="specimen" style="font-size: 15px; font-weight: 400; color: var(--ink-secondary);">Black, Caviar Leather, Gold Hardware</div></div>
+      <div class="type-sample"><div class="meta">Label — Jost 500, tracked</div><div class="specimen" style="font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">CHANEL</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== MOCKUPS ========== -->
+<div class="mockup-section">
+
+  <!-- INVENTORY GRID — BOUTIQUE SHELVES -->
+  <div class="mockup-label">Inventory Grid — Boutique Shelves</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="boutique-scroll">
+      <div class="boutique-header">
+        <div class="greeting">Good morning, Sarah</div>
+        <div class="title serif">My Trésor</div>
+        <div class="count">47 pieces · 3 lent</div>
+      </div>
+
+      <!-- Featured carousel -->
+      <div class="featured-carousel">
+        <div class="featured-card">
+          <div class="featured-card-photo"><span class="img-letter">C</span></div>
+          <span class="status-tag">● Available</span>
+          <div class="featured-card-info">
+            <div class="brand">Chanel</div>
+            <div class="name serif">Classic Flap Bag</div>
+            <div class="price">AED 31,200</div>
+          </div>
+        </div>
+        <div class="featured-card">
+          <div class="featured-card-photo"><span class="img-letter">H</span></div>
+          <span class="status-tag lent">● Lent</span>
+          <div class="featured-card-info">
+            <div class="brand">Hermès</div>
+            <div class="name serif">Birkin 30 · Togo</div>
+            <div class="price">AED 110,000</div>
+          </div>
+        </div>
+        <div class="featured-card">
+          <div class="featured-card-photo"><span class="img-letter">R</span></div>
+          <span class="status-tag">● Available</span>
+          <div class="featured-card-info">
+            <div class="brand">Rolex</div>
+            <div class="name serif">Datejust 36</div>
+            <div class="price">AED 44,000</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shelf: Handbags -->
+      <div class="shelf">
+        <div class="shelf-header">
+          <span class="name serif">Handbags</span>
+          <span class="count">12 items</span>
+        </div>
+        <div class="shelf-row">
+          <div class="shelf-card">
+            <div class="shelf-card-photo">
+              <span class="img-letter">C</span>
+              <span class="status-dot available"></span>
+            </div>
+            <div class="brand">Chanel</div>
+            <div class="item-name">Classic Flap · Med</div>
+            <div class="price">AED 31,200</div>
+          </div>
+          <div class="shelf-card">
+            <div class="shelf-card-photo">
+              <span class="img-letter">H</span>
+              <span class="status-dot lent"></span>
+            </div>
+            <div class="brand">Hermès</div>
+            <div class="item-name">Birkin 30 · Togo</div>
+            <div class="price">AED 110,000</div>
+          </div>
+          <div class="shelf-card">
+            <div class="shelf-card-photo">
+              <span class="img-letter">D</span>
+              <span class="status-dot available"></span>
+            </div>
+            <div class="brand">Dior</div>
+            <div class="item-name">Lady Dior · Med</div>
+            <div class="price">AED 18,800</div>
+          </div>
+          <div class="shelf-card">
+            <div class="shelf-card-photo">
+              <span class="img-letter">C</span>
+              <span class="status-dot available"></span>
+            </div>
+            <div class="brand">Chanel</div>
+            <div class="item-name">Boy Bag · Small</div>
+            <div class="price">AED 24,500</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shelf: Jewelry -->
+      <div class="shelf">
+        <div class="shelf-header">
+          <span class="name serif">Jewelry</span>
+          <span class="count">8 items</span>
+        </div>
+        <div class="shelf-row">
+          <div class="shelf-card">
+            <div class="shelf-card-photo">
+              <span class="img-letter">C</span>
+              <span class="status-dot available"></span>
+            </div>
+            <div class="brand">Cartier</div>
+            <div class="item-name">Love Bracelet</div>
+            <div class="price">AED 26,400</div>
+          </div>
+          <div class="shelf-card">
+            <div class="shelf-card-photo">
+              <span class="img-letter">V</span>
+              <span class="status-dot lent"></span>
+            </div>
+            <div class="brand">Van Cleef</div>
+            <div class="item-name">Alhambra Bracelet</div>
+            <div class="price">AED 14,700</div>
+          </div>
+          <div class="shelf-card">
+            <div class="shelf-card-photo">
+              <span class="img-letter">T</span>
+              <span class="status-dot available"></span>
+            </div>
+            <div class="brand">Tiffany</div>
+            <div class="item-name">T1 Hinged Bangle</div>
+            <div class="price">AED 12,200</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shelf: Watches -->
+      <div class="shelf">
+        <div class="shelf-header">
+          <span class="name serif">Watches</span>
+          <span class="count">5 items</span>
+        </div>
+        <div class="shelf-row">
+          <div class="shelf-card">
+            <div class="shelf-card-photo">
+              <span class="img-letter">R</span>
+              <span class="status-dot available"></span>
+            </div>
+            <div class="brand">Rolex</div>
+            <div class="item-name">Datejust 36</div>
+            <div class="price">AED 44,000</div>
+          </div>
+          <div class="shelf-card">
+            <div class="shelf-card-photo">
+              <span class="img-letter">C</span>
+              <span class="status-dot available"></span>
+            </div>
+            <div class="brand">Cartier</div>
+            <div class="item-name">Tank Française</div>
+            <div class="price">AED 21,300</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active"><div class="icon">◈</div><span>Trésor</span></div>
+      <div class="tab-item"><div class="icon">◯</div><span>Circle</span></div>
+      <div class="tab-add">+</div>
+      <div class="tab-item"><div class="icon">♡</div><span>Wishlist</span></div>
+      <div class="tab-item"><div class="icon">≡</div><span>Activity</span></div>
+    </div>
+  </div>
+
+  <!-- ITEM DETAIL — STACKED CARD + TABBED -->
+  <div class="mockup-label" style="margin-top: 20px;">Item Detail — Stacked Card + Tabs</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="detail-stacked">
+      <div class="detail-stacked-scroll">
+        <div class="detail-parallax">
+          <div class="detail-nav-overlay">
+            <div class="btn">‹</div>
+            <div class="btn">♡</div>
+          </div>
+          <span class="img-letter">C</span>
+        </div>
+
+        <div class="detail-stacked-card">
+          <div class="brand">Chanel</div>
+          <div class="name serif">Classic Flap Bag</div>
+          <div class="spec">Black · Caviar Leather · Gold Hardware · Medium</div>
+          <div class="price-row">
+            <div class="price-cell">
+              <div class="label">Value</div>
+              <div class="value">AED 31,200</div>
+            </div>
+            <div class="price-cell">
+              <div class="label">Condition</div>
+              <div class="value">Excellent</div>
+            </div>
+            <div class="price-cell">
+              <div class="label">Status</div>
+              <div class="value" style="color: var(--status-available);">Available</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-tabs">
+          <div class="detail-tab-bar">
+            <div class="detail-tab active" onclick="switchTab(event, 'details')">Details</div>
+            <div class="detail-tab" onclick="switchTab(event, 'history')">History</div>
+            <div class="detail-tab" onclick="switchTab(event, 'lending')">Lending</div>
+          </div>
+
+          <!-- Details tab -->
+          <div class="detail-tab-content active" id="tab-details">
+            <div class="info-row"><span class="key">Owner</span><span class="val">Sarah M.</span></div>
+            <div class="info-row"><span class="key">Purchased</span><span class="val">2022 · Chanel Dubai Mall</span></div>
+            <div class="info-row"><span class="key">Category</span><span class="val">Handbags</span></div>
+            <div class="info-row"><span class="key">Material</span><span class="val">Caviar Leather</span></div>
+            <div class="info-row"><span class="key">Hardware</span><span class="val">Gold</span></div>
+            <div class="note-box">Minor corner wear on bottom-right. Hardware shows faint surface scratches consistent with gentle use. Interior lining clean.</div>
+          </div>
+
+          <!-- History tab -->
+          <div class="detail-tab-content" id="tab-history">
+            <div class="history-item">
+              <div class="avatar">L</div>
+              <div class="info">
+                <div class="person">Layla A.</div>
+                <div class="dates">Borrowed Mar 2026 · Returned Apr 2026</div>
+              </div>
+              <span class="status-pill">Returned</span>
+            </div>
+            <div class="history-item">
+              <div class="avatar">M</div>
+              <div class="info">
+                <div class="person">Mariam K.</div>
+                <div class="dates">Borrowed Dec 2025 · Returned Jan 2026</div>
+              </div>
+              <span class="status-pill">Returned</span>
+            </div>
+            <div class="history-item">
+              <div class="avatar">F</div>
+              <div class="info">
+                <div class="person">Fatima R.</div>
+                <div class="dates">Borrowed Oct 2025 · Returned Nov 2025</div>
+              </div>
+              <span class="status-pill">Returned</span>
+            </div>
+          </div>
+
+          <!-- Lending tab -->
+          <div class="detail-tab-content" id="tab-lending">
+            <div class="info-row"><span class="key">Current Status</span><span class="val" style="color: var(--status-available);">Available</span></div>
+            <div class="info-row"><span class="key">Times Lent</span><span class="val">3</span></div>
+            <div class="info-row"><span class="key">Avg Return Time</span><span class="val">28 days</span></div>
+            <div class="info-row"><span class="key">On-time Rate</span><span class="val">100%</span></div>
+            <div class="note-box" style="margin-top: 16px;">This item is available to borrow. Tap below to send a request to Sarah. She typically responds within a few hours.</div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-cta-fixed">
+        <button>Request to Borrow</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-label').textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
+}
+
+function switchTab(e, tabId) {
+  document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.detail-tab-content').forEach(c => c.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  document.getElementById('tab-' + tabId).classList.add('active');
+}
+</script>
+
+</body>
+</html>

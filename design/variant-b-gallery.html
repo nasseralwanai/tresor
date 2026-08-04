@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trésor — Variant B: Gallery Collection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ========== VARIANT B: GALLERY / COLLECTION ==========
+   Warm Atelier palette + Playfair/Jost — but structurally a gallery.
+   Pinterest-style masonry with varying card heights by aspect ratio.
+   Minimal chrome — photos breathe. Sticky floating filter bar.
+   Cards reveal brand+name on hover/tap, price hidden until detail.
+   Detail: horizontal photo swipe, info panel below.
+*/
+
+:root {
+  --bg: #FAF7F2;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #F5F0EA;
+  --bg-warm: #F0E8DC;
+  --ink: #2B2520;
+  --ink-secondary: #6B5D50;
+  --ink-tertiary: #A09080;
+  --border: #E5DDD0;
+  --border-subtle: #EFE9E0;
+  --accent: #9B7B5A;
+  --accent-warm: #C4A87E;
+  --accent-soft: rgba(155, 123, 90, 0.1);
+  --accent-gradient: linear-gradient(135deg, #C4A87E, #9B7B5A);
+  --status-available: #6B8E5A;
+  --status-lent: #C4A87E;
+  --shadow: 0 4px 24px rgba(43, 37, 32, 0.06);
+  --shadow-hover: 0 12px 48px rgba(43, 37, 32, 0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+[data-theme="dark"] {
+  --bg: #1A1510;
+  --bg-elevated: #2A2218;
+  --bg-subtle: #221C14;
+  --bg-warm: #2E2519;
+  --ink: #F5F0E8;
+  --ink-secondary: #C4B5A0;
+  --ink-tertiary: #8A7860;
+  --border: #3A2F22;
+  --border-subtle: #2E2619;
+  --accent: #C4A87E;
+  --accent-warm: #D4BC94;
+  --accent-soft: rgba(196, 168, 126, 0.12);
+  --accent-gradient: linear-gradient(135deg, #D4BC94, #C4A87E);
+  --status-available: #8AB07A;
+  --status-lent: #D4BC94;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg); color: var(--ink);
+  -webkit-font-smoothing: antialiased; line-height: 1.5;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+.serif { font-family: 'Playfair Display', Georgia, serif; }
+
+/* === THEME TOGGLE === */
+.theme-toggle {
+  position: fixed; top: 24px; right: 24px; z-index: 100;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 100px; padding: 10px 20px; font-size: 12px; font-weight: 500;
+  letter-spacing: 0.05em; color: var(--ink-secondary); cursor: pointer;
+  transition: all 0.3s ease; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 8px;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-gradient); }
+
+.section-label { font-size: 10px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+
+/* === DESIGN SYSTEM PANEL === */
+.system-panel { max-width: 1200px; margin: 0 auto; padding: 80px 40px 40px; }
+.system-panel h1 { font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 12px; }
+.system-panel .subtitle { font-size: 15px; color: var(--ink-secondary); font-weight: 300; margin-bottom: 48px; max-width: 620px; line-height: 1.7; }
+.ds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 60px; }
+.palette { display: flex; gap: 12px; flex-wrap: wrap; }
+.swatch { width: 88px; text-align: center; }
+.swatch .color { width: 88px; height: 88px; border-radius: var(--radius-sm); margin-bottom: 8px; border: 1px solid var(--border-subtle); }
+.swatch .label { font-size: 10px; font-weight: 500; letter-spacing: 0.05em; color: var(--ink-secondary); }
+.swatch .hex { font-size: 9px; color: var(--ink-tertiary); font-family: 'SF Mono', ui-monospace, monospace; }
+.type-sample { margin-bottom: 24px; }
+.type-sample .meta { font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-tertiary); margin-bottom: 6px; }
+.warm-rule { height: 2px; background: linear-gradient(90deg, transparent, var(--accent-warm), transparent); opacity: 0.3; margin: 40px auto; max-width: 1120px; }
+
+/* === MOCKUP FRAMES === */
+.mockup-section { max-width: 1200px; margin: 0 auto; padding: 20px 40px 80px; }
+.mockup-label { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.mockup-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.phone-frame { width: 375px; height: 812px; background: var(--bg-elevated); border-radius: 44px; overflow: hidden; box-shadow: var(--shadow-hover); border: 8px solid var(--ink); position: relative; display: inline-block; vertical-align: top; margin: 0 20px 40px; }
+.status-bar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-size: 14px; font-weight: 600; color: var(--ink); }
+.status-bar .icons { display: flex; gap: 6px; font-size: 12px; }
+
+/* ========================================
+   GALLERY INVENTORY — MASONRY
+   ======================================== */
+.gallery-scroll { height: calc(812px - 44px - 83px); overflow-y: auto; overflow-x: hidden; }
+.gallery-scroll::-webkit-scrollbar { display: none; }
+
+/* Minimal header — just title */
+.gallery-header { padding: 8px 20px 12px; }
+.gallery-header .title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 500; letter-spacing: -0.01em; }
+.gallery-header .count { font-size: 12px; color: var(--ink-tertiary); margin-top: 2px; }
+
+/* Sticky floating filter bar */
+.gallery-filter-sticky {
+  position: sticky; top: 0; z-index: 20;
+  padding: 10px 20px; margin: 0;
+  background: var(--bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.gallery-filter-sticky::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--bg); opacity: 0.9; z-index: -1;
+}
+.gallery-filters { display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.gallery-filters::-webkit-scrollbar { display: none; }
+.gal-filter {
+  padding: 7px 16px; border-radius: 100px; font-size: 12px; font-weight: 400;
+  white-space: nowrap; border: 1px solid var(--border); color: var(--ink-secondary);
+  background: var(--bg-elevated); transition: all 0.2s; flex-shrink: 0;
+}
+.gal-filter.active { background: var(--accent-gradient); color: #fff; border-color: transparent; font-weight: 500; }
+
+/* Masonry — CSS columns approach for true varying heights */
+.masonry { column-count: 2; column-gap: 12px; padding: 4px 20px 40px; }
+.masonry .gal-card {
+  break-inside: avoid; margin-bottom: 12px; cursor: pointer;
+  transition: transform 0.2s ease; display: block;
+}
+.masonry .gal-card:active { transform: scale(0.97); }
+
+/* Varying aspect ratios — photos breathe */
+.gal-card-photo {
+  width: 100%; border-radius: var(--radius-sm); overflow: hidden; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+}
+.gal-card-photo .img-letter { font-family: 'Playfair Display', serif; color: var(--ink-tertiary); opacity: 0.2; }
+
+/* Different aspect ratios per card */
+.gal-card.ar-portrait .gal-card-photo { aspect-ratio: 3/4; }
+.gal-card.ar-tall .gal-card-photo { aspect-ratio: 2/3; }
+.gal-card.ar-square .gal-card-photo { aspect-ratio: 1/1; }
+.gal-card.ar-wide .gal-card-photo { aspect-ratio: 4/3; }
+
+.gal-card.ar-portrait .img-letter { font-size: 56px; }
+.gal-card.ar-tall .img-letter { font-size: 64px; }
+.gal-card.ar-square .img-letter { font-size: 48px; }
+.gal-card.ar-wide .img-letter { font-size: 48px; }
+
+/* Status dot — minimal */
+.gal-status-dot {
+  position: absolute; top: 10px; right: 10px;
+  width: 8px; height: 8px; border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.7);
+}
+.gal-status-dot.available { background: var(--status-available); }
+.gal-status-dot.lent { background: var(--accent-warm); }
+
+/* Label overlay — appears on hover/tap, price hidden */
+.gal-card-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 14px 12px 10px; opacity: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+  color: #fff; transition: opacity 0.25s ease;
+}
+.gal-card:hover .gal-card-label,
+.gal-card.show-label .gal-card-label { opacity: 1; }
+.gal-card-label .brand { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+.gal-card-label .name { font-size: 12px; font-weight: 400; opacity: 0.9; margin-top: 1px; }
+
+/* Bottom tab bar */
+.tab-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 83px; background: var(--bg-elevated); border-top: 1px solid var(--border-subtle); display: flex; align-items: flex-start; justify-content: space-around; padding-top: 14px; }
+.tab-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; font-weight: 400; color: var(--ink-tertiary); }
+.tab-item.active { color: var(--accent); font-weight: 500; }
+.tab-item .icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+.tab-add { width: 48px; height: 48px; border-radius: 50%; background: var(--accent-gradient); color: #fff; display: flex; align-items: center; justify-content: center; margin-top: -24px; font-size: 22px; font-weight: 300; box-shadow: 0 4px 16px rgba(196, 168, 126, 0.5); }
+
+/* ========================================
+   GALLERY DETAIL — HORIZONTAL SWIPE + INFO
+   ======================================== */
+.detail-swipe { height: calc(812px - 44px); overflow: hidden; position: relative; display: flex; flex-direction: column; }
+
+.detail-nav-top { display: flex; justify-content: space-between; align-items: center; padding: 8px 20px; flex-shrink: 0; }
+.detail-nav-top .btn { font-size: 18px; color: var(--ink); cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg-subtle); }
+
+/* Horizontal photo carousel */
+.detail-carousel { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; flex-shrink: 0; }
+.detail-carousel::-webkit-scrollbar { display: none; }
+.detail-carousel-item {
+  flex: 0 0 100%; height: 360px; scroll-snap-align: center;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  display: flex; align-items: center; justify-content: center; position: relative;
+}
+.detail-carousel-item .img-letter { font-family: 'Playfair Display', serif; font-size: 140px; color: var(--ink-tertiary); opacity: 0.2; }
+.detail-carousel-dots { display: flex; gap: 5px; justify-content: center; padding: 8px 0; flex-shrink: 0; }
+.detail-carousel-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); }
+.detail-carousel-dot.active { background: var(--accent); width: 16px; border-radius: 3px; }
+
+/* Info panel below photos */
+.detail-info-panel { flex: 1; overflow-y: auto; padding: 8px 24px 100px; }
+.detail-info-panel::-webkit-scrollbar { display: none; }
+.detail-info-panel .brand { font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.detail-info-panel .name { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 500; line-height: 1.2; margin-bottom: 4px; }
+.detail-info-panel .spec { font-size: 13px; color: var(--ink-secondary); margin-bottom: 16px; }
+.detail-info-panel .price-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); margin-bottom: 16px; }
+.detail-info-panel .price-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-tertiary); }
+.detail-info-panel .price-value { font-size: 18px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+.detail-info-panel .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.detail-info-panel .meta-cell { padding: 12px 14px; background: var(--bg-subtle); border-radius: var(--radius-sm); }
+.detail-info-panel .meta-cell .label { font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-tertiary); margin-bottom: 4px; }
+.detail-info-panel .meta-cell .value { font-size: 13px; font-weight: 500; color: var(--ink); }
+.detail-info-panel .cta { width: 100%; padding: 14px; background: var(--accent-gradient); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; letter-spacing: 0.03em; cursor: pointer; font-family: 'Jost', sans-serif; }
+
+@media (max-width: 900px) {
+  .ds-grid { grid-template-columns: 1fr; }
+  .system-panel, .mockup-section { padding-left: 20px; padding-right: 20px; }
+  .phone-frame { margin: 0 0 40px; }
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()">
+  <span class="dot"></span>
+  <span id="theme-label">Dark Mode</span>
+</button>
+
+<!-- ========== DESIGN SYSTEM ========== -->
+<div class="system-panel">
+  <div class="section-label">Variant B · Structural Iteration</div>
+  <h1 class="serif">Gallery Collection</h1>
+  <p class="subtitle">Warm Atelier palette and typography, restructured as a Pinterest-style gallery. Masonry layout with varying card heights based on photo aspect ratio — the photos breathe with minimal chrome. A floating filter bar sticks on scroll. Cards reveal only brand + name on hover; price stays hidden until the detail screen. Detail uses horizontal photo swipe with an info panel below.</p>
+
+  <div class="ds-grid">
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Color Palette</div>
+      <div class="palette">
+        <div class="swatch"><div class="color" style="background: #FAF7F2;"></div><div class="label">Cream</div><div class="hex">#FAF7F2</div></div>
+        <div class="swatch"><div class="color" style="background: #2B2520;"></div><div class="label">Espresso</div><div class="hex">#2B2520</div></div>
+        <div class="swatch"><div class="color" style="background: #9B7B5A;"></div><div class="label">Camel</div><div class="hex">#9B7B5A</div></div>
+        <div class="swatch"><div class="color" style="background: #C4A87E;"></div><div class="label">Bronze</div><div class="hex">#C4A87E</div></div>
+        <div class="swatch"><div class="color" style="background: #6B5D50;"></div><div class="label">Taupe</div><div class="hex">#6B5D50</div></div>
+        <div class="swatch"><div class="color" style="background: #E5DDD0;"></div><div class="label">Sand</div><div class="hex">#E5DDD0</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Typography</div>
+      <div class="type-sample"><div class="meta">Display — Playfair Display 500</div><div class="specimen serif" style="font-size: 38px; font-weight: 500; line-height: 1.05;">Trésor</div></div>
+      <div class="type-sample"><div class="meta">Headline — Playfair Display 500</div><div class="specimen serif" style="font-size: 26px; font-weight: 500;">Classic Flap Bag</div></div>
+      <div class="type-sample"><div class="meta">Body — Jost 400</div><div class="specimen" style="font-size: 15px; font-weight: 400; color: var(--ink-secondary);">Black, Caviar Leather, Gold Hardware</div></div>
+      <div class="type-sample"><div class="meta">Label — Jost 500, tracked</div><div class="specimen" style="font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">CHANEL</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== MOCKUPS ========== -->
+<div class="mockup-section">
+
+  <!-- INVENTORY GRID — GALLERY MASONRY -->
+  <div class="mockup-label">Inventory Grid — Masonry Gallery</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="gallery-scroll">
+      <div class="gallery-header">
+        <div class="title serif">Collection</div>
+        <div class="count">47 pieces</div>
+      </div>
+
+      <!-- Sticky floating filter -->
+      <div class="gallery-filter-sticky">
+        <div class="gallery-filters">
+          <span class="gal-filter active">All</span>
+          <span class="gal-filter">Handbags</span>
+          <span class="gal-filter">Jewelry</span>
+          <span class="gal-filter">Watches</span>
+          <span class="gal-filter">Shoes</span>
+        </div>
+      </div>
+
+      <!-- Masonry — varying heights -->
+      <div class="masonry">
+        <!-- Chanel — tall -->
+        <div class="gal-card ar-tall show-label">
+          <div class="gal-card-photo">
+            <span class="img-letter">C</span>
+            <span class="gal-status-dot available"></span>
+            <div class="gal-card-label">
+              <div class="brand">Chanel</div>
+              <div class="name">Classic Flap · Medium</div>
+            </div>
+          </div>
+        </div>
+        <!-- Cartier — square -->
+        <div class="gal-card ar-square">
+          <div class="gal-card-photo">
+            <span class="img-letter">C</span>
+            <span class="gal-status-dot available"></span>
+            <div class="gal-card-label">
+              <div class="brand">Cartier</div>
+              <div class="name">Love Bracelet</div>
+            </div>
+          </div>
+        </div>
+        <!-- Hermès — portrait -->
+        <div class="gal-card ar-portrait">
+          <div class="gal-card-photo">
+            <span class="img-letter">H</span>
+            <span class="gal-status-dot lent"></span>
+            <div class="gal-card-label">
+              <div class="brand">Hermès</div>
+              <div class="name">Birkin 30 · Togo</div>
+            </div>
+          </div>
+        </div>
+        <!-- Rolex — wide -->
+        <div class="gal-card ar-wide">
+          <div class="gal-card-photo">
+            <span class="img-letter">R</span>
+            <span class="gal-status-dot available"></span>
+            <div class="gal-card-label">
+              <div class="brand">Rolex</div>
+              <div class="name">Datejust 36</div>
+            </div>
+          </div>
+        </div>
+        <!-- Dior — portrait -->
+        <div class="gal-card ar-portrait">
+          <div class="gal-card-photo">
+            <span class="img-letter">D</span>
+            <span class="gal-status-dot available"></span>
+            <div class="gal-card-label">
+              <div class="brand">Dior</div>
+              <div class="name">Lady Dior · Medium</div>
+            </div>
+          </div>
+        </div>
+        <!-- Van Cleef — square -->
+        <div class="gal-card ar-square">
+          <div class="gal-card-photo">
+            <span class="img-letter">V</span>
+            <span class="gal-status-dot lent"></span>
+            <div class="gal-card-label">
+              <div class="brand">Van Cleef</div>
+              <div class="name">Alhambra Bracelet</div>
+            </div>
+          </div>
+        </div>
+        <!-- Chanel — tall (second photo angle) -->
+        <div class="gal-card ar-tall">
+          <div class="gal-card-photo">
+            <span class="img-letter">C</span>
+            <span class="gal-status-dot available"></span>
+            <div class="gal-card-label">
+              <div class="brand">Chanel</div>
+              <div class="name">Classic Flap · Back</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active"><div class="icon">◈</div><span>Trésor</span></div>
+      <div class="tab-item"><div class="icon">◯</div><span>Circle</span></div>
+      <div class="tab-add">+</div>
+      <div class="tab-item"><div class="icon">♡</div><span>Wishlist</span></div>
+      <div class="tab-item"><div class="icon">≡</div><span>Activity</span></div>
+    </div>
+  </div>
+
+  <!-- ITEM DETAIL — HORIZONTAL SWIPE + INFO PANEL -->
+  <div class="mockup-label" style="margin-top: 20px;">Item Detail — Photo Swipe + Info</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="detail-swipe">
+      <div class="detail-nav-top">
+        <span class="btn">‹</span>
+        <span class="btn">♡</span>
+      </div>
+      <div class="detail-carousel">
+        <div class="detail-carousel-item"><span class="img-letter">C</span></div>
+        <div class="detail-carousel-item"><span class="img-letter">C</span></div>
+        <div class="detail-carousel-item"><span class="img-letter">C</span></div>
+        <div class="detail-carousel-item"><span class="img-letter">C</span></div>
+      </div>
+      <div class="detail-carousel-dots">
+        <span class="detail-carousel-dot active"></span>
+        <span class="detail-carousel-dot"></span>
+        <span class="detail-carousel-dot"></span>
+        <span class="detail-carousel-dot"></span>
+      </div>
+      <div class="detail-info-panel">
+        <div class="brand">Chanel</div>
+        <div class="name serif">Classic Flap Bag</div>
+        <div class="spec">Black · Caviar Leather · Gold Hardware · Medium</div>
+        <div class="price-row">
+          <span class="price-label">Estimated Value</span>
+          <span class="price-value">AED 31,200</span>
+        </div>
+        <div class="meta-grid">
+          <div class="meta-cell">
+            <div class="label">Condition</div>
+            <div class="value">Excellent</div>
+          </div>
+          <div class="meta-cell">
+            <div class="label">Status</div>
+            <div class="value" style="color: var(--status-available);">Available</div>
+          </div>
+          <div class="meta-cell">
+            <div class="label">Owner</div>
+            <div class="value">Sarah M.</div>
+          </div>
+          <div class="meta-cell">
+            <div class="label">Purchased</div>
+            <div class="value">2022</div>
+          </div>
+        </div>
+        <button class="cta">Request to Borrow</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-label').textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
+}
+</script>
+
+</body>
+</html>

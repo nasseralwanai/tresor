@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trésor — Variant A: Editorial Magazine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ========== VARIANT A: EDITORIAL MAGAZINE ==========
+   Warm Atelier palette + Playfair/Jost — but structurally editorial.
+   Asymmetric magazine-spread grid. Hero with overlapping text.
+   Horizontal-scroll category pills. Overlapping card labels.
+   Full-bleed detail hero with slide-up info overlay.
+*/
+
+:root {
+  --bg: #FAF7F2;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #F5F0EA;
+  --bg-warm: #F0E8DC;
+  --ink: #2B2520;
+  --ink-secondary: #6B5D50;
+  --ink-tertiary: #A09080;
+  --border: #E5DDD0;
+  --border-subtle: #EFE9E0;
+  --accent: #9B7B5A;
+  --accent-warm: #C4A87E;
+  --accent-soft: rgba(155, 123, 90, 0.1);
+  --accent-gradient: linear-gradient(135deg, #C4A87E, #9B7B5A);
+  --status-available: #6B8E5A;
+  --status-lent: #C4A87E;
+  --shadow: 0 4px 24px rgba(43, 37, 32, 0.06);
+  --shadow-hover: 0 12px 48px rgba(43, 37, 32, 0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+[data-theme="dark"] {
+  --bg: #1A1510;
+  --bg-elevated: #2A2218;
+  --bg-subtle: #221C14;
+  --bg-warm: #2E2519;
+  --ink: #F5F0E8;
+  --ink-secondary: #C4B5A0;
+  --ink-tertiary: #8A7860;
+  --border: #3A2F22;
+  --border-subtle: #2E2619;
+  --accent: #C4A87E;
+  --accent-warm: #D4BC94;
+  --accent-soft: rgba(196, 168, 126, 0.12);
+  --accent-gradient: linear-gradient(135deg, #D4BC94, #C4A87E);
+  --status-available: #8AB07A;
+  --status-lent: #D4BC94;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+.serif { font-family: 'Playfair Display', Georgia, serif; }
+
+/* === THEME TOGGLE === */
+.theme-toggle {
+  position: fixed; top: 24px; right: 24px; z-index: 100;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 100px; padding: 10px 20px;
+  font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500;
+  letter-spacing: 0.05em; color: var(--ink-secondary);
+  cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 8px;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-gradient); }
+
+/* === SECTION LABEL === */
+.section-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+}
+
+/* === DESIGN SYSTEM PANEL === */
+.system-panel { max-width: 1200px; margin: 0 auto; padding: 80px 40px 40px; }
+.system-panel h1 {
+  font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 500;
+  letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 12px;
+}
+.system-panel .subtitle {
+  font-size: 15px; color: var(--ink-secondary); font-weight: 300;
+  margin-bottom: 48px; max-width: 620px; line-height: 1.7;
+}
+.ds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 60px; }
+.palette { display: flex; gap: 12px; flex-wrap: wrap; }
+.swatch { width: 88px; text-align: center; }
+.swatch .color { width: 88px; height: 88px; border-radius: var(--radius-sm); margin-bottom: 8px; border: 1px solid var(--border-subtle); }
+.swatch .label { font-size: 10px; font-weight: 500; letter-spacing: 0.05em; color: var(--ink-secondary); }
+.swatch .hex { font-size: 9px; color: var(--ink-tertiary); font-family: 'SF Mono', ui-monospace, monospace; }
+.type-sample { margin-bottom: 24px; }
+.type-sample .meta { font-size: 10px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-tertiary); margin-bottom: 6px; }
+
+.warm-rule {
+  height: 2px; background: linear-gradient(90deg, transparent, var(--accent-warm), transparent);
+  opacity: 0.3; margin: 40px auto; max-width: 1120px;
+}
+
+/* === MOCKUP FRAMES === */
+.mockup-section { max-width: 1200px; margin: 0 auto; padding: 20px 40px 80px; }
+.mockup-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.mockup-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.phone-frame {
+  width: 375px; height: 812px; background: var(--bg-elevated);
+  border-radius: 44px; overflow: hidden; box-shadow: var(--shadow-hover);
+  border: 8px solid var(--ink); position: relative;
+  display: inline-block; vertical-align: top; margin: 0 20px 40px;
+}
+.status-bar {
+  height: 44px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; font-size: 14px; font-weight: 600; color: var(--ink);
+}
+.status-bar .icons { display: flex; gap: 6px; font-size: 12px; }
+
+/* ========================================
+   EDITORIAL INVENTORY — MAGAZINE SPREAD
+   ======================================== */
+.editorial-scroll {
+  height: calc(812px - 44px - 83px);
+  overflow-y: auto; overflow-x: hidden;
+}
+.editorial-scroll::-webkit-scrollbar { display: none; }
+
+/* Masthead */
+.ed-masthead { padding: 8px 24px 16px; }
+.ed-masthead .issue {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 4px;
+}
+.ed-masthead .title {
+  font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 500;
+  letter-spacing: -0.01em; line-height: 1.1;
+}
+.ed-masthead .meta-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 6px; font-size: 12px; color: var(--ink-tertiary);
+}
+.ed-masthead .meta-row .count { font-variant-numeric: tabular-nums; }
+.ed-masthead .meta-row .date { font-style: italic; font-family: 'Playfair Display', serif; }
+
+/* Horizontal-scroll category pills */
+.ed-pills {
+  display: flex; gap: 8px; padding: 4px 24px 16px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.ed-pills::-webkit-scrollbar { display: none; }
+.ed-pill {
+  padding: 8px 20px; border-radius: 100px; font-size: 12px;
+  font-weight: 400; white-space: nowrap; border: 1px solid var(--border);
+  color: var(--ink-secondary); background: transparent;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.ed-pill.active {
+  background: var(--accent-gradient); color: #fff;
+  border-color: transparent; font-weight: 500;
+}
+
+/* HERO ITEM — full width with overlapping text */
+.ed-hero { position: relative; margin: 0 24px 24px; }
+.ed-hero-photo {
+  width: 100%; height: 280px; border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  overflow: hidden; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.ed-hero-photo .img-letter {
+  font-family: 'Playfair Display', serif; font-size: 140px;
+  color: var(--ink-tertiary); opacity: 0.2;
+}
+.ed-hero-overlay {
+  position: absolute; bottom: -20px; left: 16px; right: 16px;
+  background: var(--bg-elevated); border-radius: var(--radius-sm);
+  padding: 18px 20px; box-shadow: var(--shadow-hover);
+}
+.ed-hero-overlay .brand {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 4px;
+}
+.ed-hero-overlay .name {
+  font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 500;
+  line-height: 1.15; margin-bottom: 6px;
+}
+.ed-hero-overlay .bottom-row {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.ed-hero-overlay .spec { font-size: 12px; color: var(--ink-secondary); }
+.ed-hero-overlay .value {
+  font-size: 13px; color: var(--accent); font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.ed-hero-overlay .status-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 500; padding: 3px 10px;
+  border-radius: 100px; background: var(--accent-soft);
+  color: var(--status-available); margin-top: 6px;
+}
+
+/* Asymmetric grid — magazine spread */
+.ed-spread {
+  padding: 20px 24px 40px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+}
+.ed-card { cursor: pointer; transition: transform 0.2s ease; }
+.ed-card:active { transform: scale(0.97); }
+
+/* Size variants */
+.ed-card.size-full { grid-column: span 4; }
+.ed-card.size-half { grid-column: span 2; }
+.ed-card.size-quarter { grid-column: span 1; }
+
+.ed-card-photo {
+  border-radius: var(--radius-sm); overflow: hidden; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+}
+.ed-card.size-full .ed-card-photo { height: 140px; }
+.ed-card.size-half .ed-card-photo { aspect-ratio: 4/5; }
+.ed-card.size-quarter .ed-card-photo { aspect-ratio: 3/4; }
+
+.ed-card-photo .img-letter {
+  font-family: 'Playfair Display', serif; color: var(--ink-tertiary); opacity: 0.2;
+}
+.ed-card.size-full .img-letter { font-size: 72px; }
+.ed-card.size-half .img-letter { font-size: 56px; }
+.ed-card.size-quarter .img-letter { font-size: 36px; }
+
+/* Overlapping label — sits on top of photo */
+.ed-card-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 10px 12px; background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+  color: #fff;
+}
+.ed-card-label .brand {
+  font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 1px;
+}
+.ed-card-label .name { font-size: 11px; font-weight: 400; opacity: 0.9; }
+.ed-card-label .value {
+  font-size: 10px; font-weight: 500; margin-top: 2px;
+  font-variant-numeric: tabular-nums; color: var(--accent-warm);
+}
+
+/* For full-width card — label below photo */
+.ed-card.size-full .ed-card-below {
+  padding: 10px 4px 0; display: flex; justify-content: space-between; align-items: center;
+}
+.ed-card.size-full .ed-card-below .brand {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.05em; color: var(--ink);
+}
+.ed-card.size-full .ed-card-below .name { font-size: 12px; color: var(--ink-secondary); }
+.ed-card.size-full .ed-card-below .value { font-size: 12px; color: var(--accent); font-weight: 500; }
+
+.ed-status-dot {
+  position: absolute; top: 8px; right: 8px;
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.ed-status-dot.available { background: var(--status-available); }
+.ed-status-dot.lent { background: var(--accent-warm); }
+
+/* Bottom tab bar */
+.tab-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 83px;
+  background: var(--bg-elevated); border-top: 1px solid var(--border-subtle);
+  display: flex; align-items: flex-start; justify-content: space-around; padding-top: 14px;
+}
+.tab-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 400; color: var(--ink-tertiary);
+}
+.tab-item.active { color: var(--accent); font-weight: 500; }
+.tab-item .icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+.tab-add {
+  width: 48px; height: 48px; border-radius: 50%; background: var(--accent-gradient);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  margin-top: -24px; font-size: 22px; font-weight: 300;
+  box-shadow: 0 4px 16px rgba(196, 168, 126, 0.5);
+}
+
+/* ========================================
+   EDITORIAL DETAIL — FULL-BLEED + SLIDE-UP
+   ======================================== */
+.detail-full { height: calc(812px - 44px); overflow: hidden; position: relative; }
+.detail-bleed {
+  width: 100%; height: 65%; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  display: flex; align-items: center; justify-content: center;
+}
+.detail-bleed .img-letter {
+  font-family: 'Playfair Display', serif; font-size: 200px;
+  color: var(--ink-tertiary); opacity: 0.15;
+}
+.detail-nav-floating {
+  position: absolute; top: 16px; left: 16px; right: 16px;
+  display: flex; justify-content: space-between; z-index: 10;
+}
+.detail-nav-floating .btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--ink); cursor: pointer;
+}
+[data-theme="dark"] .detail-nav-floating .btn { background: rgba(42,34,24,0.85); }
+
+.detail-bleed-tag {
+  position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; font-weight: 500; letter-spacing: 0.2em;
+  text-transform: uppercase; color: #fff; background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px); padding: 5px 14px; border-radius: 100px;
+}
+
+/* Slide-up info panel */
+.detail-slideup {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--bg-elevated); border-radius: 28px 28px 0 0;
+  padding: 24px 24px 100px; box-shadow: 0 -8px 40px rgba(0,0,0,0.1);
+  height: 45%; overflow-y: auto;
+}
+.detail-slideup::-webkit-scrollbar { display: none; }
+.detail-slideup .grabber {
+  width: 36px; height: 4px; border-radius: 2px; background: var(--border);
+  margin: 0 auto 20px;
+}
+.detail-slideup .brand {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+}
+.detail-slideup .name {
+  font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 500;
+  line-height: 1.2; margin-bottom: 4px;
+}
+.detail-slideup .spec { font-size: 13px; color: var(--ink-secondary); margin-bottom: 18px; }
+.detail-slideup .meta-row {
+  display: flex; gap: 0; margin-bottom: 18px;
+  background: var(--bg-subtle); border-radius: var(--radius-sm); overflow: hidden;
+}
+.detail-slideup .meta-item {
+  flex: 1; padding: 12px 8px; text-align: center;
+  border-right: 1px solid var(--border-subtle);
+}
+.detail-slideup .meta-item:last-child { border-right: none; }
+.detail-slideup .meta-item .label {
+  font-size: 8px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-tertiary); margin-bottom: 4px;
+}
+.detail-slideup .meta-item .value {
+  font-size: 13px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.detail-slideup .cta {
+  width: 100%; padding: 14px; background: var(--accent-gradient); color: #fff;
+  border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
+  letter-spacing: 0.03em; cursor: pointer; font-family: 'Jost', sans-serif;
+}
+
+@media (max-width: 900px) {
+  .ds-grid { grid-template-columns: 1fr; }
+  .system-panel, .mockup-section { padding-left: 20px; padding-right: 20px; }
+  .phone-frame { margin: 0 0 40px; }
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()">
+  <span class="dot"></span>
+  <span id="theme-label">Dark Mode</span>
+</button>
+
+<!-- ========== DESIGN SYSTEM ========== -->
+<div class="system-panel">
+  <div class="section-label">Variant A · Structural Iteration</div>
+  <h1 class="serif">Editorial Magazine</h1>
+  <p class="subtitle">Warm Atelier palette and typography, restructured as a magazine spread. Asymmetric grid with full-, half-, and quarter-width items. Hero with overlapping text card. Horizontal-scroll category pills. Detail screen uses full-bleed photography with a slide-up info panel — the photo is the page, the metadata floats over it.</p>
+
+  <div class="ds-grid">
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Color Palette</div>
+      <div class="palette">
+        <div class="swatch"><div class="color" style="background: #FAF7F2;"></div><div class="label">Cream</div><div class="hex">#FAF7F2</div></div>
+        <div class="swatch"><div class="color" style="background: #2B2520;"></div><div class="label">Espresso</div><div class="hex">#2B2520</div></div>
+        <div class="swatch"><div class="color" style="background: #9B7B5A;"></div><div class="label">Camel</div><div class="hex">#9B7B5A</div></div>
+        <div class="swatch"><div class="color" style="background: #C4A87E;"></div><div class="label">Bronze</div><div class="hex">#C4A87E</div></div>
+        <div class="swatch"><div class="color" style="background: #6B5D50;"></div><div class="label">Taupe</div><div class="hex">#6B5D50</div></div>
+        <div class="swatch"><div class="color" style="background: #E5DDD0;"></div><div class="label">Sand</div><div class="hex">#E5DDD0</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="section-label" style="margin-bottom: 20px;">Typography</div>
+      <div class="type-sample"><div class="meta">Display — Playfair Display 500</div><div class="specimen serif" style="font-size: 38px; font-weight: 500; line-height: 1.05;">Trésor</div></div>
+      <div class="type-sample"><div class="meta">Headline — Playfair Display 500</div><div class="specimen serif" style="font-size: 26px; font-weight: 500;">Classic Flap Bag</div></div>
+      <div class="type-sample"><div class="meta">Body — Jost 400</div><div class="specimen" style="font-size: 15px; font-weight: 400; color: var(--ink-secondary);">Black, Caviar Leather, Gold Hardware</div></div>
+      <div class="type-sample"><div class="meta">Label — Jost 500, tracked</div><div class="specimen" style="font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);">CHANEL</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== MOCKUPS ========== -->
+<div class="mockup-section">
+
+  <!-- INVENTORY GRID — EDITORIAL -->
+  <div class="mockup-label">Inventory Grid — Editorial Spread</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="editorial-scroll">
+      <div class="ed-masthead">
+        <div class="issue">Vol. 03 · Collection</div>
+        <div class="title serif">My Trésor</div>
+        <div class="meta-row">
+          <span class="count">47 pieces · 3 lent</span>
+          <span class="date">August 2026</span>
+        </div>
+      </div>
+
+      <div class="ed-pills">
+        <span class="ed-pill active">All</span>
+        <span class="ed-pill">Handbags</span>
+        <span class="ed-pill">Jewelry</span>
+        <span class="ed-pill">Watches</span>
+        <span class="ed-pill">Shoes</span>
+        <span class="ed-pill">Accessories</span>
+      </div>
+
+      <!-- HERO -->
+      <div class="ed-hero">
+        <div class="ed-hero-photo">
+          <span class="img-letter">C</span>
+        </div>
+        <div class="ed-hero-overlay">
+          <div class="brand">Chanel</div>
+          <div class="name serif">Classic Flap Bag</div>
+          <div class="bottom-row">
+            <span class="spec">Black · Caviar · Gold HW</span>
+            <span class="value">AED 31,200</span>
+          </div>
+          <div class="status-tag">● Available</div>
+        </div>
+      </div>
+
+      <!-- ASYMMETRIC SPREAD -->
+      <div class="ed-spread">
+        <!-- Half width -->
+        <div class="ed-card size-half">
+          <div class="ed-card-photo">
+            <span class="img-letter">H</span>
+            <span class="ed-status-dot lent"></span>
+            <div class="ed-card-label">
+              <div class="brand">Hermès</div>
+              <div class="name">Birkin 30 · Togo</div>
+              <div class="value">AED 110,000</div>
+            </div>
+          </div>
+        </div>
+        <div class="ed-card size-half">
+          <div class="ed-card-photo">
+            <span class="img-letter">C</span>
+            <span class="ed-status-dot available"></span>
+            <div class="ed-card-label">
+              <div class="brand">Cartier</div>
+              <div class="name">Love Bracelet</div>
+              <div class="value">AED 26,400</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full width -->
+        <div class="ed-card size-full">
+          <div class="ed-card-photo">
+            <span class="img-letter">R</span>
+            <span class="ed-status-dot available"></span>
+          </div>
+          <div class="ed-card-below">
+            <div>
+              <div class="brand">Rolex</div>
+              <div class="name">Datejust 36 · Silver Dial</div>
+            </div>
+            <div class="value">AED 44,000</div>
+          </div>
+        </div>
+
+        <!-- Quarter width x2 -->
+        <div class="ed-card size-quarter">
+          <div class="ed-card-photo">
+            <span class="img-letter">D</span>
+            <span class="ed-status-dot available"></span>
+            <div class="ed-card-label">
+              <div class="brand">Dior</div>
+              <div class="name">Lady Dior</div>
+            </div>
+          </div>
+        </div>
+        <div class="ed-card size-quarter">
+          <div class="ed-card-photo">
+            <span class="img-letter">V</span>
+            <span class="ed-status-dot lent"></span>
+            <div class="ed-card-label">
+              <div class="brand">Van Cleef</div>
+              <div class="name">Alhambra</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Half width -->
+        <div class="ed-card size-half">
+          <div class="ed-card-photo">
+            <span class="img-letter">D</span>
+            <span class="ed-status-dot available"></span>
+            <div class="ed-card-label">
+              <div class="brand">Dior</div>
+              <div class="name">Lady Dior · Medium</div>
+              <div class="value">AED 18,800</div>
+            </div>
+          </div>
+        </div>
+        <div class="ed-card size-half">
+          <div class="ed-card-photo">
+            <span class="img-letter">V</span>
+            <span class="ed-status-dot lent"></span>
+            <div class="ed-card-label">
+              <div class="brand">Van Cleef</div>
+              <div class="name">Alhambra Bracelet</div>
+              <div class="value">AED 14,700</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-item active"><div class="icon">◈</div><span>Trésor</span></div>
+      <div class="tab-item"><div class="icon">◯</div><span>Circle</span></div>
+      <div class="tab-add">+</div>
+      <div class="tab-item"><div class="icon">♡</div><span>Wishlist</span></div>
+      <div class="tab-item"><div class="icon">≡</div><span>Activity</span></div>
+    </div>
+  </div>
+
+  <!-- ITEM DETAIL — FULL-BLEED + SLIDE-UP -->
+  <div class="mockup-label" style="margin-top: 20px;">Item Detail — Full-Bleed + Slide-Up</div>
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="icons">●●● 📶 🔋</span>
+    </div>
+    <div class="detail-full">
+      <div class="detail-bleed">
+        <div class="detail-nav-floating">
+          <div class="btn">‹</div>
+          <div class="btn">♡</div>
+        </div>
+        <div class="detail-bleed-tag">1 of 4</div>
+        <span class="img-letter">C</span>
+      </div>
+      <div class="detail-slideup">
+        <div class="grabber"></div>
+        <div class="brand">Chanel</div>
+        <div class="name serif">Classic Flap Bag</div>
+        <div class="spec">Black · Caviar Leather · Gold Hardware · Medium</div>
+        <div class="meta-row">
+          <div class="meta-item"><div class="label">Value</div><div class="value">AED 31,200</div></div>
+          <div class="meta-item"><div class="label">Condition</div><div class="value">Excellent</div></div>
+          <div class="meta-item"><div class="label">Status</div><div class="value" style="color: var(--status-available);">Available</div></div>
+        </div>
+        <button class="cta">Request to Borrow</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  document.getElementById('theme-label').textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
+}
+</script>
+
+</body>
+</html>

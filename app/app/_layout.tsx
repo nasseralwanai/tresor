@@ -1,24 +1,21 @@
 /**
- * Root layout — top-level navigator.
+ * Root layout — top-level navigator with AuthProvider.
  *
- * Checks auth state via useAuth (placeholder returns loading=true).
+ * Checks auth state via useAuth.
  * - loading  → splash/loading screen
  * - no session → (auth) group
  * - has session → (tabs) group
- *
- * TODO(backend): When Sonny's real useAuth lands, the session check
- * will actually switch between auth and tabs.
  */
 
 import { Stack } from 'expo-router';
 import { View, ActivityIndicator, StyleSheet, useColorScheme } from 'react-native';
 import { ThemeProvider } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '@/hooks/useAuth';
+import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { useThemeColors } from '@/theme';
 import { TresorDarkTheme, TresorLightTheme } from '@/theme/colors';
 
-export default function RootLayout() {
+function RootNavigator() {
   const colors = useThemeColors();
   const scheme = useColorScheme();
   const { loading, session } = useAuth();
@@ -44,6 +41,14 @@ export default function RootLayout() {
         </Stack>
       )}
     </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
   );
 }
 

@@ -22,10 +22,12 @@ import * as ImagePicker from 'expo-image-picker';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { createProfile, uploadAvatar } from '@/lib/profile';
+import { useAuth } from '@/hooks/useAuth';
 import { hapticLight, hapticSuccess, hapticError } from '@/lib/haptics';
 
 export default function ProfileSetupScreen() {
   const colors = useThemeColors();
+  const { user } = useAuth();
   const [name, setName] = useState('');
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -66,22 +68,25 @@ export default function ProfileSetupScreen() {
 
   const handleComplete = async () => {
     if (!name.trim()) return;
+    const userId = user?.id;
+    if (!userId) {
+      setError('Authentication required. Please restart the onboarding flow.');
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      // TODO(backend): Replace mock userId with real auth user id from useAuth
-      const mockUserId = 'mock-user-id';
       let avatarUrl: string | null = null;
 
       if (avatarUri) {
-        // TODO(backend): uploadAvatar will upload to Supabase Storage
-        avatarUrl = await uploadAvatar(mockUserId, avatarUri);
+        avatarUrl = await uploadAvatar(userId, avatarUri);
       }
 
       await createProfile({
-        userId: mockUserId,
+        userId,
         fullName: name.trim(),
         avatarUrl,
+        phone: user?.phone ?? null,
       });
 
       hapticSuccess();

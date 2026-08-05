@@ -111,7 +111,7 @@ export default function InviteCodeScreen() {
                     ]}
                   >
                     <Text style={[styles.avatarText, { color: colors.accent }]}>
-                      {member.full_name.charAt(0)}
+                      {(member.display_name ?? '?').charAt(0)}
                     </Text>
                   </View>
                 ))}

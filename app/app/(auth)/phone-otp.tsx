@@ -1,9 +1,12 @@
 /**
- * Phone OTP screen — phone number input → 6-digit OTP input.
- * Auto-advances to OTP entry after phone submit, auto-submits on 6 digits.
+ * Sign In / Sign Up screen — email/password authentication.
+ *
+ * Originally a phone OTP screen, repurposed for email/password auth since
+ * phone OTP requires Twilio (not available in local dev). Supports both
+ * sign-in and sign-up modes.
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +14,6 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -20,62 +22,39 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { useAuth } from '@/hooks/useAuth';
 import { hapticSuccess, hapticError } from '@/lib/haptics';
 
-type Step = 'phone' | 'otp';
+type Mode = 'signin' | 'signup';
 
 export default function PhoneOtpScreen() {
   const colors = useThemeColors();
-  const { signInWithPhone, verifyOtp } = useAuth();
-  const [step, setStep] = useState<Step>('phone');
-  const [phone, setPhone] = useState('');
-  const [otp, setOtp] = useState('');
+  const { signIn, signUp } = useAuth();
+  const [mode, setMode] = useState<Mode>('signin');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const otpRef = useRef<TextInput>(null);
 
-  // Auto-submit OTP when 6 digits entered
-  useEffect(() => {
-    if (otp.length === 6 && step === 'otp') {
-      handleVerifyOtp();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [otp, step]);
-
-  const handleSendOtp = async () => {
-    if (phone.trim().length < 8) return;
+  const handleSubmit = async () => {
+    if (!email.trim() || !password.trim()) return;
     setLoading(true);
     setError(null);
     try {
-      await signInWithPhone(phone);
-      hapticSuccess();
-      setStep('otp');
-      // Focus OTP input after a brief delay
-      setTimeout(() => otpRef.current?.focus(), 300);
-    } catch {
-      hapticError();
-      setError('Could not send code. Check the number and try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    if (otp.length !== 6) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const success = await verifyOtp(phone, otp);
-      if (success) {
-        hapticSuccess();
-        router.push('/(auth)/profile-setup');
+      if (mode === 'signin') {
+        await signIn(email.trim(), password);
       } else {
-        hapticError();
-        setError('Invalid code. Try again.');
-        setOtp('');
+        await signUp(email.trim(), password);
       }
-    } catch {
+      hapticSuccess();
+      // Auth state listener will switch to tabs automatically.
+      // If signing up and email confirmation is required, inform the user.
+      if (mode === 'signup') {
+        setError(null);
+        // Check if session was set (local dev = no email confirmation)
+        // The onAuthStateChange will navigate if session is set.
+      }
+    } catch (e: any) {
       hapticError();
-      setError('Verification failed. Try again.');
-      setOtp('');
+      const msg = e?.message ?? 'Authentication failed. Try again.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -88,86 +67,81 @@ export default function PhoneOtpScreen() {
         style={styles.inner}
       >
         <View style={styles.body}>
-          {step === 'phone' ? (
-            <>
-              <Text style={[styles.description, { color: colors.textSecondary }]}>
-                Enter your phone number. We'll send a verification code.
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: colors.surface,
-                    color: colors.textPrimary,
-                    borderColor: error ? colors.error : colors.border,
-                  },
-                ]}
-                placeholder="+1 (555) 000-0000"
-                placeholderTextColor={colors.textSecondary}
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-                autoCorrect={false}
-                returnKeyType="done"
-                onSubmitEditing={handleSendOtp}
-              />
-            </>
-          ) : (
-            <>
-              <Text style={[styles.description, { color: colors.textSecondary }]}>
-                Enter the 6-digit code sent to{'\n'}
-                <Text style={{ color: colors.textPrimary }}>{phone}</Text>
-              </Text>
-              <TextInput
-                ref={otpRef}
-                style={[
-                  styles.otpInput,
-                  {
-                    backgroundColor: colors.surface,
-                    color: colors.textPrimary,
-                    borderColor: error ? colors.error : colors.border,
-                  },
-                ]}
-                placeholder="000000"
-                placeholderTextColor={colors.textSecondary}
-                value={otp}
-                onChangeText={(text) => {
-                  setOtp(text.replace(/[^0-9]/g, '').slice(0, 6));
-                  setError(null);
-                }}
-                keyboardType="number-pad"
-                autoCorrect={false}
-                autoFocus
-              />
-              <TouchableOpacity onPress={() => setStep('phone')} style={styles.resendLink}>
-                <Text style={[styles.linkText, { color: colors.accent }]}>
-                  ← Change number
-                </Text>
-              </TouchableOpacity>
-            </>
-          )}
+          <Text style={[styles.title, { color: colors.textPrimary }]}>
+            {mode === 'signin' ? 'Welcome Back' : 'Create Account'}
+          </Text>
+          <Text style={[styles.description, { color: colors.textSecondary }]}>
+            {mode === 'signin'
+              ? 'Sign in to your Trésor account.'
+              : 'Sign up to join your luxury circle.'}
+          </Text>
+
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: colors.surface,
+                color: colors.textPrimary,
+                borderColor: error ? colors.error : colors.border,
+              },
+            ]}
+            placeholder="Email"
+            placeholderTextColor={colors.textSecondary}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="next"
+          />
+
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: colors.surface,
+                color: colors.textPrimary,
+                borderColor: error ? colors.error : colors.border,
+              },
+            ]}
+            placeholder="Password"
+            placeholderTextColor={colors.textSecondary}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="done"
+            onSubmitEditing={handleSubmit}
+          />
 
           {error && (
             <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
           )}
+
+          <Text style={[styles.hintText, { color: colors.textSecondary }]}>
+            Demo: sarah@test.local / password123
+          </Text>
         </View>
 
         <View style={styles.footer}>
-          {step === 'phone' ? (
-            <PrimaryButton
-              label="Send Code"
-              loading={loading}
-              disabled={phone.trim().length < 8}
-              onPress={handleSendOtp}
-            />
-          ) : (
-            <PrimaryButton
-              label="Verify"
-              loading={loading}
-              disabled={otp.length !== 6}
-              onPress={handleVerifyOtp}
-            />
-          )}
+          <PrimaryButton
+            label={mode === 'signin' ? 'Sign In' : 'Sign Up'}
+            loading={loading}
+            disabled={!email.trim() || !password.trim()}
+            onPress={handleSubmit}
+          />
+          <Text
+            style={[styles.switchMode, { color: colors.accent }]}
+            onPress={() => {
+              setMode(mode === 'signin' ? 'signup' : 'signin');
+              setError(null);
+            }}
+          >
+            {mode === 'signin'
+              ? "Don't have an account? Sign up"
+              : 'Already have an account? Sign in'}
+          </Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -178,40 +152,37 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   inner: { flex: 1, paddingHorizontal: spacing.xl },
   body: { flex: 1, paddingTop: spacing.xl },
+  title: {
+    ...typography.title1,
+    marginBottom: spacing.sm,
+  },
   description: {
     ...typography.body,
     marginBottom: spacing.lg,
     lineHeight: 24,
   },
   input: {
-    ...typography.title3,
+    ...typography.body,
     height: 56,
     borderRadius: radius.md,
     borderWidth: 0.5,
     paddingHorizontal: spacing.md,
-  },
-  otpInput: {
-    ...typography.largeTitle,
-    fontSize: 32,
-    height: 64,
-    borderRadius: radius.md,
-    borderWidth: 0.5,
-    paddingHorizontal: spacing.md,
-    letterSpacing: 12,
-    textAlign: 'center',
-  },
-  resendLink: {
-    alignSelf: 'flex-start',
-    marginTop: spacing.md,
-  },
-  linkText: {
-    ...typography.footnote,
+    marginBottom: spacing.md,
   },
   errorText: {
     ...typography.footnote,
     marginTop: spacing.sm,
   },
+  hintText: {
+    ...typography.caption1,
+    marginTop: spacing.md,
+  },
   footer: {
     paddingBottom: spacing.lg,
+    gap: spacing.md,
+  },
+  switchMode: {
+    ...typography.footnote,
+    textAlign: 'center',
   },
 });

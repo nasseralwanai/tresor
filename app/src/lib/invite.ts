@@ -1,56 +1,96 @@
 /**
- * Invite code API interface.
+ * Invite code API.
  *
- * TODO(backend): Sonny is implementing the real invite-code validation
- * endpoint as a Supabase Edge Function (`validate-invite-code`).
- * Replace the placeholder below with a real `supabase.functions.invoke`
- * call once the function is deployed.
- *
- * Expected backend contract:
- *   POST /functions/v1/validate-invite-code
- *   Body: { code: string }
- *   Response: InviteCodeValidation
+ * Validates invite codes against the `circles` table and joins users to
+ * circles by inserting into `circle_members`.
  */
 
+import { supabase } from '@/lib/supabase';
 import type { InviteCodeValidation } from '@/types';
 
 /**
- * Validate an invite code against the backend.
- *
- * Placeholder: simulates a network call and accepts the code "TRESOR"
- * for demo purposes. Returns a mock circle preview.
- *
- * TODO(backend): Replace with:
- *   const { data, error } = await supabase.functions.invoke('validate-invite-code', {
- *     body: { code },
- *   });
- *   if (error) throw error;
- *   return data as InviteCodeValidation;
+ * Validate an invite code against the circles table.
+ * Returns the circle info plus a preview of its members.
  */
 export async function validateInviteCode(code: string): Promise<InviteCodeValidation> {
-  // Simulate latency
-  await new Promise((resolve) => setTimeout(resolve, 600));
-
   const normalized = code.trim().toUpperCase();
+  if (!normalized) {
+    return { valid: false, error: 'Please enter an invite code.' };
+  }
 
-  // TODO(backend): Remove mock — real validation happens server-side.
-  if (normalized === 'TRESOR' || normalized === 'DEMO') {
+  try {
+    // Query the circle by invite_code
+    const { data: circle, error } = await supabase
+      .from('circles')
+      .select('id, name, description, invite_code')
+      .eq('invite_code', normalized)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (!circle) {
+      return { valid: false, error: 'This invite code is not valid or has expired.' };
+    }
+
+    // Fetch members for the preview — circle_members + profiles join
+    const { data: members, error: membersError } = await supabase
+      .from('circle_members')
+      .select(
+        'user_id, profiles!circle_members_user_id_fkey(id, display_name, avatar_url)'
+      )
+      .eq('circle_id', circle.id)
+      .limit(10);
+
+    if (membersError) throw membersError;
+
+    const memberPreviews = (members ?? [])
+      .map((m: any) => m.profiles)
+      .filter(Boolean)
+      .map((p: any) => ({
+        id: p.id,
+        display_name: p.display_name,
+        avatar_url: p.avatar_url,
+      }));
+
     return {
       valid: true,
       circle: {
-        id: 'mock-circle-id',
-        name: 'The Vault',
-        members: [
-          { id: '1', full_name: 'Sara', avatar_url: null },
-          { id: '2', full_name: 'Khalid', avatar_url: null },
-          { id: '3', full_name: 'Lina', avatar_url: null },
-        ],
+        id: circle.id,
+        name: circle.name,
+        description: circle.description,
+        invite_code: circle.invite_code,
+        members: memberPreviews,
       },
     };
+  } catch (e) {
+    console.error('[invite] validateInviteCode error:', e);
+    return {
+      valid: false,
+      error: 'Could not validate invite code. Please try again.',
+    };
   }
+}
 
-  return {
-    valid: false,
-    error: 'This invite code is not valid or has expired.',
-  };
+/**
+ * Join a circle by inserting a row into circle_members.
+ * RLS allows self-insert (user_id = auth.uid()).
+ */
+export async function joinCircle(
+  circleId: string,
+  userId: string,
+  role: string = 'member'
+): Promise<void> {
+  const { error } = await supabase.from('circle_members').insert({
+    circle_id: circleId,
+    user_id: userId,
+    role,
+  });
+
+  if (error) {
+    // 23505 = unique_violation (already a member)
+    if (error.code === '23505') {
+      return; // Already a member — that's fine
+    }
+    throw error;
+  }
 }

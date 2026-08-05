@@ -1,5 +1,6 @@
 /**
  * My Trésor screen — shows the authenticated user's items.
+ * Fetches items owned by the current user via getMyItems().
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -40,9 +41,14 @@ export default function MyTresorScreen() {
     }
   }, [user?.id]);
 
-  useEffect(() => { fetchItems(); }, [fetchItems]);
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
 
-  const onRefresh = () => { setRefreshing(true); fetchItems(); };
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchItems();
+  };
 
   const renderItem = ({ item }: { item: Item }) => (
     <TouchableOpacity
@@ -127,20 +133,51 @@ function getCategoryIcon(category: string | null): string {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  list: { padding: spacing.lg, gap: spacing.md },
+  list: {
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
   itemCard: {
-    flexDirection: 'row', alignItems: 'center', padding: spacing.md,
-    borderRadius: radius.lg, gap: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderRadius: radius.lg,
+    gap: spacing.md,
   },
   itemIcon: {
-    width: 48, height: 48, borderRadius: radius.md,
-    alignItems: 'center', justifyContent: 'center',
+    width: 48,
+    height: 48,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  itemInfo: { flex: 1 },
-  itemBrand: { ...typography.headline, marginBottom: 2 },
-  itemModel: { ...typography.subheadline, marginBottom: 4 },
-  itemMeta: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  itemValue: { ...typography.footnote, fontWeight: '600' },
-  statusBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: radius.pill },
-  statusText: { ...typography.caption2, textTransform: 'capitalize' },
+  itemInfo: {
+    flex: 1,
+  },
+  itemBrand: {
+    ...typography.headline,
+    marginBottom: 2,
+  },
+  itemModel: {
+    ...typography.subheadline,
+    marginBottom: 4,
+  },
+  itemMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  itemValue: {
+    ...typography.footnote,
+    fontWeight: '600',
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: radius.pill,
+  },
+  statusText: {
+    ...typography.caption2,
+    textTransform: 'capitalize',
+  },
 });

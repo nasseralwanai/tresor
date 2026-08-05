@@ -1,409 +1,121 @@
 /**
- * Activity Feed — timeline of activities with icons, user avatars, item thumbnails.
- * "Mark Returned" action button on active borrow items.
- * "Who Wore It Best" voting card when applicable.
- * Timestamps.
+ * Activity screen — shows the activity feed for the user's circle.
+ * Fetches recent activity entries ordered by created_at desc.
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  RefreshControl,
+  View, Text, StyleSheet, FlatList, RefreshControl,
 } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
-import { Card } from '@/components/Card';
-import { Avatar } from '@/components/Avatar';
-import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
-import { Skeleton } from '@/components/Skeleton';
-import { hapticLight, hapticSuccess } from '@/lib/haptics';
-import { getActivityFeed, markReturned, getCurrentUser } from '@/lib/mockApi';
-import { formatRelativeTime, capitalize } from '@/lib/format';
-import type { ActivityEntry } from '@/types/items';
-
-const ACTIVITY_ICONS: Record<string, string> = {
-  item_added: 'plus-circle-outline',
-  item_updated: 'pencil-circle-outline',
-  item_removed: 'minus-circle-outline',
-  borrow_requested: 'hand-coin-outline',
-  borrow_approved: 'check-circle-outline',
-  borrow_active: 'swap-horizontal',
-  borrow_returned: 'keyboard-return',
-  borrow_completed: 'check-decagram-outline',
-  borrow_declined: 'close-circle-outline',
-  wishlist_item_added: 'heart-plus-outline',
-  price_alert: 'tag-outline',
-  member_joined: 'account-plus-outline',
-  member_left: 'account-minus-outline',
-};
-
-const ACTIVITY_COLORS: Record<string, string> = {
-  borrow_requested: '#C9A961',
-  borrow_approved: '#30A46C',
-  borrow_active: '#C9A961',
-  borrow_returned: '#30A46C',
-  borrow_completed: '#30A46C',
-  borrow_declined: '#E5484D',
-  item_added: '#C9A961',
-  wishlist_item_added: '#C9A961',
-  member_joined: '#30A46C',
-  member_left: '#E5484D',
-};
+import { EmptyState } from '@/components/EmptyState';
+import { useCircleId } from '@/hooks/useCircleId';
+import { getActivityFeed } from '@/lib/activity';
+import type { ActivityEntry } from '@/types';
 
 export default function ActivityScreen() {
   const colors = useThemeColors();
+  const { circleId, loading: circleLoading } = useCircleId();
   const [activities, setActivities] = useState<ActivityEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [voteSelected, setVoteSelected] = useState<number | null>(null);
-  const currentUser = useMemo(() => getCurrentUser(), []);
 
-  const loadData = useCallback(async () => {
-    const data = await getActivityFeed();
-    setActivities(data);
-    setLoading(false);
-    setRefreshing(false);
-  }, []);
+  const fetchActivities = useCallback(async () => {
+    if (!circleId) { setLoading(false); return; }
+    try {
+      const data = await getActivityFeed(circleId);
+      setActivities(data);
+    } catch (e) {
+      console.error('[Activity] Failed to fetch feed:', e);
+    } finally {
+      setLoading(false); setRefreshing(false);
+    }
+  }, [circleId]);
 
-  useMemo(() => {
-    loadData();
-  }, []);
+  useEffect(() => { fetchActivities(); }, [fetchActivities]);
+  const onRefresh = () => { setRefreshing(true); fetchActivities(); };
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    loadData();
-  }, [loadData]);
-
-  const handleMarkReturned = async (borrowId: string) => {
-    hapticSuccess();
-    await markReturned(borrowId);
-    loadData();
-  };
-
-  if (loading) {
+  if (!circleLoading && !loading && activities.length === 0) {
     return (
       <>
         <Stack.Screen options={{ title: 'Activity' }} />
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-          <View style={styles.list}>
-            {[1, 2, 3, 4].map((i) => (
-              <Card key={i} style={styles.skeletonCard}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md }}>
-                  <Skeleton width={34} height={34} borderRadius={17} />
-                  <View style={{ flex: 1 }}>
-                    <Skeleton width={200} height={14} style={{ marginBottom: 4 }} />
-                    <Skeleton width={60} height={11} />
-                  </View>
-                </View>
-              </Card>
-            ))}
-          </View>
+          <EmptyState icon="bell-outline" title="No Activity Yet" subtitle="Borrow requests, new items, and returns will show here" />
         </View>
       </>
     );
   }
 
-  if (activities.length === 0) {
-    return (
-      <>
-        <Stack.Screen options={{ title: 'Activity' }} />
-        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
-          <MaterialCommunityIcons name="bell-outline" size={48} color={colors.textSecondary} />
-          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-            No Activity Yet
-          </Text>
-          <Text style={[styles.emptySub, { color: colors.textSecondary }]}>
-            Borrow requests, new items, and returns will show here
-          </Text>
-        </View>
-      </>
-    );
-  }
+  const renderItem = ({ item }: { item: ActivityEntry }) => (
+    <View style={[styles.activityCard, { backgroundColor: colors.surface }]}>
+      <View style={[styles.activityIcon, { backgroundColor: colors.surfaceElevated }]}>
+        <MaterialCommunityIcons name={getActivityIcon(item.type) as any} size={20} color={colors.accent} />
+      </View>
+      <View style={styles.activityInfo}>
+        <Text style={[styles.activitySummary, { color: colors.textPrimary }]}>{item.summary ?? 'Activity'}</Text>
+        <Text style={[styles.activityTime, { color: colors.textSecondary }]}>{formatTime(item.created_at)}</Text>
+      </View>
+    </View>
+  );
 
   return (
     <>
       <Stack.Screen options={{ title: 'Activity' }} />
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['bottom']}>
+        <FlatList
+          data={activities}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
-        >
-          <View style={styles.list}>
-            {/* Who Wore It Best voting card */}
-            <WhoWoreItBestCard
-              voteSelected={voteSelected}
-              onVote={(idx) => {
-                hapticLight();
-                setVoteSelected(idx);
-              }}
-            />
-
-            {activities.map((activity) => (
-              <ActivityCard
-                key={activity.id}
-                activity={activity}
-                isMyItem={activity.item_id != null && currentUser.id !== activity.user_id}
-                onMarkReturned={handleMarkReturned}
-              />
-            ))}
-          </View>
-          <View style={{ height: spacing.xl }} />
-        </ScrollView>
-      </View>
+        />
+      </SafeAreaView>
     </>
   );
 }
 
-function ActivityCard({
-  activity,
-  isMyItem,
-  onMarkReturned,
-}: {
-  activity: ActivityEntry;
-  isMyItem: boolean;
-  onMarkReturned: (borrowId: string) => void;
-}) {
-  const colors = useThemeColors();
-  const iconName = ACTIVITY_ICONS[activity.type] ?? 'bell-outline';
-  const iconColor = ACTIVITY_COLORS[activity.type] ?? colors.textSecondary;
-
-  const showMarkReturned = activity.type === 'borrow_active' && activity.borrow_id && isMyItem;
-
-  return (
-    <Card style={styles.activityCard}>
-      <View style={styles.activityTop}>
-        <Avatar name={activity.actor_name} size="sm" />
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.activityBody, { color: colors.textPrimary }]}>
-            <Text style={[styles.actorName, { color: colors.textPrimary }]}>
-              {activity.actor_name}
-            </Text>
-            {' '}
-            {activity.summary.replace(activity.actor_name, '').trim()}
-          </Text>
-          <Text style={[styles.activityTime, { color: colors.textSecondary }]}>
-            {formatRelativeTime(activity.created_at)}
-          </Text>
-        </View>
-        <View style={[styles.activityIcon, { backgroundColor: `${iconColor}15` }]}>
-          <MaterialCommunityIcons name={iconName as any} size={18} color={iconColor} />
-        </View>
-      </View>
-
-      {/* Item thumbnail */}
-      {activity.item_brand && (
-        <View style={[styles.miniItem, { backgroundColor: colors.surfaceElevated }]}>
-          <ItemPhotoPlaceholder letter={activity.item_brand} size={42} style={styles.miniPhoto} />
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.miniBrand, { color: colors.textPrimary }]} numberOfLines={1}>
-              {activity.item_brand}
-            </Text>
-            <Text style={[styles.miniType, { color: colors.textSecondary }]}>
-              {capitalize(activity.type.replace(/_/g, ' '))}
-            </Text>
-          </View>
-        </View>
-      )}
-
-      {/* Mark Returned button */}
-      {showMarkReturned && (
-        <TouchableOpacity
-          onPress={() => onMarkReturned(activity.borrow_id!)}
-          style={[styles.markReturnedBtn, { backgroundColor: colors.accent }]}
-        >
-          <MaterialCommunityIcons name="check" size={16} color={colors.charcoal} />
-          <Text style={[styles.markReturnedText, { color: colors.charcoal }]}>
-            Mark Returned
-          </Text>
-        </TouchableOpacity>
-      )}
-    </Card>
-  );
+function getActivityIcon(type: string): string {
+  switch (type) {
+    case 'item_added': return 'plus-circle-outline';
+    case 'item_updated': return 'pencil-outline';
+    case 'item_removed': return 'minus-circle-outline';
+    case 'borrow_requested': return 'hand-extended-outline';
+    case 'borrow_approved': return 'check-circle-outline';
+    case 'borrow_active': return 'swap-horizontal';
+    case 'borrow_returned': return 'keyboard-return';
+    case 'borrow_completed': return 'check-decagram-outline';
+    case 'borrow_declined': return 'close-circle-outline';
+    case 'wishlist_item_added': return 'heart-outline';
+    case 'price_alert': return 'tag-outline';
+    case 'member_joined': return 'account-plus-outline';
+    case 'member_left': return 'account-minus-outline';
+    default: return 'bell-outline';
+  }
 }
 
-function WhoWoreItBestCard({
-  voteSelected,
-  onVote,
-}: {
-  voteSelected: number | null;
-  onVote: (idx: number) => void;
-}) {
-  const colors = useThemeColors();
-  const candidates = [
-    { name: 'Sarah', brand: 'Chanel', votes: 12 },
-    { name: 'Mona', brand: 'Dior', votes: 8 },
-    { name: 'Lina', brand: 'Gucci', votes: 5 },
-  ];
-
-  return (
-    <Card style={styles.voteCard}>
-      <View style={styles.voteHeader}>
-        <MaterialCommunityIcons name="trophy-outline" size={20} color={colors.accent} />
-        <Text style={[styles.voteTitle, { color: colors.textPrimary }]}>
-          Who Wore It Best?
-        </Text>
-      </View>
-      <Text style={[styles.voteSub, { color: colors.textSecondary }]}>
-        Vote for this week's best styled item
-      </Text>
-      <View style={styles.voteRow}>
-        {candidates.map((candidate, idx) => (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => onVote(idx)}
-            style={[
-              styles.voteItem,
-              {
-                backgroundColor: voteSelected === idx ? colors.accent : colors.surfaceElevated,
-                borderColor: voteSelected === idx ? colors.accent : 'transparent',
-              },
-            ]}
-          >
-            <ItemPhotoPlaceholder letter={candidate.brand} size={54} style={styles.votePhoto} />
-            <Text style={[styles.voteName, { color: voteSelected === idx ? colors.charcoal : colors.textPrimary }]}>
-              {candidate.name}
-            </Text>
-            <Text style={[styles.voteBrand, { color: voteSelected === idx ? colors.charcoal : colors.accent }]}>
-              {candidate.votes} votes
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </Card>
-  );
+function formatTime(iso: string): string {
+  const date = new Date(iso);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  list: {
-    paddingHorizontal: spacing.lg + 6,
-    paddingTop: spacing.md,
-    gap: spacing.sm + 2,
-  },
-  activityCard: {
-    gap: spacing.sm,
-  },
-  activityTop: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.sm + 2,
-  },
-  actorName: {
-    ...typography.bodyEmphasized,
-    fontSize: 13,
-  },
-  activityBody: {
-    ...typography.body,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  activityTime: {
-    ...typography.caption2,
-    fontSize: 11,
-    marginTop: 2,
-  },
-  activityIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  miniItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm + 2,
-    borderRadius: radius.sm,
-    padding: spacing.sm + 2,
-  },
-  miniPhoto: {
-    borderRadius: radius.sm,
-  },
-  miniBrand: {
-    ...typography.bodyEmphasized,
-    fontSize: 13,
-  },
-  miniType: {
-    ...typography.caption2,
-    fontSize: 10,
-    marginTop: 1,
-  },
-  markReturnedBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    height: 40,
-    borderRadius: radius.pill,
-    marginTop: 2,
-  },
-  markReturnedText: {
-    ...typography.bodyEmphasized,
-    fontSize: 14,
-  },
-  emptyText: {
-    ...typography.title3,
-    marginTop: spacing.md,
-  },
-  emptySub: {
-    ...typography.body,
-    fontSize: 14,
-    marginTop: spacing.xs,
-    textAlign: 'center',
-    paddingHorizontal: spacing.xl,
-  },
-  skeletonCard: {
-    padding: spacing.md,
-  },
-  // Vote card
-  voteCard: {
-    marginBottom: spacing.sm,
-  },
-  voteHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: 4,
-  },
-  voteTitle: {
-    ...typography.bodyEmphasized,
-    fontSize: 15,
-  },
-  voteSub: {
-    ...typography.caption1,
-    fontSize: 12,
-    marginBottom: spacing.md,
-  },
-  voteRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  voteItem: {
-    flex: 1,
-    alignItems: 'center',
-    borderRadius: radius.md,
-    padding: spacing.sm,
-    borderWidth: 2,
-  },
-  votePhoto: {
-    borderRadius: radius.sm,
-    marginBottom: 6,
-  },
-  voteName: {
-    ...typography.caption2,
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  voteBrand: {
-    ...typography.caption2,
-    fontSize: 10,
-    fontWeight: '600',
-    marginTop: 2,
-  },
+  list: { padding: spacing.lg, gap: spacing.sm },
+  activityCard: { flexDirection: 'row', alignItems: 'center', padding: spacing.md, borderRadius: radius.lg, gap: spacing.md },
+  activityIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
+  activityInfo: { flex: 1 },
+  activitySummary: { ...typography.body, fontSize: 15, marginBottom: 2 },
+  activityTime: { ...typography.caption1 },
 });

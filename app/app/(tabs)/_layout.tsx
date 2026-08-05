@@ -91,6 +91,13 @@ export default function TabLayout() {
           tabBarIcon: (props: TabIconProps) => <TabIcon name="bell-outline" color={props.color} />,
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: (props: TabIconProps) => <TabIcon name="account-circle-outline" color={props.color} />,
+        }}
+      />
     </Tabs>
   );
 }

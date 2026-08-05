@@ -1,5 +1,5 @@
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 
@@ -10,6 +10,7 @@ export default function AddScreen() {
     { icon: 'camera-outline', label: 'Photo', subtitle: 'AI identifies your item' },
     { icon: 'link-variant', label: 'Link', subtitle: 'Paste a product URL' },
     { icon: 'pencil-outline', label: 'Manual', subtitle: 'Enter details yourself' },
+    { icon: 'view-grid-outline', label: 'Bulk Import', subtitle: 'Scan multiple items at once' },
   ];
 
   return (
@@ -22,6 +23,11 @@ export default function AddScreen() {
               key={index}
               style={[styles.optionCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
               activeOpacity={0.7}
+              onPress={() => {
+                if (option.label === 'Bulk Import') {
+                  router.push('/add/bulk-import' as any);
+                }
+              }}
             >
               <View style={[styles.optionIcon, { backgroundColor: colors.surfaceElevated }]}>
                 <MaterialCommunityIcons name={option.icon as any} size={28} color={colors.accent} />

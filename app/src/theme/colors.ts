@@ -1,7 +1,5 @@
-import { DarkTheme, DefaultTheme, Theme } from '@react-navigation/native';
-
-// Trésor brand colors — luxury, editorial, Apple Design Award aesthetic
-// Dark mode is mandatory from day one per the brief
+// Trésor brand colors — Warm Atelier aesthetic
+// No react-navigation dependency (Expo SDK 57 dropped compat)
 
 const brandColors = {
   gold: '#C9A961',
@@ -46,32 +44,5 @@ export const LightThemeColors = {
 };
 
 export type ThemeColors = typeof DarkThemeColors;
-
-// React Navigation theme integration
-export const TresorDarkTheme: Theme = {
-  ...DarkTheme,
-  colors: {
-    ...DarkTheme.colors,
-    primary: DarkThemeColors.accent,
-    background: DarkThemeColors.background,
-    card: DarkThemeColors.surfaceElevated,
-    text: DarkThemeColors.textPrimary,
-    border: DarkThemeColors.border,
-    notification: DarkThemeColors.gold,
-  },
-};
-
-export const TresorLightTheme: Theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: LightThemeColors.accent,
-    background: LightThemeColors.background,
-    card: LightThemeColors.surface,
-    text: LightThemeColors.textPrimary,
-    border: LightThemeColors.border,
-    notification: LightThemeColors.goldDark,
-  },
-};
 
 export { brandColors };

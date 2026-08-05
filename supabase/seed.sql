@@ -2,13 +2,32 @@
 -- Trésor — Seed data for local development
 -- ============================================================================
 
--- Create auth.users entries (only NOT NULL columns: id, is_sso_user, is_anonymous)
-insert into auth.users (id, is_sso_user, is_anonymous, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data)
+-- Create auth.users entries with all fields GoTrue requires for password login:
+--   instance_id, encrypted_password (bcrypt cost 10), raw_app_meta_data with provider,
+--   raw_user_meta_data with sub/email, and empty strings for nullable text columns
+--   (GoTrue's Go scanner cannot handle NULL → string conversion)
+insert into auth.users (
+  id, instance_id, is_sso_user, is_anonymous, aud, role, email,
+  encrypted_password, email_confirmed_at, created_at, updated_at,
+  raw_app_meta_data, raw_user_meta_data,
+  confirmation_token, recovery_token, email_change_token_new, email_change,
+  phone_change, phone_change_token, email_change_token_current, reauthentication_token
+)
 values
-  ('11111111-1111-1111-1111-111111111111', false, false, 'authenticated', 'authenticated', 'sarah@test.local', crypt('password123', gen_salt('bf')), now(), now(), now(), '{}'::jsonb, '{}'::jsonb),
-  ('22222222-2222-2222-2222-222222222222', false, false, 'authenticated', 'authenticated', 'layla@test.local', crypt('password123', gen_salt('bf')), now(), now(), now(), '{}'::jsonb, '{}'::jsonb),
-  ('33333333-3333-3333-3333-333333333333', false, false, 'authenticated', 'authenticated', 'maya@test.local', crypt('password123', gen_salt('bf')), now(), now(), now(), '{}'::jsonb, '{}'::jsonb)
+  ('11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000000', false, false, 'authenticated', 'authenticated', 'sarah@test.local', crypt('password123', gen_salt('bf', 10)), now(), now(), now(), '{"provider":"email","providers":["email"]}'::jsonb, '{"sub":"11111111-1111-1111-1111-111111111111","email":"sarah@test.local","email_verified":true,"phone_verified":false}'::jsonb, '', '', '', '', '', '', '', ''),
+  ('22222222-2222-2222-2222-222222222222', '00000000-0000-0000-0000-000000000000', false, false, 'authenticated', 'authenticated', 'layla@test.local', crypt('password123', gen_salt('bf', 10)), now(), now(), now(), '{"provider":"email","providers":["email"]}'::jsonb, '{"sub":"22222222-2222-2222-2222-222222222222","email":"layla@test.local","email_verified":true,"phone_verified":false}'::jsonb, '', '', '', '', '', '', '', ''),
+  ('33333333-3333-3333-3333-333333333333', '00000000-0000-0000-0000-000000000000', false, false, 'authenticated', 'authenticated', 'maya@test.local', crypt('password123', gen_salt('bf', 10)), now(), now(), now(), '{"provider":"email","providers":["email"]}'::jsonb, '{"sub":"33333333-3333-3333-3333-333333333333","email":"maya@test.local","email_verified":true,"phone_verified":false}'::jsonb, '', '', '', '', '', '', '', '')
 on conflict (id) do nothing;
+
+-- Create auth.identities entries (GoTrue requires an identity for password login)
+insert into auth.identities (provider_id, user_id, provider, identity_data, last_sign_in_at, created_at, updated_at)
+select u.id::text, u.id, 'email',
+  jsonb_build_object('sub', u.id::text, 'email', u.email, 'email_verified', true, 'phone_verified', false),
+  now(), now(), now()
+from auth.users u
+where u.email in ('sarah@test.local', 'layla@test.local', 'maya@test.local')
+  and not exists (select 1 from auth.identities i where i.user_id = u.id and i.provider = 'email')
+on conflict do nothing;
 
 -- Test profiles
 insert into public.profiles (id, phone, display_name, bio) values

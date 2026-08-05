@@ -1,131 +1,56 @@
-import { Tabs } from 'expo-router';
-import { Platform, View, Text, StyleSheet, ColorValue, useColorScheme } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+/**
+ * Root layout — top-level navigator.
+ *
+ * Checks auth state via useAuth (placeholder returns loading=true).
+ * - loading  → splash/loading screen
+ * - no session → (auth) group
+ * - has session → (tabs) group
+ *
+ * TODO(backend): When Sonny's real useAuth lands, the session check
+ * will actually switch between auth and tabs.
+ */
+
+import { Stack } from 'expo-router';
+import { View, ActivityIndicator, StyleSheet, useColorScheme } from 'react-native';
 import { ThemeProvider } from '@react-navigation/native';
-import { useThemeColors, typography, spacing, radius } from '@/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '@/hooks/useAuth';
+import { useThemeColors } from '@/theme';
 import { TresorDarkTheme, TresorLightTheme } from '@/theme/colors';
 
-type TabIconProps = { focused: boolean; color: ColorValue; size: number };
-
-function TabIcon({ name, color, size = 26 }: { name: string; color: ColorValue; size?: number }) {
-  return <MaterialCommunityIcons name={name as any} color={color} size={size} />;
-}
-
-function AddTabButton({ color }: { color: string }) {
-  return (
-    <View style={styles.addButtonContainer}>
-      <View style={[styles.addButton, { backgroundColor: color }]}>
-        <MaterialCommunityIcons name="plus" color="#0A0A0B" size={28} />
-      </View>
-    </View>
-  );
-}
-
-export default function TabLayout() {
+export default function RootLayout() {
   const colors = useThemeColors();
   const scheme = useColorScheme();
+  const { loading, session } = useAuth();
+
+  const isAuthenticated = !!session;
 
   return (
     <ThemeProvider value={scheme === 'dark' ? TresorDarkTheme : TresorLightTheme}>
-    <Tabs
-      screenOptions={{
-        headerShown: true,
-        headerStyle: { backgroundColor: colors.background },
-        headerTitleStyle: {
-          fontSize: typography.title2.fontSize,
-          fontWeight: typography.title2.fontWeight as '600',
-          color: colors.textPrimary,
-        },
-        headerShadowVisible: false,
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          borderTopWidth: 0.5,
-          height: Platform.OS === 'ios' ? 88 : 64,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
-          paddingTop: 8,
-        },
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.textSecondary,
-        tabBarLabelStyle: {
-          fontSize: typography.caption2.fontSize,
-          fontWeight: typography.caption2.fontWeight as '500',
-          marginTop: 2,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'My Trésor',
-          tabBarIcon: (props: TabIconProps) => <TabIcon name="treasure-chest" color={props.color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="circle"
-        options={{
-          title: 'Circle',
-          tabBarIcon: (props: TabIconProps) => <TabIcon name="account-group-outline" color={props.color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="add"
-        options={{
-          title: 'Add',
-          tabBarIcon: (props: TabIconProps) => <TabIcon name="plus" color={props.color} />,
-          tabBarButton: () => (
-            <View style={styles.centerButtonWrapper}>
-              <AddTabButton color={colors.accent} />
-              <Text style={[styles.centerButtonLabel, { color: colors.accent }]}>Add</Text>
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="wishlist"
-        options={{
-          title: 'Wishlist',
-          tabBarIcon: (props: TabIconProps) => <TabIcon name="heart-outline" color={props.color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="activity"
-        options={{
-          title: 'Activity',
-          tabBarIcon: (props: TabIconProps) => <TabIcon name="bell-outline" color={props.color} />,
-        }}
-      />
-    </Tabs>
+      {loading ? (
+        <SafeAreaView style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+          <ActivityIndicator size="large" color={colors.accent} />
+        </SafeAreaView>
+      ) : (
+        <Stack screenOptions={{ headerShown: false }}>
+          {/* Auth flow — shown when unauthenticated */}
+          <Stack.Screen name="(auth)" />
+
+          {/* Main app — shown when authenticated */}
+          <Stack.Screen name="(tabs)" />
+
+          {/* Standalone routes (not in tab bar) */}
+          <Stack.Screen name="add" />
+        </Stack>
+      )}
     </ThemeProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  centerButtonWrapper: {
+  loadingContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingBottom: 4,
-  },
-  addButtonContainer: {
-    alignItems: 'center',
-  },
-  addButton: {
-    width: 52,
-    height: 52,
-    borderRadius: radius.pill,
-    alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -20,
-    shadowColor: '#C9A961',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  centerButtonLabel: {
-    fontSize: typography.caption2.fontSize,
-    fontWeight: typography.caption2.fontWeight as '500',
-    marginTop: 4,
   },
 });

@@ -3,215 +3,280 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trésor — Full App Mockup v2 · Boutique Shelf</title>
+<title>Trésor — Full App Mockup v3 · Warm Atelier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* TRÉSOR v2 — Warm Atelier · Compact · Muaath for Nasser */
-:root{--bg:#FAF7F2;--surf:#FFF;--sub:#F5F0EA;--warm:#F0E8DC;--ink:#2B2520;--ink2:#6B5D50;--ink3:#A09080;--bd:#E5DDD0;--bds:#EFE9E0;--acc:#9B7B5A;--accw:#C4A87E;--accs:rgba(155,123,90,.1);--grad:linear-gradient(135deg,#C4A87E,#9B7B5A);--ok:#6B8E5A;--pend:#D4A84B;--sh:0 4px 24px rgba(43,37,32,.06);--shp:0 20px 60px rgba(43,37,32,.15),0 4px 12px rgba(43,37,32,.08);--r:16px;--rs:10px;--rx:6px}
-[data-theme="dark"]{--bg:#1A1510;--surf:#2A2218;--sub:#221C14;--warm:#2E2519;--ink:#F5F0E8;--ink2:#C4B5A0;--ink3:#8A7860;--bd:#3A2F22;--bds:#2E2619;--acc:#C4A87E;--accw:#D4BC94;--accs:rgba(196,168,126,.12);--grad:linear-gradient(135deg,#D4BC94,#C4A87E);--ok:#8AB07A;--pend:#E4C074;--sh:0 4px 24px rgba(0,0,0,.4);--shp:0 20px 60px rgba(0,0,0,.5),0 4px 12px rgba(0,0,0,.3)}
+/* TRÉSOR v3 — Warm Atelier · Muaath for Nasser · anti-slop pass */
+:root{
+  --bg:#FAF7F2; --surf:#FFFFFF; --sub:#F5F0EA; --warm:#F0E8DC;
+  --ink:#2B2520; --ink2:#6B5D50; --ink3:#A09080;
+  --bd:#E5DDD0; --bds:#EFE9E0;
+  --acc:#9B7B5A; --accw:#C4A87E; --accs:rgba(155,123,90,.08);
+  --grad:linear-gradient(135deg,#C4A87E,#9B7B5A);
+  --ok:#6B8E5A; --pend:#B8902E;
+  --sh:0 1px 2px rgba(43,37,32,.04),0 4px 12px rgba(43,37,32,.04);
+  --shp:0 24px 60px rgba(43,37,32,.16),0 6px 16px rgba(43,37,32,.08);
+  --r:14px; --rs:8px; --rx:5px;
+  --hl:1px solid var(--bds);
+}
+[data-theme="dark"]{
+  --bg:#161210; --surf:#221C16; --sub:#1E1812; --warm:#2A2118;
+  --ink:#F2EDE4; --ink2:#B5A892; --ink3:#7A6A55;
+  --bd:#3A2F22; --bds:#2A231B;
+  --acc:#C4A87E; --accw:#D4BC94; --accs:rgba(196,168,126,.10);
+  --grad:linear-gradient(135deg,#D4BC94,#C4A87E);
+  --ok:#8AB07A; --pend:#D4A84B;
+  --sh:0 1px 2px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.3);
+  --shp:0 24px 60px rgba(0,0,0,.55),0 6px 16px rgba(0,0,0,.4);
+  --hl:1px solid var(--bds);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;transition:background .3s,color .3s}
-.sf{font-family:'Playfair Display',serif}
-/* Header */
-.ph{max-width:1400px;margin:0 auto;padding:70px 40px 30px}
-.ph .lbl{font-size:10px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
-.ph h1{font-family:'Playfair Display',serif;font-size:46px;font-weight:500;letter-spacing:-.02em;line-height:1.05;margin-bottom:14px}
-.ph .sub{font-size:14px;color:var(--ink2);font-weight:300;max-width:640px;line-height:1.7}
-.ph .meta{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap}
-.ph .mi{font-size:11px;color:var(--ink3)}
-.ph .mi b{color:var(--ink2);font-weight:500;display:block;font-size:12px}
-.tgl{position:fixed;top:20px;right:20px;z-index:999;background:var(--surf);border:1px solid var(--bd);border-radius:100px;padding:9px 18px;font-size:12px;font-weight:500;color:var(--ink2);cursor:pointer;box-shadow:var(--sh);display:flex;align-items:center;gap:8px;font-family:'Jost',sans-serif}
-.tgl .d{width:7px;height:7px;border-radius:50%;background:var(--grad)}
-.wr{height:1px;background:linear-gradient(90deg,transparent,var(--accw),transparent);opacity:.3;margin:30px auto;max-width:1320px}
-/* Sections */
-.sec{max-width:1400px;margin:0 auto;padding:0 40px 50px}
-.slbl{font-size:11px;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--acc);margin-bottom:6px;display:flex;align-items:center;gap:14px}
-.slbl .n{width:26px;height:26px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;letter-spacing:0}
-.stit{font-family:'Playfair Display',serif;font-size:22px;font-weight:500;margin-bottom:6px}
-.sdesc{font-size:12px;color:var(--ink2);font-weight:300;margin-bottom:20px;max-width:580px;line-height:1.6}
-.prow{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start}
-.psub{font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3);margin:14px 0 10px;width:100%}
-/* Phone frame */
-.pf{width:340px;height:720px;background:#1a1a1a;border-radius:44px;overflow:hidden;box-shadow:var(--shp);position:relative;flex-shrink:0;border:2px solid #333}
-.ps{width:100%;height:100%;background:var(--bg);border-radius:42px;overflow:hidden;position:relative}
-.pn{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:100px;height:28px;background:#1a1a1a;border-radius:16px;z-index:100}
-.sb{height:46px;display:flex;align-items:center;justify-content:space-between;padding:14px 26px 0;font-size:13px;font-weight:600;color:var(--ink);position:relative;z-index:50;flex-shrink:0}
-.sb .ic{display:flex;gap:5px;align-items:center;font-size:11px}
-.hi{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:110px;height:4px;background:var(--ink);border-radius:3px;opacity:.3;z-index:60}
-/* Scroll */
-.sa{height:calc(720px - 46px - 72px);overflow-y:auto;overflow-x:hidden}
-.sa::-webkit-scrollbar{display:none}
-.saf{height:calc(720px - 46px);overflow-y:auto;overflow-x:hidden}
-.saf::-webkit-scrollbar{display:none}
-/* Tab bar */
-.tb{position:absolute;bottom:0;left:0;right:0;height:72px;background:var(--surf);border-top:1px solid var(--bds);display:flex;align-items:flex-start;justify-content:space-around;padding-top:12px;z-index:50}
-.ti{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:8px;color:var(--ink3);width:52px}
+html,body{background:var(--bg)}
+body{font-family:'Jost',-apple-system,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;transition:background .3s,color .3s;font-feature-settings:"kern" 1,"liga" 1}
+.sf{font-family:'Playfair Display',Georgia,serif}
+.kicker{font-size:10px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--acc)}
+
+/* ── page shell ── */
+.page{max-width:1380px;margin:0 auto;padding:88px 44px 40px}
+.head{margin-bottom:48px}
+.head .meta-row{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.head .meta-row .kicker{color:var(--ink3)}
+.head h1{font-family:'Playfair Display',serif;font-size:52px;font-weight:400;letter-spacing:-.015em;line-height:1.02;margin-bottom:20px}
+.head .sub{font-size:14px;color:var(--ink2);font-weight:300;max-width:580px;line-height:1.65}
+.head .facts{display:flex;gap:32px;margin-top:24px;flex-wrap:wrap}
+.head .facts div{font-size:10px;color:var(--ink3);letter-spacing:.04em}
+.head .facts b{display:block;color:var(--ink2);font-weight:500;font-size:12px;margin-bottom:2px;letter-spacing:.06em;text-transform:uppercase}
+
+/* ── theme toggle ── */
+.tgl{position:fixed;top:22px;right:22px;z-index:999;background:var(--surf);border:var(--hl);border-radius:100px;padding:9px 16px 9px 12px;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--ink2);cursor:pointer;box-shadow:var(--sh);display:flex;align-items:center;gap:8px;font-family:'Jost',sans-serif}
+.tgl .d{width:6px;height:6px;border-radius:50%;background:var(--acc)}
+
+/* ── section ── */
+.sec{margin-bottom:54px}
+.sec-head{margin-bottom:24px;max-width:640px}
+.sec-num{display:inline-flex;align-items:center;gap:12px;margin-bottom:10px}
+.sec-num .badge{width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;font-family:'Playfair Display',serif}
+.sec-num .label{font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--acc)}
+.sec h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;letter-spacing:-.01em;line-height:1.2;margin-bottom:8px}
+.sec .desc{font-size:13px;color:var(--ink2);font-weight:300;line-height:1.6}
+.prow{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.pcap{font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3);margin:14px 0 10px;text-align:center}
+
+/* ── phone frame ── */
+.pf{width:320px;height:680px;background:#0E0C0A;border-radius:42px;overflow:hidden;box-shadow:var(--shp);position:relative;flex-shrink:0;padding:3px}
+.ps{width:100%;height:100%;background:var(--bg);border-radius:39px;overflow:hidden;position:relative}
+.pn{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:92px;height:24px;background:#0E0C0A;border-radius:14px;z-index:100}
+
+/* status bar — CSS shapes, never emoji */
+.sb{height:44px;display:flex;align-items:center;justify-content:space-between;padding:14px 22px 0;font-size:13px;font-weight:600;color:var(--ink);position:relative;z-index:50;flex-shrink:0;letter-spacing:-.01em}
+.sb .ic{display:flex;gap:6px;align-items:center}
+.sb .sig{display:flex;gap:1.5px;align-items:flex-end}
+.sb .sig i{display:block;width:2.5px;background:var(--ink);border-radius:1px}
+.sb .sig i:nth-child(1){height:3px}.sb .sig i:nth-child(2){height:5px}.sb .sig i:nth-child(3){height:7px}.sb .sig i:nth-child(4){height:9px}
+.sb .wifi{width:13px;height:10px;position:relative}
+.sb .wifi::before{content:'';position:absolute;inset:0;border:1.5px solid var(--ink);border-bottom:none;border-radius:13px 13px 0 0;background:transparent;clip-path:polygon(0 100%,50% 0,100% 100%)}
+.sb .bat{width:22px;height:10px;border:1.2px solid var(--ink);border-radius:2.5px;padding:1px;position:relative}
+.sb .bat::after{content:'';position:absolute;right:-3px;top:3px;width:1.5px;height:3.5px;background:var(--ink);border-radius:0 1px 1px 0}
+.sb .bat i{display:block;width:72%;height:100%;background:var(--ink);border-radius:1px}
+
+.hi{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:104px;height:4px;background:var(--ink);border-radius:3px;opacity:.28;z-index:60}
+
+.sa{height:calc(680px - 44px - 64px);overflow-y:auto;overflow-x:hidden}
+.saf{height:calc(680px - 44px);overflow-y:auto;overflow-x:hidden}
+.sa::-webkit-scrollbar,.saf::-webkit-scrollbar{display:none}
+
+/* ── tab bar ── */
+.tb{position:absolute;bottom:0;left:0;right:0;height:64px;background:var(--surf);border-top:var(--hl);display:flex;align-items:flex-start;justify-content:space-around;padding-top:10px;z-index:50}
+.ti{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:8.5px;font-weight:400;color:var(--ink3);width:50px;letter-spacing:.04em}
 .ti.act{color:var(--acc);font-weight:500}
-.ti .ic{font-size:16px}
-.ta{width:42px;height:42px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;margin-top:-20px;font-size:20px;font-weight:300;box-shadow:0 4px 14px rgba(196,168,126,.5)}
-/* Common UI */
-.hd{padding:6px 20px 14px}
-.hd .gr{font-size:11px;color:var(--ink3)}
-.hd .tt{font-family:'Playfair Display',serif;font-size:26px;font-weight:500;letter-spacing:-.01em;margin-top:2px}
-.hd .ct{font-size:11px;color:var(--ink3);margin-top:3px}
+.ti svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.4}
+.ti.act svg{stroke-width:1.6}
+.ta{width:40px;height:40px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;margin-top:-18px;box-shadow:0 4px 14px rgba(196,168,126,.45)}
+.ta svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+
+/* ── screen header ── */
+.hd{padding:6px 22px 18px}
+.hd .gr{font-size:11px;color:var(--ink3);font-weight:400;letter-spacing:.01em}
+.hd .tt{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;letter-spacing:-.012em;margin-top:2px;line-height:1.1}
+.hd .ct{font-size:11px;color:var(--ink3);margin-top:4px;font-weight:300}
 .hd .nr{display:flex;justify-content:space-between;align-items:center}
-.hd .nb{width:32px;height:32px;border-radius:50%;background:var(--sub);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ink)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 20px;background:var(--grad);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;font-family:'Jost',sans-serif;box-shadow:0 3px 12px rgba(196,168,126,.3)}
+.hd .nb{width:30px;height:30px;border-radius:50%;background:var(--sub);display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.hd .nb svg{width:14px;height:14px;stroke:var(--ink);fill:none;stroke-width:1.6}
+
+/* ── shared ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;background:var(--ink);color:var(--bg);border:none;border-radius:var(--rs);font-size:12.5px;font-weight:500;cursor:pointer;font-family:'Jost',sans-serif;letter-spacing:.01em}
+.btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.6}
 .btn.fw{width:100%}
-.btn.sm{padding:8px 14px;font-size:12px}
-.btn.out{background:transparent;color:var(--ink2);border:1px solid var(--bd);box-shadow:none}
-.btn.ghost{background:var(--sub);color:var(--ink);box-shadow:none}
-.badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:500;padding:3px 8px;border-radius:100px;letter-spacing:.02em}
+.btn.sm{padding:7px 12px;font-size:11px}
+.btn.acc{background:var(--grad);color:#fff;box-shadow:0 2px 8px rgba(196,168,126,.25)}
+.btn.out{background:transparent;color:var(--ink);border:1px solid var(--bd)}
+.btn.ghost{background:var(--sub);color:var(--ink)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:500;padding:3px 8px;border-radius:100px;letter-spacing:.02em}
 .badge .dt{width:5px;height:5px;border-radius:50%;background:currentColor}
-.badge.ok{color:var(--ok);background:rgba(107,142,90,.12)}
+.badge.ok{color:var(--ok);background:rgba(107,142,90,.10)}
 .badge.lent{color:var(--acc);background:var(--accs)}
-.badge.pend{color:var(--pend);background:rgba(212,168,75,.12)}
+.badge.pend{color:var(--pend);background:rgba(184,144,46,.10)}
 .badge.priv{color:var(--ink3);background:var(--sub)}
 .badge.nolend{color:var(--ink2);background:var(--sub)}
-.av{width:36px;height:36px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
-.av.sm{width:28px;height:28px;font-size:11px}
-.av.lg{width:52px;height:52px;font-size:18px}
-.card{background:var(--surf);border-radius:var(--r);padding:14px;box-shadow:var(--sh)}
-.card.sub{background:var(--sub)}
-.toggle{width:40px;height:22px;border-radius:100px;background:var(--bd);position:relative;cursor:pointer;flex-shrink:0;transition:.2s}
+.av{width:34px;height:34px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0;letter-spacing:.02em}
+.av.sm{width:26px;height:26px;font-size:10px}
+.av.lg{width:46px;height:46px;font-size:15px}
+.card{background:var(--surf);border:var(--hl);border-radius:var(--r);padding:14px}
+.toggle{width:36px;height:20px;border-radius:100px;background:var(--bd);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
 .toggle.on{background:var(--acc)}
-.toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
-.toggle.on::after{left:20px}
-.lock{font-size:11px;color:var(--ink3)}
-.field{width:100%;padding:12px 14px;background:var(--sub);border:1px solid var(--bds);border-radius:var(--rs);font-size:13px;color:var(--ink);font-family:'Jost',sans-serif;resize:none}
-.field.lbl{font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);padding:0;background:none;border:none;margin-bottom:8px}
-/* Item photo placeholder */
-.iph{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--sub),var(--warm));border-radius:var(--rs);position:relative;overflow:hidden}
-.iph .L{font-family:'Playfair Display',serif;color:var(--ink3);opacity:.18}
-.iph .shine{position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.12),transparent)}
-/* Featured carousel */
-.fc{display:flex;gap:10px;padding:0 20px 18px;overflow-x:auto}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.toggle.on::after{transform:translateX(16px)}
+.field{width:100%;padding:11px 13px;background:var(--surf);border:1px solid var(--bd);border-radius:var(--rs);font-size:13px;color:var(--ink);font-family:'Jost',sans-serif}
+.field::placeholder{color:var(--ink3)}
+.flbl{font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;display:block}
+
+/* photo placeholder — serif initial on subtle gradient, no gray box */
+.iph{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--sub) 0%,var(--warm) 100%);border-radius:var(--rs);position:relative;overflow:hidden}
+.iph .L{font-family:'Playfair Display',serif;color:var(--ink);opacity:.14;font-weight:500}
+
+/* featured carousel */
+.fc{display:flex;gap:10px;padding:0 22px 16px;overflow-x:auto}
 .fc::-webkit-scrollbar{display:none}
-.fcc{flex:0 0 230px;border-radius:var(--r);overflow:hidden;background:var(--sub);position:relative}
-.fcc .ph{height:140px}
-.fcc .ph .L{font-size:70px}
-.fcc .inf{padding:12px 14px}
-.fcc .inf .br{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:3px}
-.fcc .inf .nm{font-family:'Playfair Display',serif;font-size:15px;font-weight:500;line-height:1.2;margin-bottom:3px}
-.fcc .inf .pr{font-size:12px;font-weight:500}
+.fcc{flex:0 0 210px;border:var(--hl);border-radius:var(--r);overflow:hidden;background:var(--surf)}
+.fcc .ph{height:130px;border-radius:0}
+.fcc .ph .L{font-size:62px}
+.fcc .inf{padding:11px 13px}
+.fcc .inf .br{font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:2px}
+.fcc .inf .nm{font-family:'Playfair Display',serif;font-size:14px;font-weight:500;line-height:1.2;margin-bottom:3px}
+.fcc .inf .pr{font-size:11px;color:var(--ink2);font-weight:400}
 .fcc .stag{position:absolute;top:8px;left:8px}
-/* Shelf */
-.shf{margin-bottom:20px}
-.shfh{display:flex;justify-content:space-between;align-items:center;padding:0 20px 8px}
-.shfh .nm{font-family:'Playfair Display',serif;font-size:16px;font-weight:500}
-.shfh .ct{font-size:10px;color:var(--ink3)}
-.shfr{display:flex;gap:10px;padding:0 20px;overflow-x:auto}
+
+/* category shelf */
+.shf{margin-bottom:18px}
+.shfh{display:flex;justify-content:space-between;align-items:baseline;padding:0 22px 8px}
+.shfh .nm{font-family:'Playfair Display',serif;font-size:15px;font-weight:500}
+.shfh .ct{font-size:10px;color:var(--ink3);font-weight:300}
+.shfr{display:flex;gap:10px;padding:0 22px;overflow-x:auto}
 .shfr::-webkit-scrollbar{display:none}
-.smc{flex:0 0 110px}
-.smc .ph{width:110px;height:110px;border-radius:var(--rs);margin-bottom:6px}
-.smc .ph .L{font-size:38px}
-.smc .sdot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;box-shadow:0 0 0 2px var(--surf)}
-.smc .br{font-size:9px;font-weight:600;color:var(--ink)}
-.smc .in{font-size:10px;color:var(--ink2);line-height:1.3}
-.smc .pr{font-size:10px;color:var(--acc);font-weight:500}
-/* Grid */
-.grd{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px}
-.gc{cursor:pointer}
-.gc .ph{width:100%;aspect-ratio:1;border-radius:var(--rs);margin-bottom:6px}
-.gc .ph .L{font-size:42px}
-.gc .sdot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;box-shadow:0 0 0 2px var(--surf)}
-/* Feed */
-.feed{padding:0 20px}
-.fpost{background:var(--surf);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:var(--sh)}
-.fpost .top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.fpost .top .nm{font-size:13px;font-weight:500}
-.fpost .top .tm{font-size:10px;color:var(--ink3)}
-.fpost .body{font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:10px}
-.fpost .body em{font-family:'Playfair Display',serif;font-style:italic;color:var(--acc)}
-.fpost .acts{display:flex;gap:16px;font-size:11px;color:var(--ink3)}
-.fpost .acts span{display:flex;align-items:center;gap:4px;cursor:pointer}
-.fpost .mini{background:var(--sub);border-radius:var(--rs);padding:10px;margin:8px 0;display:flex;gap:10px;align-items:center}
-.fpost .mini .ph{width:48px;height:48px;border-radius:var(--rx);flex-shrink:0}
-.fpost .mini .ph .L{font-size:22px}
+.smc{flex:0 0 100px}
+.smc .ph{width:100px;height:100px;border-radius:var(--rs);margin-bottom:5px;position:relative}
+.smc .ph .L{font-size:34px}
+.smc .sdot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;box-shadow:0 0 0 2px var(--bg)}
+.smc .br{font-size:9px;font-weight:500;color:var(--ink);letter-spacing:.02em}
+.smc .in{font-size:10px;color:var(--ink2);line-height:1.3;margin-top:1px}
+.smc .pr{font-size:10px;color:var(--acc);font-weight:500;margin-top:1px}
+
+/* feed */
+.feed{padding:0 22px}
+.fpost{background:var(--surf);border:var(--hl);border-radius:var(--r);padding:13px;margin-bottom:11px}
+.fpost .top{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.fpost .top .nm{font-size:12.5px;font-weight:500}
+.fpost .top .tm{font-size:10px;color:var(--ink3);font-weight:300}
+.fpost .body{font-size:12.5px;color:var(--ink);line-height:1.5;margin-bottom:9px}
+.fpost .body em{font-family:'Playfair Display',serif;font-style:italic;color:var(--acc);font-weight:500}
+.fpost .acts{display:flex;gap:18px;font-size:10.5px;color:var(--ink3);margin-top:8px}
+.fpost .acts span{display:flex;align-items:center;gap:4px}
+.fpost .acts svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.4}
+.fpost .mini{background:var(--sub);border-radius:var(--rs);padding:9px;margin:8px 0;display:flex;gap:9px;align-items:center}
+.fpost .mini .ph{width:42px;height:42px;border-radius:var(--rx);flex-shrink:0}
+.fpost .mini .ph .L{font-size:20px}
 .fpost .mini .mn{font-size:11px;font-weight:500}
-.fpost .mini .mb{font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em}
-/* Onboarding */
-.obg{height:100%;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--bg) 0%,var(--warm) 100%);position:relative;overflow:hidden}
-.obg::before{content:'';position:absolute;top:-80px;right:-80px;width:240px;height:240px;border-radius:50%;background:var(--accs);filter:blur(50px)}
-.obc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 28px;position:relative;z-index:2}
-.obl{width:76px;height:76px;border-radius:20px;background:var(--grad);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 6px 24px rgba(196,168,126,.4)}
-.obl .mg{font-family:'Playfair Display',serif;font-size:38px;font-weight:600;color:#fff}
-.obt{font-family:'Playfair Display',serif;font-size:32px;font-weight:500;letter-spacing:-.02em;margin-bottom:10px;text-align:center}
-.obs{font-size:13px;color:var(--ink2);font-weight:300;text-align:center;line-height:1.6;margin-bottom:28px;max-width:250px}
-.obf{padding:20px 28px 40px;text-align:center;position:relative;z-index:2}
+.fpost .mini .mb{font-size:9px;color:var(--ink3);letter-spacing:.02em;margin-top:1px}
+
+/* onboarding */
+.obg{height:100%;display:flex;flex-direction:column;background:var(--bg);position:relative;overflow:hidden}
+.obg::before{content:'';position:absolute;top:-100px;right:-100px;width:240px;height:240px;border-radius:50%;background:var(--accs)}
+.obc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 26px;position:relative;z-index:2}
+.obl{width:64px;height:64px;border-radius:16px;background:var(--ink);display:flex;align-items:center;justify-content:center;margin-bottom:22px}
+.obl span{font-family:'Playfair Display',serif;font-size:32px;font-weight:500;color:var(--bg)}
+.obt{font-family:'Playfair Display',serif;font-size:30px;font-weight:400;letter-spacing:-.02em;margin-bottom:8px;text-align:center}
+.obs{font-size:13px;color:var(--ink2);font-weight:300;text-align:center;line-height:1.6;margin-bottom:26px;max-width:240px}
+.obf{padding:18px 26px 36px;position:relative;z-index:2}
 .obf .cp{display:flex;gap:6px;justify-content:center;margin-bottom:12px}
-.obf .ca{width:30px;height:30px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;border:2px solid var(--bg)}
-.obf .tx{font-size:11px;color:var(--ink3);line-height:1.5}
+.obf .ca{width:28px;height:28px;border-radius:50%;background:var(--sub);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--ink2)}
+.obf .tx{font-size:11px;color:var(--ink3);line-height:1.5;text-align:center}
 .obf .tx b{color:var(--ink2);font-weight:500}
-/* Bulk import grid */
-.bgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 20px 16px}
+
+/* bulk grid */
+.bgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:0 22px 14px}
 .bgrid .cell{aspect-ratio:1;border-radius:var(--rs);position:relative;overflow:hidden}
-.bgrid .cell .L{font-size:28px}
-.bgrid .cell .chk{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:50%;background:var(--grad);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center}
-.bgrid .cell.add{border:2px dashed var(--bd);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ink3);background:transparent}
-/* Vote card */
-.vote{display:flex;gap:8px;margin:10px 0}
-.vote .vc{flex:1;background:var(--sub);border-radius:var(--rs);padding:8px;text-align:center;cursor:pointer}
-.vote .vc .ph{width:100%;height:60px;border-radius:var(--rx);margin-bottom:6px}
-.vote .vc .ph .L{font-size:24px}
+.bgrid .cell .L{font-size:26px}
+.bgrid .cell .chk{position:absolute;top:5px;right:5px;width:17px;height:17px;border-radius:50%;background:var(--grad);color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center}
+.bgrid .cell.add{border:1px dashed var(--bd);display:flex;align-items:center;justify-content:center;color:var(--ink3);background:transparent}
+
+/* vote */
+.vote{display:flex;gap:8px;margin:8px 0}
+.vote .vc{flex:1;background:var(--sub);border-radius:var(--rs);padding:8px;text-align:center}
+.vote .vc .ph{width:100%;height:54px;border-radius:var(--rx);margin-bottom:5px}
+.vote .vc .ph .L{font-size:22px}
 .vote .vc .vn{font-size:9px;font-weight:500}
 .vote .vc .vv{font-size:10px;color:var(--acc);font-weight:600;margin-top:2px}
-/* Pledge */
+
+/* pledge */
 .pledge{background:var(--accs);border-radius:var(--rs);padding:10px;margin-top:8px}
-.pledge .pt{font-size:11px;color:var(--ink2);margin-bottom:6px}
-.pledge .bar{height:5px;background:var(--bd);border-radius:100px;overflow:hidden;margin-bottom:6px}
-.pledge .bar .fill{height:100%;width:45%;background:var(--grad);border-radius:100px}
+.pledge .pt{font-size:11px;color:var(--ink2);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.pledge .pt svg{width:12px;height:12px;stroke:var(--acc);fill:none;stroke-width:1.5}
+.pledge .bar{height:4px;background:var(--bd);border-radius:100px;overflow:hidden;margin-bottom:5px}
+.pledge .bar .fill{height:100%;background:var(--grad);border-radius:100px}
 .pledge .pa{display:flex;justify-content:space-between;align-items:center}
-.pledge .pa .amt{font-size:12px;font-weight:600;color:var(--acc)}
+.pledge .pa .amt{font-size:11px;font-weight:600;color:var(--acc)}
 .pledge .pa .pp{font-size:9px;color:var(--ink3)}
+
+/* divider */
+.div{height:1px;background:var(--bds);margin:24px 22px}
+
+/* footer */
+.foot{max-width:1380px;margin:0 auto;padding:24px 44px 64px;text-align:center}
+.foot .l{font-size:10px;color:var(--ink3);letter-spacing:.08em;line-height:1.7}
 </style>
 </head>
 <body>
 
-<button class="tgl" onclick="document.documentElement.setAttribute('data-theme',document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')"><span class="d"></span>Toggle Theme</button>
+<button class="tgl" onclick="document.documentElement.setAttribute('data-theme',document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')"><span class="d"></span><span id="tl">Dark</span></button>
 
-<div class="ph">
-  <div class="lbl">Trésor · Luxury Circle Inventory</div>
-  <h1>Full App Mockup <span style="font-size:28px;color:var(--ink3)">v2</span></h1>
-  <p class="sub">Revised with Nasser's feedback: bulk onboarding import, item privacy &amp; lendability, date-free borrowing, frictionless returns, social wishlist, and engagement features. Warm Atelier palette · Boutique Shelf design.</p>
-  <div class="meta">
-    <div class="mi"><b>Designer</b>Muaath</div>
-    <div class="mi"><b>Brief</b>Nasser</div>
-    <div class="mi"><b>Dev Lead</b>Dwight</div>
-    <div class="mi"><b>Variant</b>C — Boutique Shelf</div>
+<div class="page">
+  <div class="head">
+    <div class="meta-row"><span class="kicker">Trésor</span><span class="kicker" style="color:var(--ink3)">Luxury Circle Inventory</span></div>
+    <h1>Full App Mockup<br><span style="font-size:28px;color:var(--ink3);font-weight:400">v3 · Warm Atelier</span></h1>
+    <p class="sub">Refined pass addressing Nasser's notes: zero emoji, no glassmorphism, editorial spacing, hairline borders, serif-initial photo treatments. Same Boutique Shelf structure, same feature set — stripped of the vibe-coded look.</p>
+    <div class="facts">
+      <div><b>Designer</b>Muaath</div>
+      <div><b>Brief</b>Nasser</div>
+      <div><b>Dev Lead</b>Dwight</div>
+      <div><b>Variant</b>C — Boutique Shelf</div>
+      <div><b>Screens</b>17 frames, 9 sections</div>
+    </div>
   </div>
 </div>
-<div class="wr"></div>
 
-<!-- ===== 1. ONBOARDING ===== -->
+<!-- ═══ 1. ONBOARDING ═══ -->
+<div class="page" style="padding-top:0">
 <div class="sec">
-  <div class="slbl"><span class="n">1</span> Onboarding · Invite &amp; First Run</div>
-  <div class="stit">Welcome to the Circle</div>
-  <p class="sdesc">Invite code entry, then straight into bulk import — first-time users have many items to add. No empty-home cold start.</p>
+  <div class="sec-head">
+    <div class="sec-num"><span class="badge">1</span><span class="label">Onboarding · First Run</span></div>
+    <h2>Welcome to the Circle</h2>
+    <p class="desc">Invite code, then straight into bulk import — first-time users arrive with many items. No empty-home cold start.</p>
+  </div>
   <div class="prow">
+
     <!-- 1a: Invite Code -->
     <div>
-      <div class="psub">1a — Invite Code</div>
+      <div class="pcap">1a · Invite Code</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
         <div class="obg">
-          <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+          <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
           <div class="obc">
-            <div class="obl"><span class="mg">T</span></div>
+            <div class="obl"><span>T</span></div>
             <div class="obt">Trésor</div>
             <div class="obs">Your private circle for sharing luxury. Enter your invite to join.</div>
             <div style="width:100%;margin-bottom:16px">
-              <div style="font-size:10px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-bottom:10px;align-self:flex-start">Invite Code</div>
-              <div style="display:flex;gap:8px;justify-content:center">
-                <div style="width:38px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);box-shadow:0 0 0 3px var(--accs);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500">T</div>
-                <div style="width:38px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500">R</div>
-                <div style="width:38px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:var(--ink3)">E</div>
-                <div style="width:38px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink3)">—</div>
-                <div style="width:38px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink3)">7</div>
-                <div style="width:38px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink3)">K</div>
+              <div class="kicker" style="margin-bottom:10px;align-self:flex-start">Invite Code</div>
+              <div style="display:flex;gap:7px;justify-content:center">
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);box-shadow:0 0 0 3px var(--accs);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">T</div>
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">R</div>
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500;color:var(--ink3)">E</div>
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink3)">—</div>
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink3)">7</div>
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink3)">K</div>
               </div>
             </div>
-            <button class="btn fw" style="margin-top:8px">Continue</button>
+            <button class="btn fw acc">Continue</button>
           </div>
           <div class="obf">
             <div class="cp">
@@ -226,46 +291,45 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
 
     <!-- 1b: Bulk Capture -->
     <div>
-      <div class="psub">1b — Bulk Photo Capture</div>
+      <div class="pcap">1b · Bulk Photo Capture</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
           <div class="hd">
             <div class="nr">
-              <div class="nb">←</div>
-              <div style="font-size:12px;color:var(--ink3)">Step 2 of 3</div>
-              <div class="nb">⋯</div>
+              <div class="nb"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+              <div style="font-size:11px;color:var(--ink3)">Step 2 of 3</div>
+              <div class="nb"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/></svg></div>
             </div>
-            <div class="tt" style="margin-top:14px">Add Your Collection</div>
-            <div class="ct">Snap items one by one, or select from gallery. AI identifies each piece.</div>
+            <div class="tt" style="margin-top:12px">Add Your Collection</div>
+            <div class="ct">Snap each piece or import from gallery. AI identifies brand and model.</div>
           </div>
-          <!-- Camera viewfinder -->
-          <div style="margin:0 20px 16px;height:200px;border-radius:var(--r);background:linear-gradient(135deg,var(--sub),var(--warm));display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative">
-            <div style="font-size:48px;color:var(--ink3);opacity:.3">📷</div>
-            <div style="font-size:13px;color:var(--ink2);margin-top:8px;font-weight:500">Point at an item</div>
-            <div style="font-size:11px;color:var(--ink3)">Tap to capture · Hold for burst</div>
-            <div style="position:absolute;bottom:12px;display:flex;gap:20px;align-items:center">
-              <div style="font-size:18px;color:var(--ink3)">🖼</div>
-              <div style="width:54px;height:54px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;border:3px solid var(--surf);box-shadow:0 4px 16px rgba(196,168,126,.4)">⚪</div>
-              <div style="font-size:14px;color:var(--ink3)">✦</div>
+          <!-- viewfinder -->
+          <div style="margin:0 22px 14px;height:180px;border-radius:var(--r);background:linear-gradient(135deg,var(--sub),var(--warm));display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;border:1px solid var(--bds)">
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.2" style="opacity:.5"><path d="M3 7h3l2-2h8l2 2h3v12H3z"/><circle cx="12" cy="13" r="3.5"/><circle cx="12" cy="13" r="1.2" fill="var(--ink3)"/></svg>
+            <div style="font-size:12px;color:var(--ink2);margin-top:8px;font-weight:500">Point at an item</div>
+            <div style="font-size:10px;color:var(--ink3);margin-top:2px">Tap to capture · Hold for burst</div>
+            <div style="position:absolute;bottom:12px;display:flex;gap:18px;align-items:center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.4"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="1.5"/><path d="M3 17l5-4 4 3 3-2 6 4"/></svg>
+              <div style="width:48px;height:48px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;border:3px solid var(--surf);box-shadow:0 3px 12px rgba(196,168,126,.4)"><div style="width:18px;height:18px;border-radius:50%;border:2px solid #fff"></div></div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.4"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg>
             </div>
-            <div style="position:absolute;top:10px;right:10px;background:var(--surf);border-radius:100px;padding:4px 10px;font-size:10px;font-weight:600;color:var(--acc)">6 captured</div>
+            <div style="position:absolute;top:10px;right:10px;background:var(--surf);border:1px solid var(--bds);border-radius:100px;padding:3px 9px;font-size:9.5px;font-weight:500;color:var(--acc)">6 captured</div>
           </div>
-          <!-- Captured thumbnails -->
-          <div style="padding:0 20px 8px;font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)">Captured This Session</div>
+          <div style="padding:0 22px 6px;font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3)">This Session</div>
           <div class="bgrid">
-            <div class="cell iph"><span class="L">C</span><div class="chk">✓</div></div>
-            <div class="cell iph"><span class="L">H</span><div class="chk">✓</div></div>
-            <div class="cell iph"><span class="L">R</span><div class="chk">✓</div></div>
-            <div class="cell iph"><span class="L">D</span><div class="chk">✓</div></div>
-            <div class="cell iph"><span class="L">V</span><div class="chk">✓</div></div>
-            <div class="cell iph"><span class="L">B</span><div class="chk">✓</div></div>
-            <div class="cell add">+</div>
-            <div class="cell add" style="border:none;background:var(--accs);font-size:10px;color:var(--acc);font-weight:500">Gallery<br>Multi-select</div>
+            <div class="cell iph"><span class="L">C</span><div class="chk"><svg width="8" height="8" viewBox="0 0 24 24" stroke="#fff" stroke-width="3" fill="none"><path d="M5 12l5 5 9-11"/></svg></div></div>
+            <div class="cell iph"><span class="L">H</span><div class="chk"><svg width="8" height="8" viewBox="0 0 24 24" stroke="#fff" stroke-width="3" fill="none"><path d="M5 12l5 5 9-11"/></svg></div></div>
+            <div class="cell iph"><span class="L">R</span><div class="chk"><svg width="8" height="8" viewBox="0 0 24 24" stroke="#fff" stroke-width="3" fill="none"><path d="M5 12l5 5 9-11"/></svg></div></div>
+            <div class="cell iph"><span class="L">D</span><div class="chk"><svg width="8" height="8" viewBox="0 0 24 24" stroke="#fff" stroke-width="3" fill="none"><path d="M5 12l5 5 9-11"/></svg></div></div>
+            <div class="cell iph"><span class="L">V</span><div class="chk"><svg width="8" height="8" viewBox="0 0 24 24" stroke="#fff" stroke-width="3" fill="none"><path d="M5 12l5 5 9-11"/></svg></div></div>
+            <div class="cell iph"><span class="L">B</span><div class="chk"><svg width="8" height="8" viewBox="0 0 24 24" stroke="#fff" stroke-width="3" fill="none"><path d="M5 12l5 5 9-11"/></svg></div></div>
+            <div class="cell add"><svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div class="cell add" style="border:none;background:var(--accs);font-size:9px;color:var(--acc);font-weight:500;letter-spacing:.06em;text-transform:uppercase">Gallery<br>Multi</div>
           </div>
-          <div style="padding:8px 20px 24px">
-            <button class="btn fw">Analyze 6 Items with AI ✦</button>
-            <div style="text-align:center;font-size:10px;color:var(--ink3);margin-top:8px">Or skip for now — add later</div>
+          <div style="padding:8px 22px 22px">
+            <button class="btn fw acc">Analyze 6 Items with AI</button>
+            <div style="text-align:center;font-size:10px;color:var(--ink3);margin-top:8px">Or skip — add later</div>
           </div>
         </div>
         <div class="hi"></div>
@@ -274,84 +338,74 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
 
     <!-- 1c: AI Batch Results -->
     <div>
-      <div class="psub">1c — AI Batch Results · Confirm All</div>
+      <div class="pcap">1c · AI Batch Results</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
           <div class="hd">
             <div class="nr">
-              <div class="nb">←</div>
-              <div style="font-size:12px;color:var(--ink3)">Step 3 of 3</div>
-              <div style="font-size:12px;color:var(--acc);font-weight:500">Edit</div>
+              <div class="nb"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+              <div style="font-size:11px;color:var(--ink3)">Step 3 of 3</div>
+              <div style="font-size:11px;color:var(--acc);font-weight:500">Edit</div>
             </div>
-            <div class="tt" style="margin-top:14px">Confirm Your Items</div>
-            <div class="ct">AI identified 6 pieces. Tap any to edit before adding to your collection.</div>
+            <div class="tt" style="margin-top:12px">Confirm Your Items</div>
+            <div class="ct">AI identified 6 pieces. Tap any to edit before adding.</div>
           </div>
-          <!-- Results grid -->
-          <div style="padding:0 20px 12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <!-- Item 1 -->
-            <div class="card" style="padding:10px">
-              <div class="iph" style="height:80px;margin-bottom:8px"><span class="L" style="font-size:32px">C</span><span class="shine"></span></div>
-              <div style="font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Chanel</div>
+          <div style="padding:0 22px 10px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="border:var(--hl);border-radius:var(--r);padding:9px;background:var(--surf)">
+              <div class="iph" style="height:70px;margin-bottom:7px"><span class="L" style="font-size:30px">C</span></div>
+              <div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Chanel</div>
               <div class="sf" style="font-size:12px;font-weight:500;line-height:1.2">Classic Flap</div>
-              <div style="font-size:10px;color:var(--ink2);margin-top:2px">AED 42,000 · Medium</div>
-              <div style="font-size:9px;color:var(--ok);margin-top:4px">✓ 96% confident</div>
+              <div style="font-size:10px;color:var(--ink2);margin-top:1px">AED 42,000 · Medium</div>
+              <div style="font-size:9px;color:var(--ok);margin-top:3px;display:flex;align-items:center;gap:3px"><svg width="9" height="9" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M5 12l5 5 9-11"/></svg>96% confident</div>
             </div>
-            <!-- Item 2 -->
-            <div class="card" style="padding:10px">
-              <div class="iph" style="height:80px;margin-bottom:8px"><span class="L" style="font-size:32px">H</span><span class="shine"></span></div>
-              <div style="font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Hermès</div>
+            <div style="border:var(--hl);border-radius:var(--r);padding:9px;background:var(--surf)">
+              <div class="iph" style="height:70px;margin-bottom:7px"><span class="L" style="font-size:30px">H</span></div>
+              <div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Hermès</div>
               <div class="sf" style="font-size:12px;font-weight:500;line-height:1.2">Birkin 30</div>
-              <div style="font-size:10px;color:var(--ink2);margin-top:2px">AED 95,000 · Togo Gold</div>
-              <div style="font-size:9px;color:var(--ok);margin-top:4px">✓ 94% confident</div>
+              <div style="font-size:10px;color:var(--ink2);margin-top:1px">AED 95,000 · Togo Gold</div>
+              <div style="font-size:9px;color:var(--ok);margin-top:3px;display:flex;align-items:center;gap:3px"><svg width="9" height="9" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M5 12l5 5 9-11"/></svg>94% confident</div>
             </div>
-            <!-- Item 3 -->
-            <div class="card" style="padding:10px">
-              <div class="iph" style="height:80px;margin-bottom:8px"><span class="L" style="font-size:32px">R</span><span class="shine"></span></div>
-              <div style="font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Rolex</div>
+            <div style="border:var(--hl);border-radius:var(--r);padding:9px;background:var(--surf)">
+              <div class="iph" style="height:70px;margin-bottom:7px"><span class="L" style="font-size:30px">R</span></div>
+              <div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Rolex</div>
               <div class="sf" style="font-size:12px;font-weight:500;line-height:1.2">Datejust 36</div>
-              <div style="font-size:10px;color:var(--ink2);margin-top:2px">AED 38,000 · Steel</div>
-              <div style="font-size:9px;color:var(--pend);margin-top:4px">⚠ Verify model</div>
+              <div style="font-size:10px;color:var(--ink2);margin-top:1px">AED 38,000 · Steel</div>
+              <div style="font-size:9px;color:var(--pend);margin-top:3px;display:flex;align-items:center;gap:3px"><svg width="9" height="9" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 3l9 17H3z"/><path d="M12 10v4M12 17v.5"/></svg>Verify model</div>
             </div>
-            <!-- Item 4 -->
-            <div class="card" style="padding:10px">
-              <div class="iph" style="height:80px;margin-bottom:8px"><span class="L" style="font-size:32px">D</span><span class="shine"></span></div>
-              <div style="font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Dior</div>
+            <div style="border:var(--hl);border-radius:var(--r);padding:9px;background:var(--surf)">
+              <div class="iph" style="height:70px;margin-bottom:7px"><span class="L" style="font-size:30px">D</span></div>
+              <div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Dior</div>
               <div class="sf" style="font-size:12px;font-weight:500;line-height:1.2">Lady Dior</div>
-              <div style="font-size:10px;color:var(--ink2);margin-top:2px">AED 18,000 · Mini</div>
-              <div style="font-size:9px;color:var(--ok);margin-top:4px">✓ 91% confident</div>
+              <div style="font-size:10px;color:var(--ink2);margin-top:1px">AED 18,000 · Mini</div>
+              <div style="font-size:9px;color:var(--ok);margin-top:3px;display:flex;align-items:center;gap:3px"><svg width="9" height="9" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M5 12l5 5 9-11"/></svg>91% confident</div>
             </div>
-            <!-- Item 5 -->
-            <div class="card" style="padding:10px">
-              <div class="iph" style="height:80px;margin-bottom:8px"><span class="L" style="font-size:32px">V</span><span class="shine"></span></div>
-              <div style="font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Van Cleef</div>
+            <div style="border:var(--hl);border-radius:var(--r);padding:9px;background:var(--surf)">
+              <div class="iph" style="height:70px;margin-bottom:7px"><span class="L" style="font-size:30px">V</span></div>
+              <div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Van Cleef</div>
               <div class="sf" style="font-size:12px;font-weight:500;line-height:1.2">Alhambra</div>
-              <div style="font-size:10px;color:var(--ink2);margin-top:2px">AED 12,000 · Bracelet</div>
-              <div style="font-size:9px;color:var(--ok);margin-top:4px">✓ 93% confident</div>
+              <div style="font-size:10px;color:var(--ink2);margin-top:1px">AED 12,000 · Bracelet</div>
+              <div style="font-size:9px;color:var(--ok);margin-top:3px;display:flex;align-items:center;gap:3px"><svg width="9" height="9" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M5 12l5 5 9-11"/></svg>93% confident</div>
             </div>
-            <!-- Item 6 -->
-            <div class="card" style="padding:10px">
-              <div class="iph" style="height:80px;margin-bottom:8px"><span class="L" style="font-size:32px">B</span><span class="shine"></span></div>
-              <div style="font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Cartier</div>
+            <div style="border:var(--hl);border-radius:var(--r);padding:9px;background:var(--surf)">
+              <div class="iph" style="height:70px;margin-bottom:7px"><span class="L" style="font-size:30px">B</span></div>
+              <div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Cartier</div>
               <div class="sf" style="font-size:12px;font-weight:500;line-height:1.2">Love Bracelet</div>
-              <div style="font-size:10px;color:var(--ink2);margin-top:2px">AED 14,000 · Yellow Gold</div>
-              <div style="font-size:9px;color:var(--ok);margin-top:4px">✓ 97% confident</div>
+              <div style="font-size:10px;color:var(--ink2);margin-top:1px">AED 14,000 · YG</div>
+              <div style="font-size:9px;color:var(--ok);margin-top:3px;display:flex;align-items:center;gap:3px"><svg width="9" height="9" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M5 12l5 5 9-11"/></svg>97% confident</div>
             </div>
           </div>
-          <!-- Privacy defaults -->
-          <div style="margin:0 20px 14px;padding:12px;background:var(--sub);border-radius:var(--rs)">
-            <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:8px">Default Settings for All Items</div>
+          <div style="margin:0 22px 12px;padding:12px;background:var(--sub);border-radius:var(--rs);border:var(--hl)">
+            <div style="font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:8px">Default Settings · All Items</div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-              <span style="font-size:12px">Visible to circle</span>
-              <div class="toggle on"></div>
+              <span style="font-size:12px">Visible to circle</span><div class="toggle on"></div>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center">
-              <span style="font-size:12px">Available to lend</span>
-              <div class="toggle on"></div>
+              <span style="font-size:12px">Available to lend</span><div class="toggle on"></div>
             </div>
           </div>
-          <div style="padding:0 20px 24px">
-            <button class="btn fw">Add 6 Items to Collection</button>
+          <div style="padding:0 22px 22px">
+            <button class="btn fw acc">Add 6 Items to Collection</button>
           </div>
         </div>
         <div class="hi"></div>
@@ -359,18 +413,21 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
     </div>
   </div>
 </div>
-<div class="wr"></div>
+</div>
 
-<!-- ===== 2. HOME ===== -->
+<!-- ═══ 2. HOME ═══ -->
+<div class="page" style="padding-top:0">
 <div class="sec">
-  <div class="slbl"><span class="n">2</span> Home · Boutique Shelf</div>
-  <div class="stit">Your Collection at a Glance</div>
-  <p class="sdesc">Collection insights, Style of the Week, lent-item hints with nudge, one-tap return. Bottom tab bar on main screens.</p>
+  <div class="sec-head">
+    <div class="sec-num"><span class="badge">2</span><span class="label">Home · Boutique Shelf</span></div>
+    <h2>Your Collection at a Glance</h2>
+    <p class="desc">Collection value, Style of the Week, lent-item nudge, one-tap return. Featured carousel plus category rows.</p>
+  </div>
   <div class="prow">
     <div>
-      <div class="psub">2a — Home Feed</div>
+      <div class="pcap">2a · Home Feed</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="sa">
           <div class="hd">
             <div class="nr">
@@ -379,66 +436,65 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
                 <div class="tt">Your Trésor</div>
                 <div class="ct">12 items · 2 currently lent</div>
               </div>
-              <div class="nb">🔔</div>
+              <div class="nb"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M6 9a6 6 0 0112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z"/><path d="M10 21a2 2 0 004 0"/></svg></div>
             </div>
           </div>
           <!-- Collection Insights -->
-          <div style="margin:0 20px 14px;padding:14px;background:var(--grad);border-radius:var(--r);color:#fff">
-            <div style="font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;opacity:.8;margin-bottom:4px">Collection Insights</div>
-            <div class="sf" style="font-size:22px;font-weight:600">AED 245,000</div>
-            <div style="font-size:11px;opacity:.85">across 12 items · +AED 12k this quarter</div>
+          <div style="margin:0 22px 14px;padding:15px;background:var(--surf);border:var(--hl);border-radius:var(--r)">
+            <div class="kicker" style="margin-bottom:4px">Collection Insights</div>
+            <div class="sf" style="font-size:24px;font-weight:500;letter-spacing:-.01em">AED 245,000</div>
+            <div style="font-size:11px;color:var(--ink3);font-weight:300">across 12 items · +AED 12k this quarter</div>
           </div>
-          <!-- Lent hint with nudge -->
-          <div style="margin:0 20px 14px;padding:12px 14px;background:var(--sub);border-radius:var(--r);display:flex;align-items:center;gap:12px">
+          <!-- Lent nudge -->
+          <div style="margin:0 22px 14px;padding:11px 13px;background:var(--sub);border-radius:var(--r);display:flex;align-items:center;gap:11px">
             <div class="av sm">MA</div>
             <div style="flex:1">
               <div style="font-size:12px;font-weight:500">Chanel Classic Flap</div>
-              <div style="font-size:10px;color:var(--ink3)">Still with Mona A. — 2 weeks</div>
+              <div style="font-size:10px;color:var(--ink3)">Still with Mona A. — two weeks</div>
             </div>
-            <button class="btn sm ghost" style="padding:6px 12px;font-size:11px">Nudge</button>
+            <button class="btn sm ghost">Nudge</button>
           </div>
           <!-- Style of the Week -->
-          <div style="margin:0 20px 18px;padding:14px;background:var(--surf);border-radius:var(--r);box-shadow:var(--sh)">
-            <div style="font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-bottom:8px">✦ Style of the Week</div>
+          <div style="margin:0 22px 16px;padding:14px;background:var(--surf);border:var(--hl);border-radius:var(--r)">
+            <div class="kicker" style="margin-bottom:8px">Style of the Week</div>
             <div style="display:flex;gap:12px;align-items:center">
-              <div class="iph" style="width:64px;height:64px;border-radius:var(--rs)"><span class="L" style="font-size:26px">D</span></div>
+              <div class="iph" style="width:58px;height:58px;border-radius:var(--rs)"><span class="L" style="font-size:24px">D</span></div>
               <div style="flex:1">
-                <div style="font-size:11px;color:var(--ink2)">This week's sleeping beauty:</div>
-                <div class="sf" style="font-size:14px;font-weight:500">Mona's Dior Lady Dior</div>
-                <div style="font-size:10px;color:var(--ink3)">Untouched for 47 days · Style it?</div>
+                <div style="font-size:11px;color:var(--ink2);font-weight:300">This week's sleeping beauty</div>
+                <div class="sf" style="font-size:14px;font-weight:500;margin-top:1px">Mona's Dior Lady Dior</div>
+                <div style="font-size:10px;color:var(--ink3);margin-top:2px">Untouched for 47 days · Style it?</div>
               </div>
             </div>
           </div>
-          <!-- Featured carousel -->
-          <div style="padding:0 20px 8px;font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)">Recently Added</div>
+          <div style="padding:0 22px 6px;font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3)">Recently Added</div>
           <div class="fc">
             <div class="fcc">
-              <div class="iph ph"><span class="L">C</span><span class="shine"></span></div>
+              <div class="iph ph"><span class="L">C</span></div>
               <div class="inf"><div class="br">Chanel</div><div class="nm">Classic Flap</div><div class="pr">AED 42,000</div></div>
               <div class="stag"><span class="badge lent"><span class="dt"></span>Lent</span></div>
             </div>
             <div class="fcc">
-              <div class="iph ph"><span class="L">H</span><span class="shine"></span></div>
+              <div class="iph ph"><span class="L">H</span></div>
               <div class="inf"><div class="br">Hermès</div><div class="nm">Birkin 30</div><div class="pr">AED 95,000</div></div>
               <div class="stag"><span class="badge ok"><span class="dt"></span>Available</span></div>
             </div>
             <div class="fcc">
-              <div class="iph ph"><span class="L">R</span><span class="shine"></span></div>
+              <div class="iph ph"><span class="L">R</span></div>
               <div class="inf"><div class="br">Rolex</div><div class="nm">Datejust 36</div><div class="pr">AED 38,000</div></div>
               <div class="stag"><span class="badge ok"><span class="dt"></span>Available</span></div>
             </div>
           </div>
-          <!-- Shelf: Bags -->
+          <!-- Bags shelf -->
           <div class="shf">
             <div class="shfh"><span class="nm">Bags</span><span class="ct">5 items</span></div>
             <div class="shfr">
               <div class="smc"><div class="iph ph"><span class="L">C</span><div class="sdot" style="background:var(--accw)"></div></div><div class="br">Chanel</div><div class="in">Classic Flap</div><div class="pr">AED 42k</div></div>
               <div class="smc"><div class="iph ph"><span class="L">H</span><div class="sdot" style="background:var(--ok)"></div></div><div class="br">Hermès</div><div class="in">Birkin 30</div><div class="pr">AED 95k</div></div>
               <div class="smc"><div class="iph ph"><span class="L">D</span><div class="sdot" style="background:var(--ok)"></div></div><div class="br">Dior</div><div class="in">Lady Dior</div><div class="pr">AED 18k</div></div>
-              <div class="smc"><div class="iph ph"><span class="L">🔒</span></div><div class="br">Private</div><div class="in">Hidden item</div><div class="pr" style="color:var(--ink3)">—</div></div>
+              <div class="smc"><div class="iph ph" style="background:var(--sub)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.4" style="opacity:.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div><div class="br" style="color:var(--ink3)">Private</div><div class="in" style="color:var(--ink3)">Hidden item</div><div class="pr" style="color:var(--ink3)">—</div></div>
             </div>
           </div>
-          <!-- Shelf: Watches -->
+          <!-- Watches shelf -->
           <div class="shf">
             <div class="shfh"><span class="nm">Watches</span><span class="ct">2 items</span></div>
             <div class="shfr">
@@ -447,58 +503,62 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
             </div>
           </div>
         </div>
-        <!-- Tab bar -->
         <div class="tb">
-          <div class="ti act"><span class="ic">⌂</span>Home</div>
-          <div class="ti"><span class="ic">♡</span>Wishlist</div>
-          <div class="ta">+</div>
-          <div class="ti"><span class="ic">◉</span>Circle</div>
-          <div class="ti"><span class="ic">☺</span>Profile</div>
+          <div class="ti act"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg><span>Home</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg><span>Wishlist</span></div>
+          <div class="ta"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg><span>Circle</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg><span>Profile</span></div>
         </div>
         <div class="hi"></div>
       </div></div>
     </div>
   </div>
 </div>
-<div class="wr"></div>
+</div>
 
-<!-- ===== 3. ITEM DETAIL ===== -->
+<!-- ═══ 3. ITEM DETAIL ═══ -->
+<div class="page" style="padding-top:0">
 <div class="sec">
-  <div class="slbl"><span class="n">3</span> Item Detail · Privacy &amp; Lendability</div>
-  <div class="stit">Controls for Visibility and Lending</div>
-  <p class="sdesc">Visibility toggle (circle vs private), lendable toggle, lock icon on private cards, "not for lending" tag. Status badge: "Currently with Mona A." — no dates.</p>
+  <div class="sec-head">
+    <div class="sec-num"><span class="badge">3</span><span class="label">Item Detail · Privacy &amp; Lending</span></div>
+    <h2>Controls for Visibility and Lending</h2>
+    <p class="desc">Visibility toggle, lendable toggle, lock icon on private cards, "not for lending" tag. Status reads "Currently with Mona A." — no dates.</p>
+  </div>
   <div class="prow">
-    <!-- 3a: Available item -->
+
+    <!-- 3a: Available -->
     <div>
-      <div class="psub">3a — Available · Lendable</div>
+      <div class="pcap">3a · Available · Lendable</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
-          <div class="hd">
-            <div class="nr"><div class="nb">←</div><div style="font-size:12px;color:var(--ink3)">Bags</div><div class="nb">♡</div></div>
-          </div>
-          <div class="iph" style="height:200px;margin:0 20px 16px;border-radius:var(--r)"><span class="L" style="font-size:80px">C</span><span class="shine"></span></div>
-          <div style="padding:0 20px">
-            <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Chanel</div>
-            <div class="sf" style="font-size:24px;font-weight:500;margin:2px 0 6px">Classic Flap</div>
-            <div style="display:flex;gap:8px;margin-bottom:14px">
+          <div class="hd"><div class="nr">
+            <div class="nb"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div style="font-size:11px;color:var(--ink3)">Bags</div>
+            <div class="nb"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg></div>
+          </div></div>
+          <div class="iph" style="height:180px;margin:0 22px 14px;border-radius:var(--r)"><span class="L" style="font-size:72px">C</span></div>
+          <div style="padding:0 22px">
+            <div class="kicker">Chanel</div>
+            <div class="sf" style="font-size:22px;font-weight:500;margin:2px 0 8px;letter-spacing:-.01em">Classic Flap</div>
+            <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
               <span class="badge ok"><span class="dt"></span>Available</span>
               <span class="badge ok">Available to lend</span>
             </div>
-            <div style="font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:16px">Medium · Caviar &amp; Gold Hardware · Purchased 2023 · AED 42,000</div>
-            <!-- Privacy & Lendability -->
-            <div style="background:var(--sub);border-radius:var(--rs);padding:14px;margin-bottom:14px">
-              <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px">Visibility &amp; Lending</div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <div><div style="font-size:12px;font-weight:500">Visible to circle</div><div style="font-size:10px;color:var(--ink3)">Friends can see this item</div></div>
+            <div style="font-size:12.5px;color:var(--ink2);line-height:1.6;margin-bottom:14px">Medium · Caviar &amp; Gold Hardware · Purchased 2023 · AED 42,000</div>
+            <div style="background:var(--sub);border:var(--hl);border-radius:var(--rs);padding:13px;margin-bottom:14px">
+              <div class="kicker" style="margin-bottom:10px">Visibility &amp; Lending</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px">
+                <div><div style="font-size:12px;font-weight:500">Visible to circle</div><div style="font-size:10px;color:var(--ink3);font-weight:300">Friends can see this item</div></div>
                 <div class="toggle on"></div>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center">
-                <div><div style="font-size:12px;font-weight:500">Available to lend</div><div style="font-size:10px;color:var(--ink3)">Friends can request to borrow</div></div>
+                <div><div style="font-size:12px;font-weight:500">Available to lend</div><div style="font-size:10px;color:var(--ink3);font-weight:300">Friends can request to borrow</div></div>
                 <div class="toggle on"></div>
               </div>
             </div>
-            <button class="btn fw" style="margin-bottom:12px">Edit Item</button>
+            <button class="btn fw" style="margin-bottom:20px">Edit Item</button>
           </div>
         </div>
         <div class="hi"></div>
@@ -507,30 +567,32 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
 
     <!-- 3b: Private + Not for lending -->
     <div>
-      <div class="psub">3b — Private · Not for Lending</div>
+      <div class="pcap">3b · Private · Not for Lending</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
-          <div class="hd">
-            <div class="nr"><div class="nb">←</div><div style="font-size:12px;color:var(--ink3)">Bags</div><div class="nb">♡</div></div>
-          </div>
-          <div class="iph" style="height:200px;margin:0 20px 16px;border-radius:var(--r);position:relative"><span class="L" style="font-size:80px">H</span><span class="shine"></span><div style="position:absolute;top:12px;right:12px;background:var(--surf);border-radius:100px;padding:5px 12px;font-size:11px;display:flex;align-items:center;gap:5px;color:var(--ink2)">🔒 Private</div></div>
-          <div style="padding:0 20px">
-            <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Hermès</div>
-            <div class="sf" style="font-size:24px;font-weight:500;margin:2px 0 6px">Birkin 30</div>
-            <div style="display:flex;gap:8px;margin-bottom:14px">
-              <span class="badge priv">🔒 Private</span>
+          <div class="hd"><div class="nr">
+            <div class="nb"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div style="font-size:11px;color:var(--ink3)">Bags</div>
+            <div class="nb"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg></div>
+          </div></div>
+          <div class="iph" style="height:180px;margin:0 22px 14px;border-radius:var(--r);position:relative"><span class="L" style="font-size:72px">H</span><div style="position:absolute;top:11px;right:11px;background:var(--surf);border:var(--hl);border-radius:100px;padding:4px 11px;font-size:10px;display:flex;align-items:center;gap:5px;color:var(--ink2)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Private</div></div>
+          <div style="padding:0 22px">
+            <div class="kicker">Hermès</div>
+            <div class="sf" style="font-size:22px;font-weight:500;margin:2px 0 8px;letter-spacing:-.01em">Birkin 30</div>
+            <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+              <span class="badge priv"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Private</span>
               <span class="badge nolend">Not for lending</span>
             </div>
-            <div style="font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:16px">Togo Gold · PHW · Purchased 2022 · AED 95,000</div>
-            <div style="background:var(--sub);border-radius:var(--rs);padding:14px;margin-bottom:14px">
-              <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:10px">Visibility &amp; Lending</div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <div><div style="font-size:12px;font-weight:500">🔒 Private</div><div style="font-size:10px;color:var(--ink3)">Only you can see this item</div></div>
+            <div style="font-size:12.5px;color:var(--ink2);line-height:1.6;margin-bottom:14px">Togo Gold · PHW · Purchased 2022 · AED 95,000</div>
+            <div style="background:var(--sub);border:var(--hl);border-radius:var(--rs);padding:13px;margin-bottom:14px">
+              <div class="kicker" style="margin-bottom:10px">Visibility &amp; Lending</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:11px">
+                <div><div style="font-size:12px;font-weight:500">Private</div><div style="font-size:10px;color:var(--ink3);font-weight:300">Only you can see this item</div></div>
                 <div class="toggle"></div>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center">
-                <div><div style="font-size:12px;font-weight:500">Not for lending</div><div style="font-size:10px;color:var(--ink3)">Hidden from borrow requests</div></div>
+                <div><div style="font-size:12px;font-weight:500">Not for lending</div><div style="font-size:10px;color:var(--ink3);font-weight:300">Hidden from borrow requests</div></div>
                 <div class="toggle"></div>
               </div>
             </div>
@@ -543,29 +605,30 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
 
     <!-- 3c: Lent out -->
     <div>
-      <div class="psub">3c — Currently Lent</div>
+      <div class="pcap">3c · Currently Lent</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
-          <div class="hd">
-            <div class="nr"><div class="nb">←</div><div style="font-size:12px;color:var(--ink3)">Bags</div><div class="nb">♡</div></div>
-          </div>
-          <div class="iph" style="height:200px;margin:0 20px 16px;border-radius:var(--r)"><span class="L" style="font-size:80px">C</span><span class="shine"></span></div>
-          <div style="padding:0 20px">
-            <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Chanel</div>
-            <div class="sf" style="font-size:24px;font-weight:500;margin:2px 0 6px">Classic Flap</div>
-            <div style="display:flex;gap:8px;margin-bottom:14px">
+          <div class="hd"><div class="nr">
+            <div class="nb"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div>
+            <div style="font-size:11px;color:var(--ink3)">Bags</div>
+            <div class="nb"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg></div>
+          </div></div>
+          <div class="iph" style="height:180px;margin:0 22px 14px;border-radius:var(--r)"><span class="L" style="font-size:72px">C</span></div>
+          <div style="padding:0 22px">
+            <div class="kicker">Chanel</div>
+            <div class="sf" style="font-size:22px;font-weight:500;margin:2px 0 8px;letter-spacing:-.01em">Classic Flap</div>
+            <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
               <span class="badge lent"><span class="dt"></span>Currently with Mona A.</span>
             </div>
-            <!-- Borrower info -->
-            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--sub);border-radius:var(--rs);margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:11px;padding:11px;background:var(--sub);border:var(--hl);border-radius:var(--rs);margin-bottom:14px">
               <div class="av">MA</div>
               <div style="flex:1">
                 <div style="font-size:12px;font-weight:500">With Mona A.</div>
-                <div style="font-size:10px;color:var(--ink3)">2 weeks · No due date</div>
+                <div style="font-size:10px;color:var(--ink3);font-weight:300">Two weeks · No due date</div>
               </div>
             </div>
-            <button class="btn fw" style="margin-bottom:10px">Mark Returned</button>
+            <button class="btn fw acc" style="margin-bottom:9px">Mark Returned</button>
             <button class="btn fw out">Nudge Mona</button>
           </div>
         </div>
@@ -574,111 +637,110 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
     </div>
   </div>
 </div>
-<div class="wr"></div>
+</div>
 
-<!-- ===== 4. CIRCLE ===== -->
+<!-- ═══ 4. CIRCLE ═══ -->
+<div class="page" style="padding-top:0">
 <div class="sec">
-  <div class="slbl"><span class="n">4</span> Circle · Members &amp; Filter</div>
-  <div class="stit">Your Trusted Circle</div>
-  <p class="sdesc">"Only show lendable" filter. Browse friends' collections, see who's most generous.</p>
+  <div class="sec-head">
+    <div class="sec-num"><span class="badge">4</span><span class="label">Circle · Members &amp; Filter</span></div>
+    <h2>Your Trusted Circle</h2>
+    <p class="desc">"Only show lendable" filter. Browse friends' collections, see who's most generous.</p>
+  </div>
   <div class="prow">
     <div>
-      <div class="psub">4a — Circle Members</div>
+      <div class="pcap">4a · Circle Members</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="sa">
           <div class="hd">
-            <div class="nr">
-              <div class="tt">Circle</div>
-              <div class="nb">+</div>
-            </div>
+            <div class="nr"><div class="tt">Circle</div><div class="nb"><svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="1.5" fill="none"><path d="M12 5v14M5 12h14"/></svg></div></div>
             <div class="ct">5 members · 47 items shared</div>
           </div>
-          <!-- Filter -->
-          <div style="padding:0 20px 14px;display:flex;gap:8px;flex-wrap:wrap">
-            <div style="padding:6px 14px;border-radius:100px;background:var(--grad);color:#fff;font-size:11px;font-weight:500">Only show lendable</div>
-            <div style="padding:6px 14px;border-radius:100px;background:var(--sub);color:var(--ink2);font-size:11px">All items</div>
-            <div style="padding:6px 14px;border-radius:100px;background:var(--sub);color:var(--ink2);font-size:11px">Available now</div>
+          <div style="padding:0 22px 12px;display:flex;gap:7px;flex-wrap:wrap">
+            <div style="padding:5px 12px;border-radius:100px;background:var(--ink);color:var(--bg);font-size:10.5px;font-weight:500">Only show lendable</div>
+            <div style="padding:5px 12px;border-radius:100px;background:var(--sub);color:var(--ink2);font-size:10.5px;border:1px solid var(--bds)">All items</div>
+            <div style="padding:5px 12px;border-radius:100px;background:var(--sub);color:var(--ink2);font-size:10.5px;border:1px solid var(--bds)">Available now</div>
           </div>
-          <!-- Stats -->
-          <div style="display:flex;gap:10px;padding:0 20px 16px">
-            <div style="flex:1;background:var(--sub);border-radius:var(--rs);padding:12px;text-align:center">
-              <div class="sf" style="font-size:22px;font-weight:600">47</div>
-              <div style="font-size:9px;color:var(--ink3);letter-spacing:.05em">Lendable items</div>
+          <div style="display:flex;gap:9px;padding:0 22px 14px">
+            <div style="flex:1;background:var(--sub);border:var(--hl);border-radius:var(--rs);padding:11px;text-align:center">
+              <div class="sf" style="font-size:20px;font-weight:500">47</div>
+              <div style="font-size:9px;color:var(--ink3);letter-spacing:.04em;margin-top:1px">Lendable items</div>
             </div>
-            <div style="flex:1;background:var(--sub);border-radius:var(--rs);padding:12px;text-align:center">
-              <div class="sf" style="font-size:22px;font-weight:600">8</div>
-              <div style="font-size:9px;color:var(--ink3);letter-spacing:.05em">Active borrows</div>
+            <div style="flex:1;background:var(--sub);border:var(--hl);border-radius:var(--rs);padding:11px;text-align:center">
+              <div class="sf" style="font-size:20px;font-weight:500">8</div>
+              <div style="font-size:9px;color:var(--ink3);letter-spacing:.04em;margin-top:1px">Active borrows</div>
             </div>
           </div>
-          <!-- Members -->
-          <div style="padding:0 20px">
-            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bds)">
-              <div class="av lg" style="position:relative">MA<div style="position:absolute;bottom:0;right:0;width:11px;height:11px;border-radius:50%;background:var(--ok);border:2px solid var(--surf)"></div></div>
-              <div style="flex:1"><div style="font-size:14px;font-weight:500">Mona A.</div><div style="font-size:11px;color:var(--ink3)">14 items · 3 currently lent out</div><div style="font-size:10px;color:var(--acc);font-weight:500;margin-top:1px">Most generous this season</div></div>
-              <div style="font-size:16px;color:var(--ink3)">›</div>
+          <div style="padding:0 22px">
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:var(--hl)">
+              <div class="av lg" style="position:relative">MA<div style="position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:var(--ok);border:2px solid var(--surf)"></div></div>
+              <div style="flex:1"><div style="font-size:13px;font-weight:500">Mona A.</div><div style="font-size:10.5px;color:var(--ink3);font-weight:300">14 items · 3 currently lent out</div><div style="font-size:10px;color:var(--acc);font-weight:500;margin-top:1px">Most generous this season</div></div>
+              <svg width="12" height="12" viewBox="0 0 24 24" stroke="var(--ink3)" stroke-width="1.5" fill="none"><path d="M9 6l6 6-6 6"/></svg>
             </div>
-            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bds)">
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:var(--hl)">
               <div class="av lg">AK</div>
-              <div style="flex:1"><div style="font-size:14px;font-weight:500">Aisha K.</div><div style="font-size:11px;color:var(--ink3)">9 items · 2 available</div></div>
-              <div style="font-size:16px;color:var(--ink3)">›</div>
+              <div style="flex:1"><div style="font-size:13px;font-weight:500">Aisha K.</div><div style="font-size:10.5px;color:var(--ink3);font-weight:300">9 items · 2 available</div></div>
+              <svg width="12" height="12" viewBox="0 0 24 24" stroke="var(--ink3)" stroke-width="1.5" fill="none"><path d="M9 6l6 6-6 6"/></svg>
             </div>
-            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bds)">
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:var(--hl)">
               <div class="av lg">FR</div>
-              <div style="flex:1"><div style="font-size:14px;font-weight:500">Fatima R.</div><div style="font-size:11px;color:var(--ink3)">11 items · 1 lent to you</div></div>
-              <div style="font-size:16px;color:var(--ink3)">›</div>
+              <div style="flex:1"><div style="font-size:13px;font-weight:500">Fatima R.</div><div style="font-size:10.5px;color:var(--ink3);font-weight:300">11 items · 1 lent to you</div></div>
+              <svg width="12" height="12" viewBox="0 0 24 24" stroke="var(--ink3)" stroke-width="1.5" fill="none"><path d="M9 6l6 6-6 6"/></svg>
             </div>
-            <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bds)">
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:var(--hl)">
               <div class="av lg">LS</div>
-              <div style="flex:1"><div style="font-size:14px;font-weight:500">Layla S.</div><div style="font-size:11px;color:var(--ink3)">8 items · all available</div></div>
-              <div style="font-size:16px;color:var(--ink3)">›</div>
+              <div style="flex:1"><div style="font-size:13px;font-weight:500">Layla S.</div><div style="font-size:10.5px;color:var(--ink3);font-weight:300">8 items · all available</div></div>
+              <svg width="12" height="12" viewBox="0 0 24 24" stroke="var(--ink3)" stroke-width="1.5" fill="none"><path d="M9 6l6 6-6 6"/></svg>
             </div>
-            <div style="display:flex;align-items:center;gap:12px;padding:12px 0">
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 0">
               <div class="av lg">SM</div>
-              <div style="flex:1"><div style="font-size:14px;font-weight:500">Sarah M. (you)</div><div style="font-size:11px;color:var(--ink3)">12 items · 2 lent out</div></div>
-              <div style="font-size:16px;color:var(--ink3)">›</div>
+              <div style="flex:1"><div style="font-size:13px;font-weight:500">Sarah M. (you)</div><div style="font-size:10.5px;color:var(--ink3);font-weight:300">12 items · 2 lent out</div></div>
             </div>
           </div>
         </div>
         <div class="tb">
-          <div class="ti"><span class="ic">⌂</span>Home</div>
-          <div class="ti"><span class="ic">♡</span>Wishlist</div>
-          <div class="ta">+</div>
-          <div class="ti act"><span class="ic">◉</span>Circle</div>
-          <div class="ti"><span class="ic">☺</span>Profile</div>
+          <div class="ti"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg><span>Home</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg><span>Wishlist</span></div>
+          <div class="ta"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div class="ti act"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg><span>Circle</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg><span>Profile</span></div>
         </div>
         <div class="hi"></div>
       </div></div>
     </div>
   </div>
 </div>
-<div class="wr"></div>
+</div>
 
-<!-- ===== 5. BORROW FLOW (NO DATES) ===== -->
+<!-- ═══ 5. BORROW FLOW ═══ -->
+<div class="page" style="padding-top:0">
 <div class="sec">
-  <div class="slbl"><span class="n">5</span> Borrow Flow · No Dates</div>
-  <div class="stit">Request → Accept → With [Person] → Return</div>
-  <p class="sdesc">No date pickers, due dates, or countdowns. Simple status: "Currently with Mona A." Either party marks returned. One-tap confirmation.</p>
+  <div class="sec-head">
+    <div class="sec-num"><span class="badge">5</span><span class="label">Borrow Flow · No Dates</span></div>
+    <h2>Request → Accept → With [Person] → Return</h2>
+    <p class="desc">No date pickers, due dates, or countdowns. Simple status: "Currently with Mona A." Either party marks returned.</p>
+  </div>
   <div class="prow">
+
     <!-- 5a: Request -->
     <div>
-      <div class="psub">5a — Request to Borrow</div>
+      <div class="pcap">5a · Request to Borrow</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
-          <div class="hd"><div class="nr"><div class="nb">←</div><div style="font-size:12px;color:var(--ink3)">Borrow</div><div></div></div></div>
-          <div style="text-align:center;padding:10px 20px 20px">
-            <div class="iph" style="width:120px;height:120px;border-radius:var(--r);margin:0 auto 16px"><span class="L" style="font-size:48px">C</span></div>
-            <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Chanel</div>
-            <div class="sf" style="font-size:20px;font-weight:500;margin:2px 0 14px">Classic Flap</div>
-            <div style="font-size:13px;color:var(--ink2);margin-bottom:20px">Ask Sarah to borrow the Chanel Classic Flap</div>
-            <!-- Note field -->
-            <div style="text-align:left;margin-bottom:20px">
-              <div style="font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:8px">Note (optional)</div>
-              <textarea class="field" rows="3" placeholder="Add a message...">Hi Sarah! Would love to borrow this for a wedding next weekend 🤍</textarea>
+          <div class="hd"><div class="nr"><div class="nb"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div><div style="font-size:11px;color:var(--ink3)">Borrow</div><div></div></div></div>
+          <div style="text-align:center;padding:8px 22px 18px">
+            <div class="iph" style="width:110px;height:110px;border-radius:var(--r);margin:0 auto 14px"><span class="L" style="font-size:44px">C</span></div>
+            <div class="kicker">Chanel</div>
+            <div class="sf" style="font-size:19px;font-weight:500;margin:2px 0 12px">Classic Flap</div>
+            <div style="font-size:12.5px;color:var(--ink2);margin-bottom:18px;line-height:1.5">Ask Sarah to borrow the Chanel Classic Flap</div>
+            <div style="text-align:left;margin-bottom:18px">
+              <span class="flbl">Note (optional)</span>
+              <textarea class="field" rows="3" placeholder="Add a message...">Hi Sarah — would love to borrow this for a wedding next weekend.</textarea>
             </div>
-            <button class="btn fw">Send Request</button>
-            <div style="font-size:10px;color:var(--ink3);margin-top:10px">No due date — return when ready</div>
+            <button class="btn fw acc">Send Request</button>
+            <div style="font-size:10px;color:var(--ink3);margin-top:9px;font-weight:300">No due date — return when ready</div>
           </div>
         </div>
         <div class="hi"></div>
@@ -687,25 +749,25 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
 
     <!-- 5b: Owner Accepts -->
     <div>
-      <div class="psub">5b — Owner Accepts (Push)</div>
+      <div class="pcap">5b · Owner Accepts</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
-          <div class="hd"><div class="nr"><div class="nb">←</div><div style="font-size:12px;color:var(--ink3)">Requests</div><div></div></div></div>
-          <div style="padding:10px 20px">
-            <div style="font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:12px">Incoming Request</div>
-            <div class="card" style="margin-bottom:16px">
-              <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div class="hd"><div class="nr"><div class="nb"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div><div style="font-size:11px;color:var(--ink3)">Requests</div><div></div></div></div>
+          <div style="padding:8px 22px">
+            <div class="kicker" style="margin-bottom:11px">Incoming Request</div>
+            <div class="card">
+              <div style="display:flex;align-items:center;gap:11px;margin-bottom:11px">
                 <div class="av">MA</div>
-                <div><div style="font-size:13px;font-weight:500">Mona A. wants to borrow</div><div style="font-size:10px;color:var(--ink3)">2 minutes ago</div></div>
+                <div><div style="font-size:12.5px;font-weight:500">Mona A. wants to borrow</div><div style="font-size:10px;color:var(--ink3);font-weight:300">2 minutes ago</div></div>
               </div>
-              <div style="display:flex;gap:10px;padding:10px;background:var(--sub);border-radius:var(--rs);margin-bottom:12px">
-                <div class="iph" style="width:44px;height:44px;border-radius:var(--rx)"><span class="L" style="font-size:18px">C</span></div>
+              <div style="display:flex;gap:9px;padding:9px;background:var(--sub);border-radius:var(--rs);margin-bottom:11px">
+                <div class="iph" style="width:40px;height:40px;border-radius:var(--rx)"><span class="L" style="font-size:16px">C</span></div>
                 <div><div style="font-size:11px;font-weight:500">Chanel Classic Flap</div><div style="font-size:9px;color:var(--ink3)">Chanel · AED 42,000</div></div>
               </div>
-              <div style="font-size:12px;color:var(--ink2);line-height:1.5;padding:10px;background:var(--sub);border-radius:var(--rs);margin-bottom:14px;font-style:italic">"Hi Sarah! Would love to borrow this for a wedding next weekend 🤍"</div>
-              <div style="display:flex;gap:10px">
-                <button class="btn fw" style="flex:1">Accept</button>
+              <div style="font-size:11.5px;color:var(--ink2);line-height:1.5;padding:9px;background:var(--sub);border-radius:var(--rs);margin-bottom:13px;font-style:italic">"Hi Sarah — would love to borrow this for a wedding next weekend."</div>
+              <div style="display:flex;gap:9px">
+                <button class="btn fw acc" style="flex:1">Accept</button>
                 <button class="btn fw out" style="flex:1">Decline</button>
               </div>
             </div>
@@ -717,21 +779,21 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
 
     <!-- 5c: Item Out -->
     <div>
-      <div class="psub">5c — Item Out · Mark Returned</div>
+      <div class="pcap">5c · Item Out · Mark Returned</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
-          <div class="hd"><div class="nr"><div class="nb">←</div><div style="font-size:12px;color:var(--ink3)">Lent Out</div><div></div></div></div>
-          <div style="padding:10px 20px;text-align:center">
-            <div class="iph" style="width:120px;height:120px;border-radius:var(--r);margin:0 auto 14px;position:relative">
-              <span class="L" style="font-size:48px">C</span>
-              <div style="position:absolute;bottom:-6px;right:-6px;width:32px;height:32px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;border:2px solid var(--bg)">MA</div>
+          <div class="hd"><div class="nr"><div class="nb"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></div><div style="font-size:11px;color:var(--ink3)">Lent Out</div><div></div></div></div>
+          <div style="padding:8px 22px;text-align:center">
+            <div class="iph" style="width:110px;height:110px;border-radius:var(--r);margin:0 auto 13px;position:relative">
+              <span class="L" style="font-size:44px">C</span>
+              <div style="position:absolute;bottom:-6px;right:-6px;width:30px;height:30px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;border:2px solid var(--bg)">MA</div>
             </div>
-            <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Chanel</div>
-            <div class="sf" style="font-size:20px;font-weight:500;margin:2px 0 10px">Classic Flap</div>
-            <div style="display:inline-block;padding:6px 14px;background:var(--accs);border-radius:100px;font-size:12px;color:var(--acc);font-weight:500;margin-bottom:16px">Currently with Mona A.</div>
-            <div style="font-size:12px;color:var(--ink2);margin-bottom:20px">2 weeks · No due date · Return when ready</div>
-            <button class="btn fw" style="margin-bottom:10px">Mark Returned</button>
+            <div class="kicker">Chanel</div>
+            <div class="sf" style="font-size:19px;font-weight:500;margin:2px 0 9px">Classic Flap</div>
+            <div style="display:inline-block;padding:5px 13px;background:var(--accs);border-radius:100px;font-size:11.5px;color:var(--acc);font-weight:500;margin-bottom:14px">Currently with Mona A.</div>
+            <div style="font-size:12px;color:var(--ink2);margin-bottom:18px;font-weight:300">Two weeks · No due date · Return when ready</div>
+            <button class="btn fw acc" style="margin-bottom:9px">Mark Returned</button>
             <button class="btn fw out">Nudge Mona</button>
           </div>
         </div>
@@ -741,18 +803,18 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
 
     <!-- 5d: Return Confirmed -->
     <div>
-      <div class="psub">5d — Return Confirmation</div>
+      <div class="pcap">5d · Return Confirmation</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
-        <div class="saf" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 28px">
-          <div style="width:72px;height:72px;border-radius:50%;background:var(--ok);display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;margin-bottom:20px">✓</div>
-          <div class="sf" style="font-size:22px;font-weight:500;text-align:center;margin-bottom:8px">Mark Returned?</div>
-          <div style="font-size:13px;color:var(--ink2);text-align:center;margin-bottom:24px">Mona A. says the Chanel Classic Flap is back with you. Confirm received?</div>
-          <div style="display:flex;gap:10px;align-items:center;padding:12px;background:var(--sub);border-radius:var(--rs);margin-bottom:24px;width:100%">
-            <div class="iph" style="width:44px;height:44px;border-radius:var(--rx)"><span class="L" style="font-size:18px">C</span></div>
-            <div><div style="font-size:12px;font-weight:500">Chanel Classic Flap</div><div style="font-size:10px;color:var(--ink3)">From Mona A.</div></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
+        <div class="saf" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:32px 26px">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--ok);display:flex;align-items:center;justify-content:center;margin-bottom:18px"><svg width="28" height="28" viewBox="0 0 24 24" stroke="#fff" stroke-width="2.5" fill="none"><path d="M5 12l5 5 9-11"/></svg></div>
+          <div class="sf" style="font-size:21px;font-weight:500;text-align:center;margin-bottom:7px;letter-spacing:-.01em">Mark Returned?</div>
+          <div style="font-size:12.5px;color:var(--ink2);text-align:center;margin-bottom:22px;line-height:1.5">Mona A. says the Chanel Classic Flap is back with you. Confirm received?</div>
+          <div style="display:flex;gap:9px;align-items:center;padding:11px;background:var(--sub);border:var(--hl);border-radius:var(--rs);margin-bottom:20px;width:100%">
+            <div class="iph" style="width:40px;height:40px;border-radius:var(--rx)"><span class="L" style="font-size:16px">C</span></div>
+            <div><div style="font-size:11.5px;font-weight:500">Chanel Classic Flap</div><div style="font-size:10px;color:var(--ink3)">From Mona A.</div></div>
           </div>
-          <button class="btn fw" style="margin-bottom:10px">Confirm Received</button>
+          <button class="btn fw acc" style="margin-bottom:9px">Confirm Received</button>
           <button class="btn fw out">Not Yet</button>
         </div>
         <div class="hi"></div>
@@ -760,82 +822,84 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
     </div>
   </div>
 </div>
-<div class="wr"></div>
+</div>
 
-<!-- ===== 6. ACTIVITY FEED ===== -->
+<!-- ═══ 6. ACTIVITY FEED ═══ -->
+<div class="page" style="padding-top:0">
 <div class="sec">
-  <div class="slbl"><span class="n">6</span> Activity Feed · Social &amp; Engagement</div>
-  <div class="stit">Returns, Wishlist Hints, "Who Wore It Best"</div>
-  <p class="sdesc">One-tap "Mark returned?" in feed items. Wishlist "Drop hint" posts. "Seen at" tags from friends. "Who wore it best" vote cards. Reactions and comments.</p>
+  <div class="sec-head">
+    <div class="sec-num"><span class="badge">6</span><span class="label">Activity Feed · Social &amp; Engagement</span></div>
+    <h2>Returns, Wishlist Hints, Who Wore It Best</h2>
+    <p class="desc">One-tap "Mark returned?" in feed. Wishlist "Drop hint" posts. "Seen at" tags from friends. "Who wore it best" vote cards.</p>
+  </div>
   <div class="prow">
     <div>
-      <div class="psub">6a — Circle Activity Feed</div>
+      <div class="pcap">6a · Circle Activity Feed</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="sa">
           <div class="hd"><div class="tt">Activity</div><div class="ct">The Atelier Circle · Live</div></div>
           <div class="feed">
-            <!-- Borrow request -->
+            <!-- borrow request -->
             <div class="fpost">
               <div class="top"><div class="av sm">MA</div><div><div class="nm">Mona A.</div><div class="tm">requested to borrow · 5m</div></div></div>
               <div class="body">Mona wants to borrow your <em>Chanel Classic Flap</em></div>
-              <div class="mini"><div class="iph ph"><span class="L" style="font-size:20px">C</span></div><div><div class="mn">Chanel Classic Flap</div><div class="mb">AED 42,000</div></div></div>
-              <div style="display:flex;gap:8px"><button class="btn sm" style="flex:1">Accept</button><button class="btn sm out" style="flex:1">Decline</button></div>
+              <div class="mini"><div class="iph ph"><span class="L" style="font-size:18px">C</span></div><div><div class="mn">Chanel Classic Flap</div><div class="mb">AED 42,000</div></div></div>
+              <div style="display:flex;gap:8px"><button class="btn sm acc" style="flex:1">Accept</button><button class="btn sm out" style="flex:1">Decline</button></div>
             </div>
-            <!-- Mark returned in feed -->
+            <!-- returned -->
             <div class="fpost">
               <div class="top"><div class="av sm">AK</div><div><div class="nm">Aisha K.</div><div class="tm">marked an item returned · 1h</div></div></div>
               <div class="body">Aisha returned the <em>Van Cleef Alhambra</em> to Fatima</div>
-              <div style="padding:10px;background:var(--sub);border-radius:var(--rs);margin:8px 0">
-                <div style="display:flex;align-items:center;gap:10px">
-                  <div class="iph" style="width:40px;height:40px;border-radius:var(--rx)"><span class="L" style="font-size:16px">V</span></div>
-                  <div style="flex:1"><div style="font-size:11px;font-weight:500">Van Cleef Alhambra</div><div style="font-size:9px;color:var(--ok)">✓ Returned to Fatima R.</div></div>
+              <div style="padding:9px;background:var(--sub);border-radius:var(--rs);margin:8px 0">
+                <div style="display:flex;align-items:center;gap:9px">
+                  <div class="iph" style="width:38px;height:38px;border-radius:var(--rx)"><span class="L" style="font-size:14px">V</span></div>
+                  <div style="flex:1"><div style="font-size:11px;font-weight:500">Van Cleef Alhambra</div><div style="font-size:9px;color:var(--ok);display:flex;align-items:center;gap:3px;margin-top:1px"><svg width="9" height="9" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M5 12l5 5 9-11"/></svg>Returned to Fatima R.</div></div>
                 </div>
               </div>
-              <div class="acts"><span>♡ 3</span><span>💬 1</span></div>
+              <div class="acts"><span><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>3</span><span><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 11-3-6.2L21 5l-1.2 3A8 8 0 0121 12z"/></svg>1</span></div>
             </div>
-            <!-- Mark returned action -->
+            <!-- mark returned action -->
             <div class="fpost">
               <div class="top"><div class="av sm">FR</div><div><div class="nm">Fatima R.</div><div class="tm">lent an item · 2h</div></div></div>
               <div class="body">Fatima lent her <em>Cartier Love Bracelet</em> to Layla</div>
-              <div class="mini"><div class="iph ph"><span class="L" style="font-size:20px">C</span></div><div><div class="mn">Cartier Love Bracelet</div><div class="mb">Currently with Layla S.</div></div></div>
-              <button class="btn sm ghost fw" style="margin-top:6px">Mark Returned?</button>
+              <div class="mini"><div class="iph ph"><span class="L" style="font-size:18px">C</span></div><div><div class="mn">Cartier Love Bracelet</div><div class="mb">Currently with Layla S.</div></div></div>
+              <button class="btn sm ghost fw" style="margin-top:5px">Mark Returned?</button>
             </div>
-            <!-- Wishlist hint post -->
-            <div class="fpost" style="border-left:3px solid var(--accw)">
+            <!-- wishlist hint -->
+            <div class="fpost" style="border-left:2px solid var(--accw)">
               <div class="top"><div class="av sm">SM</div><div><div class="nm">Sarah M.</div><div class="tm">dropped a wishlist hint · 3h</div></div></div>
-              <div class="body">Sarah is dreaming about a <em>Cartier Love Bracelet</em> 👀</div>
-              <div class="mini"><div class="iph ph"><span class="L" style="font-size:20px">C</span></div><div><div class="mn">Cartier Love Bracelet</div><div class="mb">Yellow Gold · AED 14,000</div></div></div>
-              <div style="display:flex;gap:8px;margin:8px 0">
-                <button class="btn sm out" style="flex:1">♡ React</button>
-                <button class="btn sm out" style="flex:1">💬 Comment</button>
-                <button class="btn sm ghost" style="flex:1">I have that!</button>
+              <div class="body">Sarah is dreaming about a <em>Cartier Love Bracelet</em></div>
+              <div class="mini"><div class="iph ph"><span class="L" style="font-size:18px">C</span></div><div><div class="mn">Cartier Love Bracelet</div><div class="mb">Yellow Gold · AED 14,000</div></div></div>
+              <div style="display:flex;gap:7px;margin:7px 0">
+                <button class="btn sm out" style="flex:1">React</button>
+                <button class="btn sm out" style="flex:1">Comment</button>
+                <button class="btn sm ghost" style="flex:1">I have that</button>
               </div>
-              <!-- Seen at tag from friend -->
               <div style="padding:8px 10px;background:var(--accs);border-radius:var(--rx);font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:8px">
-                <div class="av" style="width:20px;height:20px;font-size:9px">MA</div>
-                <span><b style="color:var(--acc)">Mona A.:</b> Seen at Vestiaire for AED 22k!</span>
+                <div class="av" style="width:20px;height:20px;font-size:8px">MA</div>
+                <span><b style="color:var(--acc)">Mona A.</b> Seen at Vestiaire for AED 22k</span>
               </div>
-              <div class="acts" style="margin-top:8px"><span>♡ 5</span><span>💬 3</span></div>
+              <div class="acts" style="margin-top:7px"><span><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>5</span><span><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 11-3-6.2L21 5l-1.2 3A8 8 0 0121 12z"/></svg>3</span></div>
             </div>
-            <!-- Who wore it best -->
+            <!-- who wore it best -->
             <div class="fpost">
               <div class="top"><div class="av sm">LS</div><div><div class="nm">Layla S.</div><div class="tm">shared a style · 5h</div></div></div>
-              <div class="body" style="margin-bottom:6px">Who wore it best? 👗</div>
-              <div style="font-size:11px;color:var(--ink3);margin-bottom:8px">Hermès Birkin 30 — styled by two circle members</div>
+              <div class="body" style="margin-bottom:4px">Who wore it best?</div>
+              <div style="font-size:11px;color:var(--ink3);margin-bottom:7px;font-weight:300">Hermès Birkin 30 — styled by two circle members</div>
               <div class="vote">
                 <div class="vc">
-                  <div class="iph ph"><span class="L" style="font-size:20px">H</span></div>
+                  <div class="iph ph"><span class="L" style="font-size:18px">H</span></div>
                   <div class="vn">Mona A.</div>
                   <div class="vv">62% · 8 votes</div>
                 </div>
                 <div class="vc">
-                  <div class="iph ph"><span class="L" style="font-size:20px">H</span></div>
+                  <div class="iph ph"><span class="L" style="font-size:18px">H</span></div>
                   <div class="vn">Aisha K.</div>
                   <div class="vv">38% · 5 votes</div>
                 </div>
               </div>
-              <div style="display:flex;gap:8px"><button class="btn sm" style="flex:1">Vote Mona</button><button class="btn sm out" style="flex:1">Vote Aisha</button></div>
+              <div style="display:flex;gap:8px"><button class="btn sm acc" style="flex:1">Vote Mona</button><button class="btn sm out" style="flex:1">Vote Aisha</button></div>
             </div>
           </div>
         </div>
@@ -844,285 +908,287 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
     </div>
   </div>
 </div>
-<div class="wr"></div>
+</div>
 
-<!-- ===== 7. SOCIAL WISHLIST ===== -->
+<!-- ═══ 7. SOCIAL WISHLIST ═══ -->
+<div class="page" style="padding-top:0">
 <div class="sec">
-  <div class="slbl"><span class="n">7</span> Social Wishlist · Not a Private List</div>
-  <div class="stit">Dream, Share, Pledge, Discover</div>
-  <p class="sdesc">Wishlist items shared to circle feed. Friends react, comment, tag "seen for sale." Pledge toward group gifts. Wishlist feed tab shows friends' recent additions.</p>
+  <div class="sec-head">
+    <div class="sec-num"><span class="badge">7</span><span class="label">Social Wishlist · Not a Private List</span></div>
+    <h2>Dream, Share, Pledge, Discover</h2>
+    <p class="desc">Wishlist items shared to circle feed. Friends react, comment, tag "seen for sale." Pledge toward group gifts. Friends' dreams tab.</p>
+  </div>
   <div class="prow">
-    <!-- 7a: Your Wishlist -->
+
+    <!-- 7a: My Wishlist -->
     <div>
-      <div class="psub">7a — My Wishlist</div>
+      <div class="pcap">7a · My Wishlist</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="sa">
           <div class="hd">
-            <div class="nr"><div class="tt">Wishlist</div><div class="nb">+</div></div>
+            <div class="nr"><div class="tt">Wishlist</div><div class="nb"><svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="1.5" fill="none"><path d="M12 5v14M5 12h14"/></svg></div></div>
             <div class="ct">5 dreams · 2 friends pledged</div>
           </div>
-          <!-- Tabs -->
-          <div style="display:flex;gap:0;padding:0 20px 14px;border-bottom:1px solid var(--bds);margin-bottom:14px">
-            <div style="flex:1;text-align:center;padding-bottom:8px;border-bottom:2px solid var(--acc);font-size:12px;font-weight:500;color:var(--acc)">My Wishlist</div>
-            <div style="flex:1;text-align:center;padding-bottom:8px;font-size:12px;color:var(--ink3)">Friends' Dreams</div>
+          <div style="display:flex;gap:0;padding:0 22px 12px;border-bottom:var(--hl);margin-bottom:12px">
+            <div style="flex:1;text-align:center;padding-bottom:8px;border-bottom:2px solid var(--acc);font-size:11.5px;font-weight:500;color:var(--acc);margin-bottom:-1px">My Wishlist</div>
+            <div style="flex:1;text-align:center;padding-bottom:8px;font-size:11.5px;color:var(--ink3)">Friends' Dreams</div>
           </div>
-          <div style="padding:0 20px">
-            <!-- Wishlist item with hint shared -->
-            <div class="card" style="margin-bottom:12px">
-              <div style="display:flex;gap:10px">
-                <div class="iph" style="width:64px;height:64px;border-radius:var(--rs)"><span class="L" style="font-size:26px">C</span></div>
+          <div style="padding:0 22px">
+            <!-- wishlist item w/ hint -->
+            <div class="card" style="margin-bottom:10px">
+              <div style="display:flex;gap:9px">
+                <div class="iph" style="width:58px;height:58px;border-radius:var(--rs)"><span class="L" style="font-size:24px">C</span></div>
                 <div style="flex:1">
-                  <div style="font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Cartier</div>
-                  <div class="sf" style="font-size:14px;font-weight:500">Love Bracelet</div>
-                  <div style="font-size:11px;color:var(--ink2)">Yellow Gold · AED 14,000</div>
+                  <div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Cartier</div>
+                  <div class="sf" style="font-size:13px;font-weight:500">Love Bracelet</div>
+                  <div style="font-size:11px;color:var(--ink2);font-weight:300">Yellow Gold · AED 14,000</div>
                 </div>
               </div>
-              <div style="display:flex;gap:6px;margin-top:10px">
-                <button class="btn sm ghost" style="flex:1;font-size:10px">📤 Drop Hint</button>
+              <div style="display:flex;gap:6px;margin-top:9px">
+                <button class="btn sm ghost" style="flex:1;font-size:10px">Drop Hint</button>
                 <button class="btn sm out" style="flex:1;font-size:10px">Seen for Sale?</button>
               </div>
-              <!-- Friend reactions -->
               <div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--ink3)">
-                <div style="display:flex"><div class="av" style="width:18px;height:18px;font-size:8px;border:1.5px solid var(--surf)">MA</div><div class="av" style="width:18px;height:18px;font-size:8px;margin-left:-6px;border:1.5px solid var(--surf)">AK</div></div>
+                <div style="display:flex"><div class="av" style="width:17px;height:17px;font-size:7px;border:1.5px solid var(--surf)">MA</div><div class="av" style="width:17px;height:17px;font-size:7px;margin-left:-5px;border:1.5px solid var(--surf)">AK</div></div>
                 <span>Mona &amp; Aisha reacted · 3 comments</span>
               </div>
             </div>
-            <!-- Wishlist item with pledge -->
-            <div class="card" style="margin-bottom:12px">
-              <div style="display:flex;gap:10px">
-                <div class="iph" style="width:64px;height:64px;border-radius:var(--rs)"><span class="L" style="font-size:26px">R</span></div>
+            <!-- wishlist item w/ pledge -->
+            <div class="card" style="margin-bottom:10px">
+              <div style="display:flex;gap:9px">
+                <div class="iph" style="width:58px;height:58px;border-radius:var(--rs)"><span class="L" style="font-size:24px">R</span></div>
                 <div style="flex:1">
-                  <div style="font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Rolex</div>
-                  <div class="sf" style="font-size:14px;font-weight:500">Dayjust 36</div>
-                  <div style="font-size:11px;color:var(--ink2)">Gold · AED 38,000</div>
+                  <div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Rolex</div>
+                  <div class="sf" style="font-size:13px;font-weight:500">Datejust 36</div>
+                  <div style="font-size:11px;color:var(--ink2);font-weight:300">Gold · AED 38,000</div>
                 </div>
               </div>
-              <!-- Pledge progress -->
               <div class="pledge">
-                <div class="pt">🎁 Group gift pledge — birthday in 2 months</div>
+                <div class="pt"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="13" rx="1.5"/><path d="M4 8l3-4h10l3 4M9 13h6"/></svg>Group gift pledge — birthday in two months</div>
                 <div class="bar"><div class="fill" style="width:45%"></div></div>
                 <div class="pa"><span class="amt">AED 17,100 / 38,000</span><span class="pp">3 friends pledged</span></div>
               </div>
-              <button class="btn sm" style="width:100%;margin-top:8px">Pledge Toward This</button>
+              <button class="btn sm acc" style="width:100%;margin-top:8px">Pledge Toward This</button>
             </div>
-            <!-- Simple wishlist item -->
-            <div class="card" style="margin-bottom:12px">
-              <div style="display:flex;gap:10px">
-                <div class="iph" style="width:64px;height:64px;border-radius:var(--rs)"><span class="L" style="font-size:26px">B</span></div>
+            <!-- simple wishlist item -->
+            <div class="card" style="margin-bottom:10px">
+              <div style="display:flex;gap:9px">
+                <div class="iph" style="width:58px;height:58px;border-radius:var(--rs)"><span class="L" style="font-size:24px">B</span></div>
                 <div style="flex:1">
-                  <div style="font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)">Bottega</div>
-                  <div class="sf" style="font-size:14px;font-weight:500">Cassette Pouch</div>
-                  <div style="font-size:11px;color:var(--ink2)">Intrecciato · AED 11,000</div>
+                  <div style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)">Bottega</div>
+                  <div class="sf" style="font-size:13px;font-weight:500">Cassette Pouch</div>
+                  <div style="font-size:11px;color:var(--ink2);font-weight:300">Intrecciato · AED 11,000</div>
                 </div>
               </div>
-              <div style="display:flex;gap:6px;margin-top:10px">
-                <button class="btn sm ghost" style="flex:1;font-size:10px">📤 Drop Hint</button>
+              <div style="display:flex;gap:6px;margin-top:9px">
+                <button class="btn sm ghost" style="flex:1;font-size:10px">Drop Hint</button>
                 <button class="btn sm out" style="flex:1;font-size:10px">Seen for Sale?</button>
               </div>
             </div>
           </div>
         </div>
         <div class="tb">
-          <div class="ti"><span class="ic">⌂</span>Home</div>
-          <div class="ti act"><span class="ic">♡</span>Wishlist</div>
-          <div class="ta">+</div>
-          <div class="ti"><span class="ic">◉</span>Circle</div>
-          <div class="ti"><span class="ic">☺</span>Profile</div>
+          <div class="ti"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg><span>Home</span></div>
+          <div class="ti act"><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg><span>Wishlist</span></div>
+          <div class="ta"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg><span>Circle</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg><span>Profile</span></div>
         </div>
         <div class="hi"></div>
       </div></div>
     </div>
 
-    <!-- 7b: Friends' Wishlist Feed -->
+    <!-- 7b: Friends' Dreams -->
     <div>
-      <div class="psub">7b — Friends' Dreams Feed</div>
+      <div class="pcap">7b · Friends' Dreams Feed</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="sa">
           <div class="hd">
-            <div class="nr"><div class="tt">Wishlist</div><div class="nb">+</div></div>
+            <div class="nr"><div class="tt">Wishlist</div><div class="nb"><svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="1.5" fill="none"><path d="M12 5v14M5 12h14"/></svg></div></div>
             <div class="ct">What your circle is dreaming about</div>
           </div>
-          <div style="display:flex;gap:0;padding:0 20px 14px;border-bottom:1px solid var(--bds);margin-bottom:14px">
-            <div style="flex:1;text-align:center;padding-bottom:8px;font-size:12px;color:var(--ink3)">My Wishlist</div>
-            <div style="flex:1;text-align:center;padding-bottom:8px;border-bottom:2px solid var(--acc);font-size:12px;font-weight:500;color:var(--acc)">Friends' Dreams</div>
+          <div style="display:flex;gap:0;padding:0 22px 12px;border-bottom:var(--hl);margin-bottom:12px">
+            <div style="flex:1;text-align:center;padding-bottom:8px;font-size:11.5px;color:var(--ink3)">My Wishlist</div>
+            <div style="flex:1;text-align:center;padding-bottom:8px;border-bottom:2px solid var(--acc);font-size:11.5px;font-weight:500;color:var(--acc);margin-bottom:-1px">Friends' Dreams</div>
           </div>
           <div class="feed">
-            <!-- Mona's wishlist item -->
-            <div class="fpost" style="border-left:3px solid var(--accw)">
+            <!-- Mona -->
+            <div class="fpost" style="border-left:2px solid var(--accw)">
               <div class="top"><div class="av sm">MA</div><div><div class="nm">Mona A. added to wishlist</div><div class="tm">2h</div></div></div>
-              <div class="mini"><div class="iph ph"><span class="L" style="font-size:20px">D</span></div><div><div class="mn">Dior Saddle Bag</div><div class="mb">AED 9,500</div></div></div>
-              <div style="display:flex;gap:8px">
-                <button class="btn sm out" style="flex:1;font-size:10px">♡ React</button>
-                <button class="btn sm out" style="flex:1;font-size:10px">💬 Comment</button>
-                <button class="btn sm ghost" style="flex:1;font-size:10px">I have that!</button>
+              <div class="mini"><div class="iph ph"><span class="L" style="font-size:18px">D</span></div><div><div class="mn">Dior Saddle Bag</div><div class="mb">AED 9,500</div></div></div>
+              <div style="display:flex;gap:7px">
+                <button class="btn sm out" style="flex:1;font-size:10px">React</button>
+                <button class="btn sm out" style="flex:1;font-size:10px">Comment</button>
+                <button class="btn sm ghost" style="flex:1;font-size:10px">I have that</button>
               </div>
-              <!-- Seen at tag -->
-              <div style="padding:8px 10px;background:var(--accs);border-radius:var(--rx);font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:8px;margin-top:8px">
-                <div class="av" style="width:20px;height:20px;font-size:9px">FR</div>
-                <span><b style="color:var(--acc)">Fatima:</b> Seen at The Dubai Mall for AED 8,900!</span>
+              <div style="padding:8px 10px;background:var(--accs);border-radius:var(--rx);font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:8px;margin-top:7px">
+                <div class="av" style="width:20px;height:20px;font-size:8px">FR</div>
+                <span><b style="color:var(--acc)">Fatima:</b> Seen at The Dubai Mall for AED 8,900</span>
               </div>
-              <div class="acts" style="margin-top:8px"><span>♡ 4</span><span>💬 2</span></div>
+              <div class="acts" style="margin-top:7px"><span><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>4</span><span><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 11-3-6.2L21 5l-1.2 3A8 8 0 0121 12z"/></svg>2</span></div>
             </div>
-            <!-- Aisha pledge request -->
-            <div class="fpost" style="border-left:3px solid var(--accw)">
+            <!-- Aisha pledge -->
+            <div class="fpost" style="border-left:2px solid var(--accw)">
               <div class="top"><div class="av sm">AK</div><div><div class="nm">Aisha K. added to wishlist</div><div class="tm">1d</div></div></div>
-              <div class="mini"><div class="iph ph"><span class="L" style="font-size:20px">V</span></div><div><div class="mn">Van Cleef Perlée Ring</div><div class="mb">AED 16,000</div></div></div>
+              <div class="mini"><div class="iph ph"><span class="L" style="font-size:18px">V</span></div><div><div class="mn">Van Cleef Perlée Ring</div><div class="mb">AED 16,000</div></div></div>
               <div class="pledge">
-                <div class="pt">🎁 Aisha's birthday is in 3 weeks</div>
+                <div class="pt"><svg viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="13" rx="1.5"/><path d="M4 8l3-4h10l3 4M9 13h6"/></svg>Aisha's birthday is in three weeks</div>
                 <div class="bar"><div class="fill" style="width:30%"></div></div>
                 <div class="pa"><span class="amt">AED 4,800 / 16,000</span><span class="pp">2 friends pledged</span></div>
               </div>
-              <button class="btn sm" style="width:100%;margin-top:8px">Pledge AED 1,000</button>
-              <div class="acts" style="margin-top:8px"><span>♡ 6</span><span>💬 4</span></div>
+              <button class="btn sm acc" style="width:100%;margin-top:7px">Pledge AED 1,000</button>
+              <div class="acts" style="margin-top:7px"><span><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>6</span><span><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 11-3-6.2L21 5l-1.2 3A8 8 0 0121 12z"/></svg>4</span></div>
             </div>
             <!-- Layla hint -->
-            <div class="fpost" style="border-left:3px solid var(--accw)">
+            <div class="fpost" style="border-left:2px solid var(--accw)">
               <div class="top"><div class="av sm">LS</div><div><div class="nm">Layla S. dropped a hint</div><div class="tm">2d</div></div></div>
-              <div class="body">Layla is dreaming about an <em>Hermès Kelly</em> 👀</div>
-              <div class="mini"><div class="iph ph"><span class="L" style="font-size:20px">H</span></div><div><div class="mn">Hermès Kelly 28</div><div class="mb">AED 78,000</div></div></div>
-              <div style="display:flex;gap:8px">
-                <button class="btn sm out" style="flex:1;font-size:10px">♡ React</button>
-                <button class="btn sm out" style="flex:1;font-size:10px">💬 Comment</button>
+              <div class="body">Layla is dreaming about an <em>Hermès Kelly</em></div>
+              <div class="mini"><div class="iph ph"><span class="L" style="font-size:18px">H</span></div><div><div class="mn">Hermès Kelly 28</div><div class="mb">AED 78,000</div></div></div>
+              <div style="display:flex;gap:7px">
+                <button class="btn sm out" style="flex:1;font-size:10px">React</button>
+                <button class="btn sm out" style="flex:1;font-size:10px">Comment</button>
                 <button class="btn sm ghost" style="flex:1;font-size:10px">Seen for Sale?</button>
               </div>
-              <div class="acts" style="margin-top:8px"><span>♡ 8</span><span>💬 5</span></div>
+              <div class="acts" style="margin-top:7px"><span><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>8</span><span><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 11-3-6.2L21 5l-1.2 3A8 8 0 0121 12z"/></svg>5</span></div>
             </div>
           </div>
         </div>
         <div class="tb">
-          <div class="ti"><span class="ic">⌂</span>Home</div>
-          <div class="ti act"><span class="ic">♡</span>Wishlist</div>
-          <div class="ta">+</div>
-          <div class="ti"><span class="ic">◉</span>Circle</div>
-          <div class="ti"><span class="ic">☺</span>Profile</div>
+          <div class="ti"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg><span>Home</span></div>
+          <div class="ti act"><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg><span>Wishlist</span></div>
+          <div class="ta"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg><span>Circle</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg><span>Profile</span></div>
         </div>
         <div class="hi"></div>
       </div></div>
     </div>
   </div>
 </div>
-<div class="wr"></div>
+</div>
 
-<!-- ===== 8. PROFILE ===== -->
+<!-- ═══ 8. PROFILE ═══ -->
+<div class="page" style="padding-top:0">
 <div class="sec">
-  <div class="slbl"><span class="n">8</span> Profile · Engagement &amp; Streaks</div>
-  <div class="stit">Borrow Streak, Generosity, Collection Summary</div>
-  <p class="sdesc">"Sarah has lent 8 items this season — most generous!" Borrow streaks, collection value, activity summary.</p>
+  <div class="sec-head">
+    <div class="sec-num"><span class="badge">8</span><span class="label">Profile · Engagement &amp; Streaks</span></div>
+    <h2>Borrow Streak, Generosity, Collection Summary</h2>
+    <p class="desc">"Sarah has lent 8 items this season — most generous." Borrow streaks, collection value, activity summary.</p>
+  </div>
   <div class="prow">
     <div>
-      <div class="psub">8a — Profile</div>
+      <div class="pcap">8a · Profile</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="sa">
-          <div class="hd" style="text-align:center;padding-top:10px">
-            <div class="av lg" style="width:72px;height:72px;font-size:26px;margin:0 auto 12px">SM</div>
-            <div class="sf" style="font-size:22px;font-weight:500">Sarah M.</div>
-            <div style="font-size:12px;color:var(--ink3)">The Atelier Circle · Dubai</div>
+          <div class="hd" style="text-align:center;padding-top:8px">
+            <div class="av lg" style="width:64px;height:64px;font-size:22px;margin:0 auto 11px">SM</div>
+            <div class="sf" style="font-size:21px;font-weight:500;letter-spacing:-.01em">Sarah M.</div>
+            <div style="font-size:11.5px;color:var(--ink3);font-weight:300;margin-top:2px">The Atelier Circle · Dubai</div>
           </div>
-          <!-- Generosity streak -->
-          <div style="margin:16px 20px;padding:16px;background:var(--grad);border-radius:var(--r);color:#fff;text-align:center">
-            <div style="font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;opacity:.8;margin-bottom:6px">✦ Most Generous</div>
-            <div class="sf" style="font-size:18px;font-weight:600;margin-bottom:4px">8 items lent this season</div>
-            <div style="font-size:11px;opacity:.85">Sarah is the most generous in the circle!</div>
+          <!-- generosity -->
+          <div style="margin:14px 22px;padding:15px;background:var(--ink);border-radius:var(--r);color:var(--bg);text-align:center">
+            <div style="font-size:9px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;opacity:.6;margin-bottom:5px">Most Generous</div>
+            <div class="sf" style="font-size:17px;font-weight:500;margin-bottom:3px">8 items lent this season</div>
+            <div style="font-size:10.5px;opacity:.7;font-weight:300">Sarah is the most generous in the circle</div>
           </div>
-          <!-- Stats grid -->
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 20px 16px">
-            <div style="background:var(--sub);border-radius:var(--rs);padding:12px;text-align:center">
-              <div class="sf" style="font-size:20px;font-weight:600">12</div>
-              <div style="font-size:9px;color:var(--ink3)">Items</div>
+          <!-- stats -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 22px 14px">
+            <div style="background:var(--sub);border:var(--hl);border-radius:var(--rs);padding:11px;text-align:center">
+              <div class="sf" style="font-size:19px;font-weight:500">12</div>
+              <div style="font-size:9px;color:var(--ink3);margin-top:1px">Items</div>
             </div>
-            <div style="background:var(--sub);border-radius:var(--rs);padding:12px;text-align:center">
-              <div class="sf" style="font-size:20px;font-weight:600">8</div>
-              <div style="font-size:9px;color:var(--ink3)">Lent out</div>
+            <div style="background:var(--sub);border:var(--hl);border-radius:var(--rs);padding:11px;text-align:center">
+              <div class="sf" style="font-size:19px;font-weight:500">8</div>
+              <div style="font-size:9px;color:var(--ink3);margin-top:1px">Lent out</div>
             </div>
-            <div style="background:var(--sub);border-radius:var(--rs);padding:12px;text-align:center">
-              <div class="sf" style="font-size:20px;font-weight:600">5</div>
-              <div style="font-size:9px;color:var(--ink3)">Borrowed</div>
+            <div style="background:var(--sub);border:var(--hl);border-radius:var(--rs);padding:11px;text-align:center">
+              <div class="sf" style="font-size:19px;font-weight:500">5</div>
+              <div style="font-size:9px;color:var(--ink3);margin-top:1px">Borrowed</div>
             </div>
           </div>
-          <!-- Collection value -->
-          <div style="margin:0 20px 16px;padding:14px;background:var(--surf);border-radius:var(--r);box-shadow:var(--sh)">
-            <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:6px">Collection Value</div>
-            <div class="sf" style="font-size:24px;font-weight:600">AED 245,000</div>
-            <div style="font-size:11px;color:var(--ink3)">across 12 items · +AED 12k this quarter</div>
+          <!-- value -->
+          <div style="margin:0 22px 14px;padding:13px;background:var(--surf);border:var(--hl);border-radius:var(--r)">
+            <div class="kicker" style="margin-bottom:5px">Collection Value</div>
+            <div class="sf" style="font-size:22px;font-weight:500;letter-spacing:-.01em">AED 245,000</div>
+            <div style="font-size:10.5px;color:var(--ink3);font-weight:300">across 12 items · +AED 12k this quarter</div>
           </div>
-          <!-- Recent activity -->
-          <div style="padding:0 20px 8px;font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--ink3)">Recent Activity</div>
-          <div style="padding:0 20px">
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bds)">
-              <div style="width:32px;height:32px;border-radius:50%;background:var(--accs);display:flex;align-items:center;justify-content:center;font-size:14px">📤</div>
-              <div style="flex:1"><div style="font-size:12px;font-weight:500">Lent Chanel Classic Flap</div><div style="font-size:10px;color:var(--ink3)">To Mona A. · 2 weeks ago</div></div>
+          <!-- recent activity -->
+          <div style="padding:0 22px 6px;font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3)">Recent Activity</div>
+          <div style="padding:0 22px">
+            <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:var(--hl)">
+              <div style="width:30px;height:30px;border-radius:50%;background:var(--accs);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" stroke="var(--acc)" stroke-width="1.5" fill="none"><path d="M12 3v12M7 8l5-5 5 5M5 21h14"/></svg></div>
+              <div style="flex:1"><div style="font-size:11.5px;font-weight:500">Lent Chanel Classic Flap</div><div style="font-size:10px;color:var(--ink3);font-weight:300">To Mona A. · two weeks ago</div></div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bds)">
-              <div style="width:32px;height:32px;border-radius:50%;background:var(--accs);display:flex;align-items:center;justify-content:center;font-size:14px">📥</div>
-              <div style="flex:1"><div style="font-size:12px;font-weight:500">Borrowed Van Cleef Alhambra</div><div style="font-size:10px;color:var(--ink3)">From Fatima R. · 1 week ago</div></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:var(--hl)">
+              <div style="width:30px;height:30px;border-radius:50%;background:var(--accs);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" stroke="var(--acc)" stroke-width="1.5" fill="none"><path d="M12 21V9M7 16l5 5 5-5M5 3h14"/></svg></div>
+              <div style="flex:1"><div style="font-size:11.5px;font-weight:500">Borrowed Van Cleef Alhambra</div><div style="font-size:10px;color:var(--ink3);font-weight:300">From Fatima R. · one week ago</div></div>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
-              <div style="width:32px;height:32px;border-radius:50%;background:var(--accs);display:flex;align-items:center;justify-content:center;font-size:14px">✓</div>
-              <div style="flex:1"><div style="font-size:12px;font-weight:500">Returned Rolex Datejust</div><div style="font-size:10px;color:var(--ink3)">To Aisha K. · 3 weeks ago</div></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:9px 0">
+              <div style="width:30px;height:30px;border-radius:50%;background:var(--accs);display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" stroke="var(--acc)" stroke-width="1.5" fill="none"><path d="M5 12l5 5 9-11"/></svg></div>
+              <div style="flex:1"><div style="font-size:11.5px;font-weight:500">Returned Rolex Datejust</div><div style="font-size:10px;color:var(--ink3);font-weight:300">To Aisha K. · three weeks ago</div></div>
             </div>
           </div>
         </div>
         <div class="tb">
-          <div class="ti"><span class="ic">⌂</span>Home</div>
-          <div class="ti"><span class="ic">♡</span>Wishlist</div>
-          <div class="ta">+</div>
-          <div class="ti"><span class="ic">◉</span>Circle</div>
-          <div class="ti act"><span class="ic">☺</span>Profile</div>
+          <div class="ti"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg><span>Home</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg><span>Wishlist</span></div>
+          <div class="ta"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg><span>Circle</span></div>
+          <div class="ti act"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg><span>Profile</span></div>
         </div>
         <div class="hi"></div>
       </div></div>
     </div>
   </div>
 </div>
-<div class="wr"></div>
+</div>
 
-<!-- ===== 9. ADD / EDIT ITEM ===== -->
+<!-- ═══ 9. ADD / EDIT ITEM ═══ -->
+<div class="page" style="padding-top:0">
 <div class="sec">
-  <div class="slbl"><span class="n">9</span> Add / Edit Item · Privacy Controls</div>
-  <div class="stit">Capture, Identify, Set Visibility</div>
-  <p class="sdesc">Single-item add flow with AI identification and full privacy/lendability controls inline.</p>
+  <div class="sec-head">
+    <div class="sec-num"><span class="badge">9</span><span class="label">Add / Edit Item · Privacy Controls</span></div>
+    <h2>Capture, Identify, Set Visibility</h2>
+    <p class="desc">Single-item add flow with AI identification and full privacy/lendability controls inline.</p>
+  </div>
   <div class="prow">
     <div>
-      <div class="psub">9a — Add Item</div>
+      <div class="pcap">9a · Add Item</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
-        <div class="sb"><span>9:41</span><span class="ic">●●●● ● ▮▮</span></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
-          <div class="hd"><div class="nr"><div class="nb">✕</div><div class="sf" style="font-size:18px;font-weight:500">Add Item</div><div style="font-size:12px;color:var(--acc);font-weight:500">Save</div></div></div>
-          <div style="padding:0 20px">
-            <!-- Photo -->
-            <div class="iph" style="height:160px;border-radius:var(--r);margin-bottom:14px;border:2px dashed var(--bd)"><span class="L" style="font-size:48px">+</span><div style="position:absolute;bottom:12px;font-size:11px;color:var(--ink3)">Tap to add photo</div></div>
-            <!-- AI identified -->
-            <div style="padding:10px;background:var(--accs);border-radius:var(--rs);margin-bottom:14px;display:flex;align-items:center;gap:8px">
-              <span style="font-size:16px">✦</span>
+          <div class="hd"><div class="nr"><div class="nb"><svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="1.5" fill="none"><path d="M6 6l12 12M6 18L18 6"/></svg></div><div class="sf" style="font-size:17px;font-weight:500">Add Item</div><div style="font-size:11.5px;color:var(--acc);font-weight:500">Save</div></div></div>
+          <div style="padding:0 22px">
+            <div class="iph" style="height:140px;border-radius:var(--r);margin-bottom:13px;border:1px dashed var(--bd)"><svg width="40" height="40" viewBox="0 0 24 24" stroke="var(--ink3)" stroke-width="1.2" fill="none" style="opacity:.5"><path d="M3 7h3l2-2h8l2 2h3v12H3z"/><circle cx="12" cy="13" r="3.5"/><path d="M12 5v3M12 18v3"/></svg><div style="position:absolute;bottom:11px;font-size:11px;color:var(--ink3)">Tap to add photo</div></div>
+            <div style="padding:10px;background:var(--accs);border-radius:var(--rs);margin-bottom:13px;display:flex;align-items:center;gap:8px">
+              <svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--acc)" stroke-width="1.5" fill="none"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg>
               <span style="font-size:11px;color:var(--ink2)">AI will identify brand &amp; model from photo</span>
             </div>
-            <!-- Fields -->
-            <div style="margin-bottom:14px">
-              <div class="field lbl">Brand</div>
-              <input class="field" value="Chanel" style="margin-bottom:12px">
-              <div class="field lbl">Model</div>
-              <input class="field" value="Classic Flap" style="margin-bottom:12px">
-              <div class="field lbl">Estimated Value</div>
-              <input class="field" value="AED 42,000" style="margin-bottom:12px">
-              <div class="field lbl">Notes</div>
+            <div style="margin-bottom:13px">
+              <span class="flbl">Brand</span>
+              <input class="field" value="Chanel" style="margin-bottom:10px">
+              <span class="flbl">Model</span>
+              <input class="field" value="Classic Flap" style="margin-bottom:10px">
+              <span class="flbl">Estimated Value</span>
+              <input class="field" value="AED 42,000" style="margin-bottom:10px">
+              <span class="flbl">Notes</span>
               <textarea class="field" rows="2">Medium · Caviar &amp; Gold Hardware</textarea>
             </div>
-            <!-- Privacy & Lending -->
-            <div style="background:var(--sub);border-radius:var(--rs);padding:14px;margin-bottom:14px">
-              <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-bottom:12px">Visibility &amp; Lending</div>
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-                <div><div style="font-size:12px;font-weight:500">Visible to circle</div><div style="font-size:10px;color:var(--ink3)">Default — friends can see</div></div>
+            <div style="background:var(--sub);border:var(--hl);border-radius:var(--rs);padding:13px;margin-bottom:13px">
+              <div class="kicker" style="margin-bottom:10px">Visibility &amp; Lending</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <div><div style="font-size:12px;font-weight:500">Visible to circle</div><div style="font-size:10px;color:var(--ink3);font-weight:300">Default — friends can see</div></div>
                 <div class="toggle on"></div>
               </div>
               <div style="display:flex;justify-content:space-between;align-items:center">
-                <div><div style="font-size:12px;font-weight:500">Available to lend</div><div style="font-size:10px;color:var(--ink3)">Friends can request to borrow</div></div>
+                <div><div style="font-size:12px;font-weight:500">Available to lend</div><div style="font-size:10px;color:var(--ink3);font-weight:300">Friends can request to borrow</div></div>
                 <div class="toggle on"></div>
               </div>
             </div>
-            <button class="btn fw" style="margin-bottom:24px">Add to Collection</button>
+            <button class="btn fw acc" style="margin-bottom:20px">Add to Collection</button>
           </div>
         </div>
         <div class="hi"></div>
@@ -1130,14 +1196,17 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--ink);-webkit
     </div>
   </div>
 </div>
-
-<div style="max-width:1400px;margin:0 auto;padding:20px 40px 60px">
-  <div style="font-size:11px;color:var(--ink3);text-align:center;letter-spacing:.05em">
-    Trésor · Full App Mockup v2 · Boutique Shelf Design System<br>
-    Designer: Muaath · Brief: Nasser · Dev Lead: Dwight<br>
-    Warm Atelier Palette · Playfair Display + Jost · Cream / Espresso / Camel / Bronze
-  </div>
 </div>
+
+<div class="foot">
+  <div class="l">Trésor · Full App Mockup v3 · Boutique Shelf Design System<br>Designer: Muaath · Brief: Nasser · Dev Lead: Dwight<br>Warm Atelier · Playfair Display + Jost · Cream / Espresso / Camel / Bronze</div>
+</div>
+
+<script>
+function setLabel(){var t=document.documentElement.getAttribute('data-theme');document.getElementById('tl').textContent=t==='dark'?'Light':'Dark'}
+setLabel();
+document.querySelector('.tgl').addEventListener('click',function(){setTimeout(setLabel,0)});
+</script>
 
 </body>
 </html>

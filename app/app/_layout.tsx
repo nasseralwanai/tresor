@@ -1,7 +1,9 @@
 import { Tabs } from 'expo-router';
-import { Platform, View, Text, StyleSheet, ColorValue } from 'react-native';
+import { Platform, View, Text, StyleSheet, ColorValue, useColorScheme } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ThemeProvider } from '@react-navigation/native';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
+import { TresorDarkTheme, TresorLightTheme } from '@/theme/colors';
 
 type TabIconProps = { focused: boolean; color: ColorValue; size: number };
 
@@ -21,8 +23,10 @@ function AddTabButton({ color }: { color: string }) {
 
 export default function TabLayout() {
   const colors = useThemeColors();
+  const scheme = useColorScheme();
 
   return (
+    <ThemeProvider value={scheme === 'dark' ? TresorDarkTheme : TresorLightTheme}>
     <Tabs
       screenOptions={{
         headerShown: true,
@@ -92,6 +96,7 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </ThemeProvider>
   );
 }
 

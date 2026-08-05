@@ -1,118 +1,156 @@
 /**
- * Items API — fetch, create, update items.
+ * Item CRUD API — operations on the `items` table via Supabase.
  *
- * TODO(backend): Replace mock implementations with real Supabase queries:
- *   supabase.from('items').select('*, profiles!owner_id(display_name)')
- * RLS ensures users only see items in their circle.
+ * RLS: owners have full access to their items; circle members can SELECT
+ * items in their circle. Soft-delete sets status to 'unavailable' (there's
+ * no 'removed' enum value; the schema uses 'available', 'borrowed', 'unavailable').
  */
 
-import type { Item, CreateItemInput, CollectionInsights } from '@/types/items';
-import { mockItems, mockCurrentUser } from './mockData';
+import { supabase } from '@/lib/supabase';
+import type {
+  Item,
+  ItemPhoto,
+  Database,
+} from '@/types';
+import type { CollectionInsights } from '@/types/items';
 
-/** Simulated network latency. */
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+type ItemInsert = Database['public']['Tables']['items']['Insert'];
+type ItemUpdate = Database['public']['Tables']['items']['Update'];
+
+/** Item with its photos joined. */
+export type ItemWithPhotos = Item & { item_photos?: ItemPhoto[] };
+
+/**
+ * Fetch all items in a circle (RLS filters to circle members).
+ */
+export async function getItems(circleId: string): Promise<Item[]> {
+  const { data, error } = await supabase
+    .from('items')
+    .select('*')
+    .eq('circle_id', circleId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data ?? [];
 }
 
-/** Fetch all items for the current user (owned items). */
-export async function getMyItems(): Promise<Item[]> {
-  await delay(400);
-  return mockItems.filter((item) => item.owner_id === mockCurrentUser.id);
+/**
+ * Fetch a single item by ID, including its photos.
+ */
+export async function getItem(id: string): Promise<ItemWithPhotos | null> {
+  const { data, error } = await supabase
+    .from('items')
+    .select('*, item_photos(*)')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
 }
 
-/** Fetch items owned by a specific user (for circle browsing). */
-export async function getUserItems(userId: string, onlyLendable = false): Promise<Item[]> {
-  await delay(400);
-  let items = mockItems.filter((item) => item.owner_id === userId);
-  if (onlyLendable) {
-    items = items.filter((item) => item.is_lendable && !item.is_private);
+/**
+ * Create a new item.
+ */
+export async function createItem(data: ItemInsert): Promise<Item> {
+  const { data: item, error } = await supabase
+    .from('items')
+    .insert(data)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return item;
+}
+
+/**
+ * Update an existing item.
+ */
+export async function updateItem(id: string, data: ItemUpdate): Promise<Item> {
+  const { data: item, error } = await supabase
+    .from('items')
+    .update(data)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return item;
+}
+
+/**
+ * Soft-delete an item by setting status to 'unavailable'.
+ * (The item_status enum has no 'removed' value.)
+ */
+export async function deleteItem(id: string): Promise<void> {
+  const { error } = await supabase
+    .from('items')
+    .update({ status: 'unavailable' })
+    .eq('id', id);
+
+  if (error) throw error;
+}
+
+/**
+ * Fetch all items owned by a user.
+ */
+export async function getMyItems(userId: string): Promise<Item[]> {
+  const { data, error } = await supabase
+    .from('items')
+    .select('*')
+    .eq('owner_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+/**
+ * Fetch the current user's items (uses auth.uid() via RLS).
+ * Returns items where owner_id matches the authenticated user.
+ */
+export async function getMyItemsForCurrentUser(): Promise<Item[]> {
+  const { data, error } = await supabase
+    .from('items')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+/**
+ * Compute collection insights for the current user's items.
+ */
+export async function getCollectionInsights(): Promise<CollectionInsights | null> {
+  const items = await getMyItemsForCurrentUser();
+  if (items.length === 0) {
+    return {
+      totalValue: 0,
+      totalItems: 0,
+      currency: 'AED',
+      mostValuableItem: null,
+      leastUsedItem: null,
+      itemsLent: 0,
+    };
   }
-  return items;
-}
 
-/** Fetch all items in the user's circle (for circle screen). */
-export async function getCircleItems(onlyLendable = false): Promise<Item[]> {
-  await delay(400);
-  let items = [...mockItems];
-  if (onlyLendable) {
-    items = items.filter((item) => item.is_lendable && !item.is_private);
-  }
-  return items;
-}
+  const totalValue = items.reduce((sum, item) => sum + (item.estimated_value ?? 0), 0);
+  const itemsLent = items.filter((item) => item.status === 'borrowed').length;
 
-/** Fetch a single item by ID. */
-export async function getItem(id: string): Promise<Item | null> {
-  await delay(300);
-  return mockItems.find((item) => item.id === id) ?? null;
-}
+  const valuedItems = items.filter((item) => item.estimated_value != null);
+  const mostValuableItem = valuedItems.length > 0
+    ? valuedItems.reduce((max, item) => (item.estimated_value! > (max.estimated_value ?? 0) ? item : max))
+    : null;
 
-/** Create a new item. Returns the created item. */
-export async function createItem(input: CreateItemInput): Promise<Item> {
-  await delay(600);
-  const newItem: Item = {
-    id: `item-${Date.now()}`,
-    owner_id: mockCurrentUser.id,
-    owner_name: mockCurrentUser.full_name,
-    circle_id: mockCurrentUser.circle_id,
-    brand: input.brand,
-    model_name: input.model_name ?? null,
-    category: input.category ?? null,
-    color: null,
-    size: null,
-    material: null,
-    condition: input.condition ?? 'good',
-    status: 'available',
-    purchase_price: null,
-    estimated_value: input.estimated_value ?? null,
-    currency: input.currency ?? 'AED',
-    notes: input.notes ?? null,
-    primary_image_url: null,
-    is_private: input.is_private ?? false,
-    is_lendable: input.is_lendable ?? true,
-    authenticity_verified: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
-  // TODO(backend): Insert into Supabase and return the real row
-  mockItems.unshift(newItem);
-  return newItem;
-}
-
-/** Update item visibility/lendability. */
-export async function updateItem(
-  id: string,
-  updates: Partial<Pick<Item, 'is_private' | 'is_lendable' | 'status'>>,
-): Promise<void> {
-  await delay(300);
-  const item = mockItems.find((i) => i.id === id);
-  if (item) {
-    Object.assign(item, updates);
-  }
-}
-
-/** Get collection insights for the home screen. */
-export async function getCollectionInsights(): Promise<CollectionInsights> {
-  await delay(300);
-  const myItems = mockItems.filter((item) => item.owner_id === mockCurrentUser.id);
-  const totalValue = myItems.reduce((sum, item) => sum + (item.estimated_value ?? 0), 0);
-  const itemsLent = myItems.filter((item) => item.status === 'borrowed').length;
-
-  const mostValuable = myItems.reduce(
-    (max, item) => ((item.estimated_value ?? 0) > (max?.estimated_value ?? 0) ? item : max),
-    null as Item | null,
-  );
-
-  // "Least used" = oldest created_at that's available
-  const leastUsed = myItems
-    .filter((item) => item.status === 'available')
-    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())[0] ?? null;
+  // "Least used" = unavailable items, or just the oldest
+  const leastUsedItem = items.find((item) => item.status === 'unavailable') ?? items[items.length - 1];
 
   return {
     totalValue,
-    totalItems: myItems.length,
-    currency: 'AED',
-    mostValuableItem: mostValuable ?? null,
-    leastUsedItem: leastUsed,
+    totalItems: items.length,
+    currency: items[0]?.currency ?? 'AED',
+    mostValuableItem: mostValuableItem as unknown as CollectionInsights['mostValuableItem'],
+    leastUsedItem: leastUsedItem as unknown as CollectionInsights['leastUsedItem'],
     itemsLent,
   };
 }

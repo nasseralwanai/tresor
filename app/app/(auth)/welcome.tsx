@@ -29,7 +29,7 @@ export default function WelcomeScreen() {
       <View style={styles.footer}>
         <PrimaryButton
           label="Get Started"
-          onPress={() => router.push('/(auth)/invite-code')}
+          onPress={() => router.push('/(auth)/phone-otp')}
         />
         <Text style={[styles.footerText, { color: colors.textSecondary }]}>
           Invitation only · Join your circle

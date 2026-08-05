@@ -20,20 +20,33 @@ import { Card } from '@/components/Card';
 import { Avatar } from '@/components/Avatar';
 import { Toggle } from '@/components/Toggle';
 import { hapticLight, hapticSuccess } from '@/lib/haptics';
-import { getCurrentUser, getMyCircle, getMyItems } from '@/lib/mockApi';
+import { getCurrentUserInfo } from '@/lib/profile';
+import { getMyItems } from '@/lib/items';
+import { getMyCircle } from '@/lib/circle';
 import { formatRelativeTime } from '@/lib/format';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function ProfileScreen() {
   const colors = useThemeColors();
+  const { user, signOut } = useAuth();
   const [darkMode, setDarkMode] = useState(false);
-  const user = useMemo(() => getCurrentUser(), []);
+  const [userInfo, setUserInfo] = useState<{
+    id: string;
+    full_name: string;
+    avatar_url: string | null;
+    phone: string | null;
+    created_at: string;
+  } | null>(null);
   const [itemCount, setItemCount] = useState(0);
   const [circle, setCircle] = useState<{ id: string; name: string } | null>(null);
 
   useMemo(() => {
-    getMyItems().then((items) => setItemCount(items.length));
-    getMyCircle().then(setCircle);
-  }, []);
+    if (user?.id) {
+      getCurrentUserInfo(user.id).then(setUserInfo);
+      getMyItems(user.id).then((items) => setItemCount(items.length));
+      getMyCircle(user.id).then(setCircle);
+    }
+  }, [user?.id]);
 
   const stats = [
     { label: 'Items Owned', value: itemCount, icon: 'treasure-chest' },
@@ -45,7 +58,7 @@ export default function ProfileScreen() {
     hapticSuccess();
     Alert.alert('Sign Out', 'This will sign you out of Trésor.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: () => {} },
+      { text: 'Sign Out', style: 'destructive', onPress: () => signOut() },
     ]);
   };
 
@@ -56,12 +69,12 @@ export default function ProfileScreen() {
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Profile header */}
           <View style={styles.profileHeader}>
-            <Avatar name={user.full_name} size="lg" />
+            <Avatar name={userInfo?.full_name ?? 'User'} size="lg" />
             <Text style={[styles.profileName, { color: colors.textPrimary }]}>
-              {user.full_name}
+              {userInfo?.full_name ?? 'User'}
             </Text>
             <Text style={[styles.profilePhone, { color: colors.textSecondary }]}>
-              {user.phone}
+              {userInfo?.phone ?? ''}
             </Text>
           </View>
 
@@ -93,7 +106,7 @@ export default function ProfileScreen() {
                 {circle.name}
               </Text>
               <Text style={[styles.circleInfo, { color: colors.textSecondary }]}>
-                Member since {formatRelativeTime(user.created_at)}
+                Member since {formatRelativeTime(userInfo?.created_at ?? new Date().toISOString())}
               </Text>
             </Card>
           )}

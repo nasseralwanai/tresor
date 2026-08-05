@@ -17,15 +17,18 @@ import { Avatar } from "@/components/Avatar";
 import { ItemPhotoPlaceholder } from "@/components/ItemPhotoPlaceholder";
 import { Skeleton } from "@/components/Skeleton";
 import { hapticLight } from "@/lib/haptics";
-import { getCircleMembers, getUserItems } from "@/lib/mockApi";
+import { getCircleMembers, getMyCircle } from "@/lib/circle";
+import { getUserItems } from "@/lib/items";
 import { formatCurrencyCompact, capitalize } from "@/lib/format";
-import type { MockMember } from "@/lib/mockData";
+import { useAuth } from "@/hooks/useAuth";
+import type { CircleMemberWithItems } from "@/lib/circle";
 import type { Item } from "@/types/items";
 
 export default function CircleScreen() {
   const colors = useThemeColors();
-  const [members, setMembers] = useState<MockMember[]>([]);
-  const [selectedMember, setSelectedMember] = useState<MockMember | null>(null);
+  const { user } = useAuth();
+  const [members, setMembers] = useState<CircleMemberWithItems[]>([]);
+  const [selectedMember, setSelectedMember] = useState<CircleMemberWithItems | null>(null);
   const [memberItems, setMemberItems] = useState<Item[]>([]);
   const [onlyLendable, setOnlyLendable] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -33,13 +36,14 @@ export default function CircleScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const loadMembers = useCallback(async () => {
-    const data = await getCircleMembers();
+    if (!user?.id) { setLoading(false); return; }
+    const data = await getCircleMembers(user.id);
     setMembers(data); setLoading(false); setRefreshing(false);
-  }, []);
+  }, [user?.id]);
   useMemo(() => { loadMembers(); }, []);
   const onRefresh = useCallback(() => { setRefreshing(true); loadMembers(); }, [loadMembers]);
 
-  const handleMemberPress = useCallback(async (member: MockMember) => {
+  const handleMemberPress = useCallback(async (member: CircleMemberWithItems) => {
     hapticLight(); setSelectedMember(member); setLoadingItems(true);
     const items = await getUserItems(member.id);
     setMemberItems(items); setLoadingItems(false);
@@ -72,14 +76,14 @@ export default function CircleScreen() {
   if (selectedMember) {
     return (
       <>
-        <Stack.Screen options={{ title: selectedMember.full_name }} />
+        <Stack.Screen options={{ title: selectedMember.display_name ?? 'Unknown' }} />
         <View style={[styles.container, { backgroundColor: colors.background }]}>
           <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => { setRefreshing(true); const items = await getUserItems(selectedMember.id, onlyLendable); setMemberItems(items); setRefreshing(false); }} tintColor={colors.accent} />}>
             <View style={styles.memberHeader}>
               <TouchableOpacity onPress={handleBack} style={styles.backBtn}><MaterialCommunityIcons name="chevron-left" size={24} color={colors.textPrimary} /></TouchableOpacity>
-              <Avatar name={selectedMember.full_name} size="lg" />
+              <Avatar name={selectedMember.display_name ?? 'Unknown'} size="lg" />
               <View style={{ flex: 1, marginLeft: spacing.md }}>
-                <Text style={[styles.memberName, { color: colors.textPrimary }]}>{selectedMember.full_name}</Text>
+                <Text style={[styles.memberName, { color: colors.textPrimary }]}>{selectedMember.display_name ?? 'Unknown'}</Text>
                 <Text style={[styles.memberCount, { color: colors.textSecondary }]}>{selectedMember.item_count} items in collection</Text>
               </View>
             </View>
@@ -124,9 +128,9 @@ export default function CircleScreen() {
               <TouchableOpacity key={member.id} onPress={() => handleMemberPress(member)} activeOpacity={0.85}>
                 <Card style={styles.memberCard}>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.md }}>
-                    <Avatar name={member.full_name} size="md" />
+                    <Avatar name={member.display_name ?? 'Unknown'} size="md" />
                     <View style={{ flex: 1 }}>
-                      <Text style={[styles.memberListName, { color: colors.textPrimary }]}>{member.full_name}</Text>
+                      <Text style={[styles.memberListName, { color: colors.textPrimary }]}>{member.display_name ?? 'Unknown'}</Text>
                       <Text style={[styles.memberListCount, { color: colors.textSecondary }]}>{member.item_count} items</Text>
                     </View>
                     <MaterialCommunityIcons name="chevron-right" size={22} color={colors.textSecondary} />

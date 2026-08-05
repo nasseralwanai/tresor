@@ -4,24 +4,47 @@
 
 import { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { Card } from '@/components/Card';
 import { PrimaryButton } from '@/components/PrimaryButton';
-import { hapticSuccess } from '@/lib/haptics';
-import { requestBorrow } from '@/lib/mockApi';
+import { hapticSuccess, hapticError } from '@/lib/haptics';
+import { useAuth } from '@/hooks/useAuth';
+import { requestBorrow } from '@/lib/borrow';
+import { getItem } from '@/lib/items';
 
 export default function BorrowRequestScreen() {
   const colors = useThemeColors();
+  const { user } = useAuth();
+  const { itemId } = useLocalSearchParams<{ itemId?: string }>();
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    if (!user?.id || !itemId) return;
     setSubmitting(true);
-    await requestBorrow('', note.trim() || undefined);
-    hapticSuccess();
-    setSubmitting(false);
+    try {
+      // Fetch the item to get the lender ID and circle ID
+      const item = await getItem(itemId);
+      if (!item) {
+        hapticError();
+        setSubmitting(false);
+        return;
+      }
+      await requestBorrow({
+        itemId,
+        borrowerId: user.id,
+        lenderId: item.owner_id,
+        circleId: item.circle_id,
+        note: note.trim() || null,
+      });
+      hapticSuccess();
+    } catch {
+      hapticError();
+    } finally {
+      setSubmitting(false);
+    }
     router.back();
   };
 

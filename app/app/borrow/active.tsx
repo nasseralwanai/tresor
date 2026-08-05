@@ -20,21 +20,23 @@ import { Avatar } from '@/components/Avatar';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { hapticLight, hapticSuccess } from '@/lib/haptics';
-import { getMyActiveBorrows, markReturned, nudgeBorrower, getCurrentUser } from '@/lib/mockApi';
+import { getActiveBorrows, markReturned, nudgeBorrower } from '@/lib/borrow';
 import { formatDate, formatRelativeTime } from '@/lib/format';
-import type { BorrowTransaction } from '@/types/items';
+import { useAuth } from '@/hooks/useAuth';
+import type { BorrowTransactionEnriched } from '@/lib/borrow';
 
 export default function ActiveBorrowScreen() {
   const colors = useThemeColors();
-  const [borrows, setBorrows] = useState<BorrowTransaction[]>([]);
+  const { user } = useAuth();
+  const [borrows, setBorrows] = useState<BorrowTransactionEnriched[]>([]);
   const [loading, setLoading] = useState(true);
-  const currentUser = useMemo(() => getCurrentUser(), []);
 
   const loadData = useCallback(async () => {
-    const data = await getMyActiveBorrows();
+    if (!user?.id) { setLoading(false); return; }
+    const data = await getActiveBorrows(user.id);
     setBorrows(data);
     setLoading(false);
-  }, []);
+  }, [user?.id]);
 
   useMemo(() => {
     loadData();
@@ -86,7 +88,7 @@ export default function ActiveBorrowScreen() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.list}>
           {borrows.map((borrow) => {
-            const isLender = borrow.lender_id === currentUser.id;
+            const isLender = borrow.lender_id === user?.id;
             const otherPerson = isLender ? borrow.borrower_name : borrow.lender_name;
 
             return (

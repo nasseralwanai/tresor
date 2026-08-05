@@ -22,14 +22,9 @@ import { Avatar } from '@/components/Avatar';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { hapticLight, hapticSuccess } from '@/lib/haptics';
-import { getItem, updateItem } from '@/lib/mockApi';
-import {
-  getActiveBorrowForItem,
-  getItemBorrowHistory,
-  markReturned,
-  requestBorrow,
-} from '@/lib/mockApi';
-import { getCurrentUser } from '@/lib/mockApi';
+import { getItem, updateItem, getActiveBorrowForItem, getItemBorrowHistory } from '@/lib/items';
+import { markReturned, requestBorrow } from '@/lib/borrow';
+import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency, formatEnum, formatDate, formatRelativeTime } from '@/lib/format';
 import type { Item, BorrowTransaction } from '@/types/items';
 
@@ -45,7 +40,7 @@ export default function ItemDetailScreen() {
   const [activeBorrow, setActiveBorrow] = useState<BorrowTransaction | null>(null);
   const [isPrivate, setIsPrivate] = useState(false);
   const [isLendable, setIsLendable] = useState(true);
-  const currentUser = useMemo(() => getCurrentUser(), []);
+  const { user } = useAuth();
 
   const loadData = useCallback(async () => {
     if (!id) return;
@@ -84,8 +79,13 @@ export default function ItemDetailScreen() {
 
   const handleRequestBorrow = async () => {
     hapticSuccess();
-    if (item) {
-      await requestBorrow(item.id);
+    if (item && user?.id) {
+      await requestBorrow({
+        itemId: item.id,
+        borrowerId: user.id,
+        lenderId: item.owner_id,
+        circleId: item.circle_id,
+      });
       router.push('/borrow/request' as any);
     }
   };
@@ -121,8 +121,8 @@ export default function ItemDetailScreen() {
     );
   }
 
-  const isOwner = item.owner_id === currentUser.id;
-  const isBorrowedByMe = activeBorrow?.borrower_id === currentUser.id;
+  const isOwner = item.owner_id === user?.id;
+  const isBorrowedByMe = activeBorrow?.borrower_id === user?.id;
   const canBorrow = !isOwner && item.is_lendable && !activeBorrow;
 
   return (

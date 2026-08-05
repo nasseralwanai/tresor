@@ -1,7 +1,13 @@
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+/**
+ * Add Item screen — options for adding new items.
+ * Photo (AI), Link, Manual entry, and Bulk Import.
+ */
+
+import { View, StyleSheet, TouchableOpacity, Text, Alert } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
+import { hapticLight } from '@/lib/haptics';
 
 export default function AddScreen() {
   const colors = useThemeColors();
@@ -13,6 +19,17 @@ export default function AddScreen() {
     { icon: 'view-grid-outline', label: 'Bulk Import', subtitle: 'Scan multiple items at once' },
   ];
 
+  const handleOption = (label: string) => {
+    hapticLight();
+    if (label === 'Bulk Import') {
+      router.push('/add/bulk-import' as any);
+    } else if (label === 'Manual') {
+      router.push('/add/manual' as any);
+    } else {
+      Alert.alert('Coming Soon', `${label} entry is not yet available. Use Manual entry for now.`);
+    }
+  };
+
   return (
     <>
       <Stack.Screen options={{ title: 'Add Item' }} />
@@ -23,11 +40,7 @@ export default function AddScreen() {
               key={index}
               style={[styles.optionCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
               activeOpacity={0.7}
-              onPress={() => {
-                if (option.label === 'Bulk Import') {
-                  router.push('/add/bulk-import' as any);
-                }
-              }}
+              onPress={() => handleOption(option.label)}
             >
               <View style={[styles.optionIcon, { backgroundColor: colors.surfaceElevated }]}>
                 <MaterialCommunityIcons name={option.icon as any} size={28} color={colors.accent} />

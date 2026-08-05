@@ -1,183 +1,530 @@
 /**
- * My Trésor screen — shows the authenticated user's items.
- * Fetches items owned by the current user via getMyItems().
+ * Home Screen — My Trésor
+ *
+ * Boutique shelf layout: collection insights card, category rows,
+ * pull-to-refresh, loading skeleton state.
+ *
+ * Uses mockApi during UI development. When auth is wired, switch
+ * imports from '@/lib/mockApi' to '@/lib/items'.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  FlatList,
-  RefreshControl,
+  ScrollView,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
-import { EmptyState } from '@/components/EmptyState';
-import { useAuth } from '@/hooks/useAuth';
-import { getMyItems } from '@/lib/items';
-import type { Item } from '@/types';
+import { Card } from '@/components/Card';
+import { ItemCard } from '@/components/ItemCard';
+import { Avatar } from '@/components/Avatar';
+import { Skeleton } from '@/components/Skeleton';
+import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
+import { hapticLight } from '@/lib/haptics';
+import { getMyItems, getCollectionInsights } from '@/lib/mockApi';
+import { formatCurrency, formatCurrencyCompact, capitalize } from '@/lib/format';
+import type { Item, CollectionInsights } from '@/types/items';
+
+const CATEGORY_LABELS: Record<string, string> = {
+  bag: 'Bags',
+  jewelry: 'Jewelry',
+  watch: 'Watches',
+  shoes: 'Shoes',
+  clothing: 'Clothing',
+  accessories: 'Accessories',
+  other: 'Other',
+};
 
 export default function MyTresorScreen() {
   const colors = useThemeColors();
-  const { user } = useAuth();
   const [items, setItems] = useState<Item[]>([]);
+  const [insights, setInsights] = useState<CollectionInsights | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchItems = useCallback(async () => {
-    if (!user?.id) return;
-    try {
-      const data = await getMyItems(user.id);
-      setItems(data);
-    } catch (e) {
-      console.error('[MyTresor] Failed to fetch items:', e);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [user?.id]);
+  const loadData = useCallback(async () => {
+    const [itemsData, insightsData] = await Promise.all([
+      getMyItems(),
+      getCollectionInsights(),
+    ]);
+    setItems(itemsData);
+    setInsights(insightsData);
+    setLoading(false);
+    setRefreshing(false);
+  }, []);
 
-  useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+  useMemo(() => {
+    loadData();
+  }, []);
 
-  const onRefresh = () => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchItems();
+    loadData();
+  }, [loadData]);
+
+  const itemsByCategory = useMemo(() => {
+    const groups: Record<string, Item[]> = {};
+    for (const item of items) {
+      const cat = item.category ?? 'other';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(item);
+    }
+    return groups;
+  }, [items]);
+
+  const handleItemPress = (item: Item) => {
+    router.push(`/item/${item.id}` as any);
   };
 
-  const renderItem = ({ item }: { item: Item }) => (
-    <TouchableOpacity
-      style={[styles.itemCard, { backgroundColor: colors.surface }]}
-      activeOpacity={0.7}
-    >
-      <View style={[styles.itemIcon, { backgroundColor: colors.surfaceElevated }]}>
-        <MaterialCommunityIcons
-          name={getCategoryIcon(item.category) as any}
-          size={24}
-          color={colors.accent}
-        />
-      </View>
-      <View style={styles.itemInfo}>
-        <Text style={[styles.itemBrand, { color: colors.textPrimary }]} numberOfLines={1}>
-          {item.brand}
-        </Text>
-        {item.model_name && (
-          <Text style={[styles.itemModel, { color: colors.textSecondary }]} numberOfLines={1}>
-            {item.model_name}
-          </Text>
-        )}
-        <View style={styles.itemMeta}>
-          {item.estimated_value != null && (
-            <Text style={[styles.itemValue, { color: colors.accent }]}>
-              {item.currency} {item.estimated_value.toLocaleString()}
-            </Text>
-          )}
-          <View style={[styles.statusBadge, { backgroundColor: colors.surfaceElevated }]}>
-            <Text style={[styles.statusText, { color: colors.textSecondary }]}>
-              {item.status.replace('_', ' ')}
-            </Text>
-          </View>
-        </View>
-      </View>
-      <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textSecondary} />
-    </TouchableOpacity>
-  );
-
-  if (!loading && items.length === 0) {
+  if (loading) {
     return (
       <>
         <Stack.Screen options={{ title: 'My Trésor' }} />
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-          <EmptyState
-            icon="treasure-chest"
-            title="Your Collection Awaits"
-            subtitle="Tap the + button to add your first luxury piece"
-          />
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <HomeSkeleton />
+          </ScrollView>
         </View>
       </>
     );
   }
 
+  const emptyCollection = items.length === 0;
+
   return (
     <>
       <Stack.Screen options={{ title: 'My Trésor' }} />
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['bottom']}>
-        <FlatList
-          data={items}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.list}
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
-        />
-      </SafeAreaView>
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.greeting, { color: colors.textSecondary }]}>
+                {getGreeting()}
+              </Text>
+              <Text style={[styles.title, { color: colors.textPrimary }]}>My Trésor</Text>
+              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                {insights ? `${insights.totalItems} items` : `${items.length} items`}
+                {insights && insights.itemsLent > 0
+                  ? ` · ${insights.itemsLent} currently lent`
+                  : ''}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => hapticLight()}
+              style={[styles.iconButton, { backgroundColor: colors.surface }]}
+            >
+              <MaterialCommunityIcons name="bell-outline" size={18} color={colors.textPrimary} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Collection Insights */}
+          {insights && !emptyCollection && (
+            <View style={styles.section}>
+              <Card>
+                <Text style={[styles.kicker, { color: colors.accent }]}>COLLECTION INSIGHTS</Text>
+                <Text style={[styles.insightValue, { color: colors.textPrimary }]}>
+                  {formatCurrency(insights.totalValue, insights.currency)}
+                </Text>
+                <Text style={[styles.insightSub, { color: colors.textSecondary }]}>
+                  across {insights.totalItems} items
+                </Text>
+                <View style={styles.insightRow}>
+                  {insights.mostValuableItem && (
+                    <View style={[styles.insightCard, { backgroundColor: colors.surfaceElevated }]}>
+                      <Text style={[styles.insightLabel, { color: colors.textSecondary }]}>
+                        Most Valuable
+                      </Text>
+                      <Text style={[styles.insightItemBrand, { color: colors.textPrimary }]} numberOfLines={1}>
+                        {insights.mostValuableItem.brand}
+                      </Text>
+                      <Text style={[styles.insightItemValue, { color: colors.accent }]}>
+                        {formatCurrencyCompact(
+                          insights.mostValuableItem.estimated_value,
+                          insights.mostValuableItem.currency,
+                        )}
+                      </Text>
+                    </View>
+                  )}
+                  {insights.leastUsedItem && (
+                    <View style={[styles.insightCard, { backgroundColor: colors.surfaceElevated }]}>
+                      <Text style={[styles.insightLabel, { color: colors.textSecondary }]}>
+                        Least Used
+                      </Text>
+                      <Text style={[styles.insightItemBrand, { color: colors.textPrimary }]} numberOfLines={1}>
+                        {insights.leastUsedItem.brand}
+                      </Text>
+                      <Text style={[styles.insightItemValue, { color: colors.textSecondary }]}>
+                        {capitalize(insights.leastUsedItem.category ?? 'item')}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              </Card>
+            </View>
+          )}
+
+          {/* Lent nudge */}
+          {insights && insights.itemsLent > 0 && (
+            <View style={styles.section}>
+              <View style={[styles.nudgeCard, { backgroundColor: colors.surfaceElevated }]}>
+                <Avatar name="Mona A." size="sm" />
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.nudgeItem, { color: colors.textPrimary }]} numberOfLines={1}>
+                    Chanel Classic Flap
+                  </Text>
+                  <Text style={[styles.nudgeSub, { color: colors.textSecondary }]}>
+                    Still with Mona A. — two weeks
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => hapticLight()}
+                  style={[styles.nudgeBtn, { backgroundColor: colors.surface }]}
+                >
+                  <Text style={[styles.nudgeBtnText, { color: colors.textPrimary }]}>Nudge</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+
+          {/* Empty state */}
+          {emptyCollection && (
+            <View style={styles.emptyWrap}>
+              <View style={[styles.emptyIcon, { backgroundColor: colors.surface }]}>
+                <MaterialCommunityIcons name="treasure-chest" size={40} color={colors.accent} />
+              </View>
+              <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+                Your Collection Awaits
+              </Text>
+              <Text style={[styles.emptySub, { color: colors.textSecondary }]}>
+                Tap the + button to add your first luxury piece
+              </Text>
+            </View>
+          )}
+
+          {/* Recently Added (featured carousel) */}
+          {!emptyCollection && items.length > 0 && (
+            <View style={styles.section}>
+              <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>
+                RECENTLY ADDED
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.carousel}
+              >
+                {items.slice(0, 5).map((item) => (
+                  <ItemCard key={item.id} item={item} onPress={handleItemPress} />
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* Category shelves */}
+          {!emptyCollection &&
+            Object.entries(itemsByCategory).map(([category, catItems]) => (
+              <View key={category} style={styles.shelfSection}>
+                <View style={styles.shelfHeader}>
+                  <Text style={[styles.shelfName, { color: colors.textPrimary }]}>
+                    {CATEGORY_LABELS[category] ?? capitalize(category)}
+                  </Text>
+                  <Text style={[styles.shelfCount, { color: colors.textSecondary }]}>
+                    {catItems.length} {catItems.length === 1 ? 'item' : 'items'}
+                  </Text>
+                </View>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.shelfRow}
+                >
+                  {catItems.map((item) => (
+                    <ShelfItem key={item.id} item={item} onPress={handleItemPress} />
+                  ))}
+                </ScrollView>
+              </View>
+            ))}
+
+          <View style={{ height: spacing.xl }} />
+        </ScrollView>
+      </View>
     </>
   );
 }
 
-function getCategoryIcon(category: string | null): string {
-  switch (category) {
-    case 'bag': return 'handbag-outline';
-    case 'watch': return 'watch-variant';
-    case 'jewelry': return 'diamond-stone';
-    case 'shoes': return 'shoe-heel';
-    case 'clothing': return 'tshirt-crew-outline';
-    case 'accessories': return 'sunglasses';
-    default: return 'treasure-chest';
-  }
+function ShelfItem({ item, onPress }: { item: Item; onPress: (item: Item) => void }) {
+  const colors = useThemeColors();
+
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        hapticLight();
+        onPress(item);
+      }}
+      activeOpacity={0.85}
+      style={styles.shelfItem}
+    >
+      <View style={{ position: 'relative' }}>
+        <ItemPhotoPlaceholder letter={item.brand} size={100} style={styles.shelfPhoto} />
+        {item.status === 'borrowed' && (
+          <View style={[styles.shelfDot, { backgroundColor: colors.gold }]} />
+        )}
+      </View>
+      <Text style={[styles.shelfBrand, { color: colors.textPrimary }]} numberOfLines={1}>
+        {item.brand}
+      </Text>
+      <Text style={[styles.shelfModel, { color: colors.textSecondary }]} numberOfLines={1}>
+        {item.model_name || '—'}
+      </Text>
+      <Text style={[styles.shelfPrice, { color: colors.accent }]}>
+        {formatCurrencyCompact(item.estimated_value, item.currency)}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+function HomeSkeleton() {
+  const colors = useThemeColors();
+  return (
+    <View style={styles.section}>
+      <Skeleton width={120} height={14} style={{ marginBottom: spacing.xs }} />
+      <Skeleton width={200} height={28} style={{ marginBottom: spacing.xs }} />
+      <Skeleton width={100} height={14} style={{ marginBottom: spacing.lg }} />
+      <Card>
+        <Skeleton width={120} height={10} style={{ marginBottom: spacing.sm }} />
+        <Skeleton width={180} height={26} style={{ marginBottom: spacing.xs }} />
+        <Skeleton width={140} height={12} />
+      </Card>
+      <View style={{ marginTop: spacing.lg }}>
+        <Skeleton width={120} height={10} style={{ marginBottom: spacing.sm }} />
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          {[1, 2, 3].map((i) => (
+            <View key={i} style={[styles.skeletonCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Skeleton width="100%" height={130} borderRadius={0} />
+              <View style={{ padding: 11 }}>
+                <Skeleton width={60} height={9} style={{ marginBottom: 4 }} />
+                <Skeleton width={100} height={14} style={{ marginBottom: 4 }} />
+                <Skeleton width={50} height={11} />
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  list: {
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
-  itemCard: {
+  header: {
     flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    borderRadius: radius.lg,
-    gap: spacing.md,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg + 6,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
   },
-  itemIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  itemBrand: {
-    ...typography.headline,
+  greeting: {
+    ...typography.footnote,
     marginBottom: 2,
   },
-  itemModel: {
-    ...typography.subheadline,
+  title: {
+    ...typography.title1,
+    fontSize: 26,
+    lineHeight: 32,
+  },
+  subtitle: {
+    ...typography.caption1,
+    marginTop: 4,
+  },
+  iconButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 4,
+  },
+  section: {
+    paddingHorizontal: spacing.lg + 6,
+    marginBottom: spacing.lg,
+  },
+  kicker: {
+    ...typography.caption2,
+    fontSize: 10,
+    fontWeight: '500',
+    letterSpacing: 1.5,
+    marginBottom: 6,
+  },
+  insightValue: {
+    fontSize: 24,
+    fontWeight: '500',
+    letterSpacing: -0.3,
+  },
+  insightSub: {
+    ...typography.caption1,
+    marginTop: 2,
+  },
+  insightRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  insightCard: {
+    flex: 1,
+    borderRadius: radius.md,
+    padding: spacing.md - 2,
+  },
+  insightLabel: {
+    ...typography.caption2,
+    fontSize: 10,
     marginBottom: 4,
   },
-  itemMeta: {
+  insightItemBrand: {
+    ...typography.bodyEmphasized,
+    fontSize: 13,
+    marginBottom: 2,
+  },
+  insightItemValue: {
+    ...typography.caption1,
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  nudgeCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.md - 2,
+    padding: spacing.md - 2,
+    borderRadius: radius.lg,
   },
-  itemValue: {
-    ...typography.footnote,
-    fontWeight: '600',
+  nudgeItem: {
+    ...typography.bodyEmphasized,
+    fontSize: 13,
   },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: radius.pill,
+  nudgeSub: {
+    ...typography.caption1,
+    fontSize: 10,
+    marginTop: 1,
   },
-  statusText: {
+  nudgeBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: radius.sm,
+  },
+  nudgeBtnText: {
     ...typography.caption2,
-    textTransform: 'capitalize',
+    fontSize: 11,
+  },
+  sectionLabel: {
+    ...typography.caption2,
+    fontSize: 10,
+    fontWeight: '500',
+    letterSpacing: 1.5,
+    marginBottom: spacing.sm,
+  },
+  carousel: {
+    gap: 10,
+    paddingRight: spacing.lg + 6,
+  },
+  shelfSection: {
+    marginBottom: spacing.lg,
+  },
+  shelfHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    paddingHorizontal: spacing.lg + 6,
+    marginBottom: spacing.sm,
+  },
+  shelfName: {
+    ...typography.bodyEmphasized,
+    fontSize: 15,
+  },
+  shelfCount: {
+    ...typography.caption1,
+    fontSize: 10,
+  },
+  shelfRow: {
+    gap: 10,
+    paddingHorizontal: spacing.lg + 6,
+    paddingRight: spacing.lg + 6,
+  },
+  shelfItem: {
+    width: 100,
+    flexShrink: 0,
+  },
+  shelfPhoto: {
+    width: 100,
+    height: 100,
+    marginBottom: 5,
+  },
+  shelfDot: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  shelfBrand: {
+    ...typography.caption2,
+    fontSize: 9,
+    fontWeight: '500',
+  },
+  shelfModel: {
+    ...typography.caption1,
+    fontSize: 10,
+    lineHeight: 13,
+    marginTop: 1,
+  },
+  shelfPrice: {
+    ...typography.caption1,
+    fontSize: 10,
+    fontWeight: '500',
+    marginTop: 1,
+  },
+  emptyWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: spacing.xxl,
+    paddingHorizontal: spacing.xl,
+  },
+  emptyIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  emptyTitle: {
+    ...typography.title3,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  emptySub: {
+    ...typography.body,
+    textAlign: 'center',
+  },
+  skeletonCard: {
+    width: 210,
+    borderRadius: radius.lg,
+    borderWidth: 0.5,
+    overflow: 'hidden',
   },
 });

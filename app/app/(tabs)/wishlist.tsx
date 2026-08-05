@@ -1,324 +1,193 @@
 /**
- * Wishlist Screen — two tabs: "My Wishlist" and "Friends' Dreams".
- * My Wishlist: items with savings progress bars, target price, "Drop Hint" button.
- * Friends' Dreams: circle members' wishlist items with react/comment capability.
+ * Wishlist screen — shows the user's wishlist items with savings goals.
+ * Allows adding new items and updating savings.
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, RefreshControl,
+  View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, Modal, TextInput, Alert,
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
-import { Card } from '@/components/Card';
-import { Avatar } from '@/components/Avatar';
-import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
+import { EmptyState } from '@/components/EmptyState';
 import { PrimaryButton } from '@/components/PrimaryButton';
-import { Skeleton } from '@/components/Skeleton';
-import { hapticLight, hapticSuccess } from '@/lib/haptics';
-import { getMyWishlist, getFriendsWishlist, createWishlistItem } from '@/lib/mockApi';
-import { formatCurrency, formatRelativeTime } from '@/lib/format';
-import type { WishlistItem } from '@/types/items';
-
-type Tab = 'mine' | 'friends';
+import { useAuth } from '@/hooks/useAuth';
+import { getWishlist, addToWishlist, removeFromWishlist, updateSavings } from '@/lib/wishlist';
+import { hapticSuccess, hapticError } from '@/lib/haptics';
+import type { WishlistItem } from '@/types';
 
 export default function WishlistScreen() {
   const colors = useThemeColors();
-  const [tab, setTab] = useState<Tab>('mine');
-  const [myItems, setMyItems] = useState<WishlistItem[]>([]);
-  const [friendItems, setFriendItems] = useState<WishlistItem[]>([]);
+  const { user } = useAuth();
+  const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
 
-  const loadData = useCallback(async () => {
-    const [mine, friends] = await Promise.all([getMyWishlist(), getFriendsWishlist()]);
-    setMyItems(mine);
-    setFriendItems(friends);
-    setLoading(false);
-    setRefreshing(false);
-  }, []);
+  const fetchItems = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const data = await getWishlist(user.id);
+      setItems(data);
+    } catch (e) {
+      console.error('[Wishlist] Failed to fetch:', e);
+    } finally {
+      setLoading(false); setRefreshing(false);
+    }
+  }, [user?.id]);
 
-  useMemo(() => { loadData(); }, []);
+  useEffect(() => { fetchItems(); }, [fetchItems]);
+  const onRefresh = () => { setRefreshing(true); fetchItems(); };
 
-  const onRefresh = useCallback(() => { setRefreshing(true); loadData(); }, [loadData]);
+  const handleRemove = (id: string) => {
+    Alert.alert('Remove Item', 'Remove this from your wishlist?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Remove', style: 'destructive', onPress: async () => {
+        try { await removeFromWishlist(id); hapticSuccess(); fetchItems(); }
+        catch { hapticError(); Alert.alert('Error', 'Could not remove item.'); }
+      }},
+    ]);
+  };
+
+  const handleUpdateSavings = async (id: string, currentAmount: number) => {
+    try { await updateSavings(id, currentAmount + 100); hapticSuccess(); fetchItems(); }
+    catch { hapticError(); }
+  };
+
+  const renderItem = ({ item }: { item: WishlistItem }) => {
+    const target = item.target_price ?? item.max_price ?? 0;
+    const progress = target > 0 ? Math.min((item.current_savings / target) * 100, 100) : 0;
+    const display = [item.brand, item.model_name].filter(Boolean).join(' ') || 'Wishlist Item';
+    return (
+      <View style={[styles.itemCard, { backgroundColor: colors.surface }]}>
+        <View style={styles.itemHeader}>
+          <View style={styles.itemInfo}>
+            <Text style={[styles.itemBrand, { color: colors.textPrimary }]} numberOfLines={1}>{display}</Text>
+            {item.target_price != null && (
+              <Text style={[styles.itemTarget, { color: colors.textSecondary }]}>Target: AED {item.target_price.toLocaleString()}</Text>
+            )}
+          </View>
+          <TouchableOpacity onPress={() => handleRemove(item.id)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <MaterialCommunityIcons name="close" size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+        {target > 0 && (
+          <View style={styles.savingsSection}>
+            <View style={[styles.progressBar, { backgroundColor: colors.surfaceElevated }]}>
+              <View style={[styles.progressFill, { backgroundColor: colors.accent, width: `${progress}%` }]} />
+            </View>
+            <View style={styles.savingsRow}>
+              <Text style={[styles.savingsText, { color: colors.textSecondary }]}>AED {item.current_savings.toLocaleString()} saved</Text>
+              <Text style={[styles.savingsPercent, { color: colors.accent }]}>{Math.round(progress)}%</Text>
+            </View>
+            <TouchableOpacity style={[styles.addSavingsBtn, { borderColor: colors.accent }]} onPress={() => handleUpdateSavings(item.id, item.current_savings)}>
+              <Text style={[styles.addSavingsText, { color: colors.accent }]}>+ Add AED 100</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  if (!loading && items.length === 0) {
+    return (
+      <>
+        <Stack.Screen options={{ title: 'Wishlist' }} />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <EmptyState icon="heart-outline" title="Your Wishlist" subtitle="Save items you're dreaming of and track savings goals" />
+          <View style={styles.footerButton}>
+            <PrimaryButton label="Add Wishlist Item" onPress={() => setAddModalVisible(true)} />
+          </View>
+          <AddWishlistModal visible={addModalVisible} onClose={() => setAddModalVisible(false)} onAdded={() => { setAddModalVisible(false); fetchItems(); }} />
+        </View>
+      </>
+    );
+  }
 
   return (
     <>
       <Stack.Screen options={{ title: 'Wishlist' }} />
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <View style={[styles.tabBar, { backgroundColor: colors.surfaceElevated }]}>
-          <TouchableOpacity
-            onPress={() => { hapticLight(); setTab('mine'); }}
-            style={[styles.tab, { backgroundColor: tab === 'mine' ? colors.surface : 'transparent' }]}
-          >
-            <Text style={[styles.tabText, { color: tab === 'mine' ? colors.textPrimary : colors.textSecondary }]}>My Wishlist</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => { hapticLight(); setTab('friends'); }}
-            style={[styles.tab, { backgroundColor: tab === 'friends' ? colors.surface : 'transparent' }]}
-          >
-            <Text style={[styles.tabText, { color: tab === 'friends' ? colors.textPrimary : colors.textSecondary }]}>Friends' Dreams</Text>
-          </TouchableOpacity>
-        </View>
-
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['bottom']}>
         <FlatList
-          data={tab === 'mine' ? myItems : friendItems}
+          data={items}
           keyExtractor={(item) => item.id}
+          renderItem={renderItem}
           contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
-          ListEmptyComponent={
-            loading ? (
-              <View style={{ gap: spacing.md, padding: spacing.lg + 6 }}>
-                {[1, 2].map((i) => (
-                  <Card key={i}>
-                    <Skeleton width={150} height={16} style={{ marginBottom: 8 }} />
-                    <Skeleton width={100} height={12} style={{ marginBottom: 12 }} />
-                    <Skeleton width="100%" height={6} borderRadius={3} />
-                  </Card>
-                ))}
-              </View>
-            ) : (
-              <View style={styles.emptyState}>
-                <MaterialCommunityIcons name="heart-outline" size={48} color={colors.textSecondary} />
-                <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>
-                  {tab === 'mine' ? 'No wishlist items yet' : 'No dreams to share'}
-                </Text>
-              </View>
-            )
-          }
-          renderItem={({ item }) =>
-            tab === 'mine' ? <MyWishlistCard item={item} /> : <FriendWishlistCard item={item} />
+          ListFooterComponent={
+            <View style={styles.footerButton}>
+              <PrimaryButton label="+ Add Wishlist Item" onPress={() => setAddModalVisible(true)} />
+            </View>
           }
         />
-
-        {tab === 'mine' && (
-          <TouchableOpacity
-            onPress={() => { hapticLight(); setShowAddModal(true); }}
-            style={[styles.fab, { backgroundColor: colors.accent }]}
-          >
-            <MaterialCommunityIcons name="plus" size={28} color={colors.charcoal} />
-          </TouchableOpacity>
-        )}
-
-        <AddWishlistModal visible={showAddModal} onClose={() => setShowAddModal(false)} onAdded={() => loadData()} />
-      </View>
+        <AddWishlistModal visible={addModalVisible} onClose={() => setAddModalVisible(false)} onAdded={() => { setAddModalVisible(false); fetchItems(); }} />
+      </SafeAreaView>
     </>
-  );
-}
-
-function MyWishlistCard({ item }: { item: WishlistItem }) {
-  const colors = useThemeColors();
-  const progress = item.target_price ? Math.min((item.current_savings / item.target_price) * 100, 100) : 0;
-  return (
-    <Card style={styles.wishlistCard}>
-      <View style={styles.wishlistHeader}>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.wishlistBrand, { color: colors.accent }]}>{item.brand.toUpperCase()}</Text>
-          <Text style={[styles.wishlistModel, { color: colors.textPrimary }]} numberOfLines={1}>{item.model_name || '—'}</Text>
-        </View>
-        {item.fulfilled && (
-          <View style={[styles.fulfilledBadge, { backgroundColor: 'rgba(48,164,108,0.10)' }]}>
-            <MaterialCommunityIcons name="check" size={12} color={colors.success} />
-            <Text style={[styles.fulfilledText, { color: colors.success }]}>Fulfilled</Text>
-          </View>
-        )}
-      </View>
-      {item.target_price && (
-        <View style={styles.progressSection}>
-          <View style={styles.progressInfo}>
-            <Text style={[styles.progressSaved, { color: colors.accent }]}>{formatCurrency(item.current_savings, item.currency)}</Text>
-            <Text style={[styles.progressTarget, { color: colors.textSecondary }]}>of {formatCurrency(item.target_price, item.currency)}</Text>
-          </View>
-          <View style={[styles.progressBar, { backgroundColor: colors.border }]}>
-            <View style={[styles.progressFill, { backgroundColor: colors.accent, width: `${progress}%` }]} />
-          </View>
-          <Text style={[styles.progressPct, { color: colors.textSecondary }]}>{progress.toFixed(0)}% saved</Text>
-        </View>
-      )}
-      {item.notes && (
-        <Text style={[styles.wishlistNotes, { color: colors.textSecondary }]} numberOfLines={2}>{item.notes}</Text>
-      )}
-      <View style={styles.wishlistActions}>
-        <TouchableOpacity onPress={() => hapticLight()} style={[styles.actionBtn, { borderColor: colors.border }]}>
-          <MaterialCommunityIcons name="bell-outline" size={14} color={colors.textPrimary} />
-          <Text style={[styles.actionBtnText, { color: colors.textPrimary }]}>Drop Hint</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => hapticLight()} style={[styles.actionBtn, { borderColor: colors.border }]}>
-          <MaterialCommunityIcons name="pencil-outline" size={14} color={colors.textPrimary} />
-          <Text style={[styles.actionBtnText, { color: colors.textPrimary }]}>Edit</Text>
-        </TouchableOpacity>
-      </View>
-    </Card>
-  );
-}
-
-function FriendWishlistCard({ item }: { item: WishlistItem }) {
-  const colors = useThemeColors();
-  const [reacted, setReacted] = useState(false);
-  const [showComment, setShowComment] = useState(false);
-  const [comment, setComment] = useState('');
-  return (
-    <Card style={styles.wishlistCard}>
-      <View style={styles.friendHeader}>
-        <Avatar name={item.owner_name} size="sm" />
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.friendName, { color: colors.textPrimary }]}>{item.owner_name}</Text>
-          <Text style={[styles.friendTime, { color: colors.textSecondary }]}>{formatRelativeTime(item.created_at)}</Text>
-        </View>
-      </View>
-      <View style={styles.friendItemRow}>
-        <ItemPhotoPlaceholder letter={item.brand} size={56} style={styles.friendPhoto} />
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.friendBrand, { color: colors.accent }]}>{item.brand.toUpperCase()}</Text>
-          <Text style={[styles.friendModel, { color: colors.textPrimary }]} numberOfLines={1}>{item.model_name || '—'}</Text>
-          {item.target_price && (
-            <Text style={[styles.friendPrice, { color: colors.textSecondary }]}>Target: {formatCurrency(item.target_price, item.currency)}</Text>
-          )}
-        </View>
-      </View>
-      {item.notes && <Text style={[styles.friendNotes, { color: colors.textSecondary }]}>{item.notes}</Text>}
-      <View style={styles.friendActions}>
-        <TouchableOpacity onPress={() => { hapticLight(); setReacted(!reacted); }} style={styles.friendAction}>
-          <MaterialCommunityIcons name={reacted ? 'heart' : 'heart-outline'} size={16} color={reacted ? colors.accent : colors.textSecondary} />
-          <Text style={[styles.friendActionText, { color: reacted ? colors.accent : colors.textSecondary }]}>React</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => { hapticLight(); setShowComment(!showComment); }} style={styles.friendAction}>
-          <MaterialCommunityIcons name="comment-outline" size={16} color={colors.textSecondary} />
-          <Text style={[styles.friendActionText, { color: colors.textSecondary }]}>Comment</Text>
-        </TouchableOpacity>
-      </View>
-      {showComment && (
-        <View style={[styles.commentBox, { backgroundColor: colors.surfaceElevated }]}>
-          <TextInput
-            style={[styles.commentInput, { color: colors.textPrimary }]}
-            value={comment}
-            onChangeText={setComment}
-            placeholder="Write a comment..."
-            placeholderTextColor={colors.textSecondary}
-          />
-          <TouchableOpacity onPress={() => { hapticSuccess(); setComment(''); setShowComment(false); }}>
-            <MaterialCommunityIcons name="send" size={20} color={colors.accent} />
-          </TouchableOpacity>
-        </View>
-      )}
-    </Card>
   );
 }
 
 function AddWishlistModal({ visible, onClose, onAdded }: { visible: boolean; onClose: () => void; onAdded: () => void }) {
   const colors = useThemeColors();
+  const { user } = useAuth();
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [targetPrice, setTargetPrice] = useState('');
-  const [notes, setNotes] = useState('');
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
-    if (!brand.trim()) return;
-    setSubmitting(true);
-    await createWishlistItem({
-      brand: brand.trim(),
-      model_name: model.trim() || null,
-      target_price: targetPrice ? parseFloat(targetPrice) : null,
-      notes: notes.trim() || null,
-      is_private: isPrivate,
-    });
-    setSubmitting(false);
-    setBrand(''); setModel(''); setTargetPrice(''); setNotes(''); setIsPrivate(false);
-    hapticSuccess();
-    onAdded();
-    onClose();
+  const handleAdd = async () => {
+    if (!brand.trim() || !user?.id) return;
+    setLoading(true);
+    try {
+      await addToWishlist({ userId: user.id, brand: brand.trim(), model_name: model.trim() || null, target_price: targetPrice ? parseFloat(targetPrice) : null });
+      hapticSuccess(); setBrand(''); setModel(''); setTargetPrice(''); onAdded();
+    } catch { hapticError(); Alert.alert('Error', 'Could not add wishlist item.'); }
+    finally { setLoading(false); }
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
-        <View style={[styles.modalSheet, { backgroundColor: colors.surface }]} onStartShouldSetResponder={() => true}>
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <View style={styles.modalOverlay}>
+        <View style={[styles.modalSheet, { backgroundColor: colors.surfaceElevated }]}>
           <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Add to Wishlist</Text>
-          <View style={styles.modalField}>
-            <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>BRAND *</Text>
-            <TextInput style={[styles.modalInput, { backgroundColor: colors.surfaceElevated, color: colors.textPrimary }]} value={brand} onChangeText={setBrand} placeholder="e.g. Bottega Veneta" placeholderTextColor={colors.textSecondary} />
-          </View>
-          <View style={styles.modalField}>
-            <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>MODEL</Text>
-            <TextInput style={[styles.modalInput, { backgroundColor: colors.surfaceElevated, color: colors.textPrimary }]} value={model} onChangeText={setModel} placeholder="e.g. The Pouch" placeholderTextColor={colors.textSecondary} />
-          </View>
-          <View style={styles.modalField}>
-            <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>TARGET PRICE (AED)</Text>
-            <TextInput style={[styles.modalInput, { backgroundColor: colors.surfaceElevated, color: colors.textPrimary }]} value={targetPrice} onChangeText={setTargetPrice} placeholder="e.g. 18000" placeholderTextColor={colors.textSecondary} keyboardType="numeric" />
-          </View>
-          <View style={styles.modalField}>
-            <Text style={[styles.fieldLabel, { color: colors.textSecondary }]}>NOTES</Text>
-            <TextInput style={[styles.modalInput, styles.modalTextArea, { backgroundColor: colors.surfaceElevated, color: colors.textPrimary }]} value={notes} onChangeText={setNotes} placeholder="What are you dreaming of?" placeholderTextColor={colors.textSecondary} multiline numberOfLines={2} textAlignVertical="top" />
-          </View>
-          <TouchableOpacity onPress={() => setIsPrivate(!isPrivate)} style={styles.privacyRow}>
-            <MaterialCommunityIcons name={isPrivate ? 'lock' : 'lock-open-outline'} size={18} color={colors.textSecondary} />
-            <Text style={[styles.privacyText, { color: colors.textSecondary }]}>{isPrivate ? 'Private' : 'Visible to circle'}</Text>
-          </TouchableOpacity>
-          <View style={{ marginTop: spacing.lg }}>
-            <PrimaryButton label={submitting ? 'Adding...' : 'Add to Wishlist'} onPress={handleSubmit} disabled={!brand.trim() || submitting} />
+          <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }]} placeholder="Brand (e.g. Chanel)" placeholderTextColor={colors.textSecondary} value={brand} onChangeText={setBrand} />
+          <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }]} placeholder="Model (optional)" placeholderTextColor={colors.textSecondary} value={model} onChangeText={setModel} />
+          <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }]} placeholder="Target Price (AED)" placeholderTextColor={colors.textSecondary} value={targetPrice} onChangeText={setTargetPrice} keyboardType="numeric" />
+          <View style={styles.modalActions}>
+            <TouchableOpacity onPress={onClose} style={[styles.modalBtn, { borderColor: colors.border }]}>
+              <Text style={[styles.modalBtnText, { color: colors.textSecondary }]}>Cancel</Text>
+            </TouchableOpacity>
+            <PrimaryButton label="Add" loading={loading} disabled={!brand.trim()} onPress={handleAdd} style={{ flex: 1 }} />
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  tabBar: { flexDirection: 'row', margin: spacing.lg + 6, borderRadius: radius.pill, padding: 4 },
-  tab: { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: radius.pill },
-  tabText: { ...typography.bodyEmphasized, fontSize: 14 },
-  list: { paddingHorizontal: spacing.lg + 6, paddingBottom: 100, gap: spacing.md },
-  emptyState: { alignItems: 'center', justifyContent: 'center', paddingTop: spacing.xxl, gap: spacing.md },
-  emptyTitle: { ...typography.body },
-  wishlistCard: { gap: spacing.sm },
-  wishlistHeader: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
-  wishlistBrand: { ...typography.caption2, fontSize: 10, fontWeight: '500', letterSpacing: 1.2, marginBottom: 2 },
-  wishlistModel: { ...typography.bodyEmphasized, fontSize: 15 },
-  fulfilledBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999 },
-  fulfilledText: { ...typography.caption2, fontSize: 10, fontWeight: '500' },
-  progressSection: { marginTop: spacing.sm },
-  progressInfo: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.xs, marginBottom: 6 },
-  progressSaved: { ...typography.bodyEmphasized, fontSize: 15 },
-  progressTarget: { ...typography.caption1, fontSize: 12 },
-  progressBar: { height: 4, borderRadius: 2, overflow: 'hidden' },
-  progressFill: { height: '100%', borderRadius: 2 },
-  progressPct: { ...typography.caption2, fontSize: 10, marginTop: 4 },
-  wishlistNotes: { ...typography.footnote, fontSize: 13, lineHeight: 18 },
-  wishlistActions: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.xs },
-  actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, paddingHorizontal: 14, paddingVertical: 8, borderRadius: radius.pill, borderWidth: 0.5 },
-  actionBtnText: { ...typography.footnote, fontSize: 12 },
-  friendHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },
-  friendName: { ...typography.bodyEmphasized, fontSize: 14 },
-  friendTime: { ...typography.caption2, fontSize: 11 },
-  friendItemRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md - 2 },
-  friendPhoto: { borderRadius: radius.sm },
-  friendBrand: { ...typography.caption2, fontSize: 10, fontWeight: '500', letterSpacing: 1.2 },
-  friendModel: { ...typography.bodyEmphasized, fontSize: 14, marginTop: 1 },
-  friendPrice: { ...typography.caption1, fontSize: 11, marginTop: 2 },
-  friendNotes: { ...typography.footnote, fontSize: 13, lineHeight: 18, marginTop: spacing.sm },
-  friendActions: { flexDirection: 'row', gap: spacing.lg, marginTop: spacing.sm },
-  friendAction: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  friendActionText: { ...typography.caption1, fontSize: 12 },
-  commentBox: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, borderRadius: radius.sm, paddingHorizontal: spacing.md - 2, paddingVertical: 8, marginTop: spacing.sm },
-  commentInput: { flex: 1, fontSize: 14, padding: 0 },
-  fab: {
-    position: 'absolute', bottom: spacing.xl, right: spacing.lg + 6,
-    width: 56, height: 56, borderRadius: 28, alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 5,
-  },
+  list: { padding: spacing.lg, gap: spacing.md },
+  itemCard: { borderRadius: radius.lg, padding: spacing.md },
+  itemHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.sm },
+  itemInfo: { flex: 1 },
+  itemBrand: { ...typography.bodyEmphasized, marginBottom: 2 },
+  itemTarget: { ...typography.caption1 },
+  savingsSection: { marginTop: spacing.sm },
+  progressBar: { height: 6, borderRadius: 3, overflow: 'hidden', marginBottom: spacing.xs },
+  progressFill: { height: '100%', borderRadius: 3 },
+  savingsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.sm },
+  savingsText: { ...typography.caption1 },
+  savingsPercent: { ...typography.caption1, fontWeight: '600' },
+  addSavingsBtn: { borderWidth: 1, borderRadius: radius.pill, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, alignSelf: 'flex-start' },
+  addSavingsText: { ...typography.caption1, fontWeight: '600' },
+  footerButton: { padding: spacing.lg },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalSheet: { borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, padding: spacing.lg, paddingBottom: spacing.xl },
   modalTitle: { ...typography.title3, textAlign: 'center', marginBottom: spacing.lg },
-  modalField: { marginBottom: spacing.md },
-  fieldLabel: { ...typography.caption2, fontSize: 10, fontWeight: '500', letterSpacing: 1.2, marginBottom: 6 },
-  modalInput: { height: 46, borderRadius: radius.sm, paddingHorizontal: spacing.md - 2, fontSize: 15 },
-  modalTextArea: { height: 70, paddingTop: spacing.sm },
-  privacyRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.sm },
-  privacyText: { ...typography.footnote, fontSize: 14 },
+  modalInput: { height: 48, borderRadius: radius.md, borderWidth: 0.5, paddingHorizontal: spacing.md, marginBottom: spacing.md, ...typography.body },
+  modalActions: { flexDirection: 'row', gap: spacing.md, alignItems: 'center' },
+  modalBtn: { borderWidth: 0.5, borderRadius: radius.pill, paddingHorizontal: spacing.lg, paddingVertical: spacing.md, height: 54, justifyContent: 'center' },
+  modalBtnText: { ...typography.body },
 });

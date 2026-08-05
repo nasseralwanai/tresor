@@ -1,10 +1,16 @@
 /**
  * Circle screen — shows circle members and their items.
+ * Fetches members + items for the user's circle via Supabase.
  */
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, RefreshControl, TouchableOpacity, SectionList,
+  View,
+  Text,
+  StyleSheet,
+  RefreshControl,
+  TouchableOpacity,
+  SectionList,
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -26,14 +32,20 @@ export default function CircleScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = useCallback(async () => {
-    if (!circleId) { setLoading(false); return; }
+    if (!circleId) {
+      setLoading(false);
+      return;
+    }
     try {
       const { data: memberRows } = await supabase
         .from('circle_members')
         .select('user_id, profiles!circle_members_user_id_fkey(*)')
         .eq('circle_id', circleId);
+
       const memberProfiles: CircleMember[] = (memberRows ?? [])
-        .map((m: any) => m.profiles).filter(Boolean);
+        .map((m: any) => m.profiles)
+        .filter(Boolean);
+
       setMembers(memberProfiles);
 
       const { data: circleItems } = await supabase
@@ -41,16 +53,24 @@ export default function CircleScreen() {
         .select('*')
         .eq('circle_id', circleId)
         .order('created_at', { ascending: false });
+
       setItems(circleItems ?? []);
     } catch (e) {
       console.error('[Circle] Failed to fetch data:', e);
     } finally {
-      setLoading(false); setRefreshing(false);
+      setLoading(false);
+      setRefreshing(false);
     }
   }, [circleId]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
-  const onRefresh = () => { setRefreshing(true); fetchData(); };
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchData();
+  };
 
   const sections = members.map((member) => ({
     title: member.display_name ?? member.phone ?? 'Unknown',
@@ -62,7 +82,11 @@ export default function CircleScreen() {
       <>
         <Stack.Screen options={{ title: 'Circle' }} />
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-          <EmptyState icon="account-group-outline" title="Your Circle" subtitle="Members of your circle will appear here" />
+          <EmptyState
+            icon="account-group-outline"
+            title="Your Circle"
+            subtitle="Members of your circle will appear here"
+          />
         </View>
       </>
     );
@@ -71,10 +95,14 @@ export default function CircleScreen() {
   const renderMemberHeader = ({ section }: { section: { title: string; data: Item[] } }) => (
     <View style={styles.memberHeader}>
       <View style={[styles.memberAvatar, { backgroundColor: colors.surfaceElevated }]}>
-        <Text style={[styles.memberInitial, { color: colors.accent }]}>{section.title.charAt(0)}</Text>
+        <Text style={[styles.memberInitial, { color: colors.accent }]}>
+          {section.title.charAt(0)}
+        </Text>
       </View>
       <View>
-        <Text style={[styles.memberName, { color: colors.textPrimary }]}>{section.title}</Text>
+        <Text style={[styles.memberName, { color: colors.textPrimary }]}>
+          {section.title}
+        </Text>
         <Text style={[styles.memberItemCount, { color: colors.textSecondary }]}>
           {section.data.length} {section.data.length === 1 ? 'item' : 'items'}
         </Text>
@@ -85,12 +113,20 @@ export default function CircleScreen() {
   const renderItem = ({ item }: { item: Item }) => (
     <View style={[styles.itemCard, { backgroundColor: colors.surface }]}>
       <View style={[styles.itemIcon, { backgroundColor: colors.surfaceElevated }]}>
-        <MaterialCommunityIcons name={getCategoryIcon(item.category) as any} size={20} color={colors.accent} />
+        <MaterialCommunityIcons
+          name={getCategoryIcon(item.category) as any}
+          size={20}
+          color={colors.accent}
+        />
       </View>
       <View style={styles.itemInfo}>
-        <Text style={[styles.itemBrand, { color: colors.textPrimary }]} numberOfLines={1}>{item.brand}</Text>
+        <Text style={[styles.itemBrand, { color: colors.textPrimary }]} numberOfLines={1}>
+          {item.brand}
+        </Text>
         {item.model_name && (
-          <Text style={[styles.itemModel, { color: colors.textSecondary }]} numberOfLines={1}>{item.model_name}</Text>
+          <Text style={[styles.itemModel, { color: colors.textSecondary }]} numberOfLines={1}>
+            {item.model_name}
+          </Text>
         )}
       </View>
       {item.estimated_value != null && (
@@ -133,16 +169,62 @@ function getCategoryIcon(category: string | null): string {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  list: { padding: spacing.lg, gap: spacing.md },
-  memberHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.sm, marginTop: spacing.lg },
-  memberAvatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  memberInitial: { ...typography.headline, fontSize: 16 },
-  memberName: { ...typography.bodyEmphasized },
-  memberItemCount: { ...typography.caption1 },
-  itemCard: { flexDirection: 'row', alignItems: 'center', padding: spacing.md, borderRadius: radius.lg, gap: spacing.md, marginBottom: spacing.sm },
-  itemIcon: { width: 40, height: 40, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center' },
-  itemInfo: { flex: 1 },
-  itemBrand: { ...typography.bodyEmphasized, fontSize: 15, marginBottom: 2 },
-  itemModel: { ...typography.caption1 },
-  itemValue: { ...typography.footnote, fontWeight: '600' },
+  list: {
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  memberHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.sm,
+    marginTop: spacing.lg,
+  },
+  memberAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  memberInitial: {
+    ...typography.headline,
+    fontSize: 16,
+  },
+  memberName: {
+    ...typography.bodyEmphasized,
+  },
+  memberItemCount: {
+    ...typography.caption1,
+  },
+  itemCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderRadius: radius.lg,
+    gap: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  itemIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  itemInfo: {
+    flex: 1,
+  },
+  itemBrand: {
+    ...typography.bodyEmphasized,
+    fontSize: 15,
+    marginBottom: 2,
+  },
+  itemModel: {
+    ...typography.caption1,
+  },
+  itemValue: {
+    ...typography.footnote,
+    fontWeight: '600',
+  },
 });

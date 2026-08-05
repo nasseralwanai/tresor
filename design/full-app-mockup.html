@@ -1,0 +1,2684 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trésor — Full App Mockup · Boutique Shelf Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ========== TRÉSOR — FULL APP MOCKUP ==========
+   Variant C: Boutique Shelf — Warm Atelier palette
+   Playfair Display + Jost · Cream/Espresso/Camel/Bronze
+   Complete app flow — 9 screens, 13 phone frames
+   Designer: Muaath | Brief: Nasser | Dev Lead: Dwight
+*/
+
+:root {
+  --bg: #FAF7F2;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle: #F5F0EA;
+  --bg-warm: #F0E8DC;
+  --ink: #2B2520;
+  --ink-secondary: #6B5D50;
+  --ink-tertiary: #A09080;
+  --border: #E5DDD0;
+  --border-subtle: #EFE9E0;
+  --accent: #9B7B5A;
+  --accent-warm: #C4A87E;
+  --accent-soft: rgba(155, 123, 90, 0.1);
+  --accent-gradient: linear-gradient(135deg, #C4A87E, #9B7B5A);
+  --status-available: #6B8E5A;
+  --status-lent: #C4A87E;
+  --status-pending: #D4A84B;
+  --shadow: 0 4px 24px rgba(43, 37, 32, 0.06);
+  --shadow-hover: 0 12px 48px rgba(43, 37, 32, 0.12);
+  --shadow-phone: 0 20px 60px rgba(43, 37, 32, 0.15), 0 4px 12px rgba(43, 37, 32, 0.08);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+}
+
+[data-theme="dark"] {
+  --bg: #1A1510;
+  --bg-elevated: #2A2218;
+  --bg-subtle: #221C14;
+  --bg-warm: #2E2519;
+  --ink: #F5F0E8;
+  --ink-secondary: #C4B5A0;
+  --ink-tertiary: #8A7860;
+  --border: #3A2F22;
+  --border-subtle: #2E2619;
+  --accent: #C4A87E;
+  --accent-warm: #D4BC94;
+  --accent-soft: rgba(196, 168, 126, 0.12);
+  --accent-gradient: linear-gradient(135deg, #D4BC94, #C4A87E);
+  --status-available: #8AB07A;
+  --status-lent: #D4BC94;
+  --status-pending: #E4C074;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.6);
+  --shadow-phone: 0 20px 60px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+.serif { font-family: 'Playfair Display', Georgia, serif; }
+
+/* === PAGE HEADER === */
+.page-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 80px 40px 40px;
+}
+.page-header .label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+}
+.page-header h1 {
+  font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 500;
+  letter-spacing: -0.02em; line-height: 1.05; margin-bottom: 16px;
+}
+.page-header .subtitle {
+  font-size: 15px; color: var(--ink-secondary); font-weight: 300;
+  max-width: 680px; line-height: 1.7;
+}
+.page-header .meta {
+  display: flex; gap: 24px; margin-top: 24px; flex-wrap: wrap;
+}
+.page-header .meta-item {
+  font-size: 11px; color: var(--ink-tertiary); letter-spacing: 0.05em;
+}
+.page-header .meta-item strong {
+  color: var(--ink-secondary); font-weight: 500; display: block;
+  font-size: 13px; margin-bottom: 2px;
+}
+
+/* === THEME TOGGLE === */
+.theme-toggle {
+  position: fixed; top: 24px; right: 24px; z-index: 1000;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 100px; padding: 10px 20px; font-size: 12px; font-weight: 500;
+  letter-spacing: 0.05em; color: var(--ink-secondary); cursor: pointer;
+  transition: all 0.3s ease; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Jost', sans-serif;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-gradient); }
+
+.warm-rule {
+  height: 2px; background: linear-gradient(90deg, transparent, var(--accent-warm), transparent);
+  opacity: 0.3; margin: 40px auto; max-width: 1320px;
+}
+
+/* === SCREEN SECTIONS === */
+.screen-section {
+  max-width: 1400px; margin: 0 auto; padding: 0 40px 60px;
+}
+.screen-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 16px;
+}
+.screen-label .num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--accent-gradient); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; letter-spacing: 0;
+}
+.screen-title {
+  font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 500;
+  color: var(--ink); margin-bottom: 8px;
+}
+.screen-desc {
+  font-size: 13px; color: var(--ink-secondary); font-weight: 300;
+  margin-bottom: 24px; max-width: 600px; line-height: 1.6;
+}
+.phone-row {
+  display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;
+}
+.phone-sublabel {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--ink-tertiary);
+  margin-bottom: 12px; margin-top: 16px; width: 100%;
+}
+
+/* === PHONE FRAME === */
+.phone-frame {
+  width: 375px; height: 812px;
+  background: #1a1a1a; border-radius: 50px;
+  overflow: hidden; box-shadow: var(--shadow-phone);
+  position: relative; flex-shrink: 0;
+  border: 3px solid #333;
+}
+.phone-screen {
+  width: 100%; height: 100%; background: var(--bg);
+  border-radius: 47px; overflow: hidden; position: relative;
+}
+.phone-notch {
+  position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 35px; background: #1a1a1a;
+  border-radius: 20px; z-index: 100;
+}
+.status-bar {
+  height: 54px; display: flex; align-items: center;
+  justify-content: space-between; padding: 18px 32px 0;
+  font-size: 15px; font-weight: 600; color: var(--ink);
+  position: relative; z-index: 50; flex-shrink: 0;
+}
+.status-bar .icons { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+.status-bar .icons .signal { display: flex; gap: 2px; align-items: flex-end; }
+.status-bar .icons .signal span {
+  width: 3px; background: var(--ink); border-radius: 1px;
+}
+.status-bar .icons .signal span:nth-child(1) { height: 4px; }
+.status-bar .icons .signal span:nth-child(2) { height: 6px; }
+.status-bar .icons .signal span:nth-child(3) { height: 8px; }
+.status-bar .icons .signal span:nth-child(4) { height: 10px; }
+.status-bar .icons .battery {
+  width: 24px; height: 12px; border: 1.5px solid var(--ink);
+  border-radius: 3px; position: relative; padding: 1.5px;
+}
+.status-bar .icons .battery::after {
+  content: ''; position: absolute; right: -3px; top: 3px;
+  width: 2px; height: 4px; background: var(--ink); border-radius: 0 1px 1px 0;
+}
+.status-bar .icons .battery .fill {
+  width: 70%; height: 100%; background: var(--ink); border-radius: 1px;
+}
+.status-bar .icons .wifi { font-size: 14px; }
+
+/* Bottom safe area */
+.home-indicator {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 134px; height: 5px; background: var(--ink);
+  border-radius: 3px; opacity: 0.3; z-index: 60;
+}
+
+/* === SCROLL AREA === */
+.scroll-area {
+  height: calc(812px - 54px - 83px); overflow-y: auto; overflow-x: hidden;
+}
+.scroll-area::-webkit-scrollbar { display: none; }
+.scroll-area-full {
+  height: calc(812px - 54px); overflow-y: auto; overflow-x: hidden;
+}
+.scroll-area-full::-webkit-scrollbar { display: none; }
+
+/* === GREETING / HEADER === */
+.screen-header { padding: 8px 24px 16px; }
+.screen-header .greeting { font-size: 12px; color: var(--ink-tertiary); }
+.screen-header .title {
+  font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 500;
+  letter-spacing: -0.01em; line-height: 1.15; margin-top: 2px;
+}
+.screen-header .count { font-size: 12px; color: var(--ink-tertiary); margin-top: 4px; }
+.screen-header .nav-row {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.screen-header .nav-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg-subtle); display: flex; align-items: center;
+  justify-content: center; font-size: 16px; color: var(--ink);
+  cursor: pointer;
+}
+
+/* === FEATURED CAROUSEL === */
+.featured-carousel {
+  display: flex; gap: 12px; padding: 0 24px 24px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.featured-carousel::-webkit-scrollbar { display: none; }
+.featured-card {
+  flex: 0 0 260px; border-radius: var(--radius); overflow: hidden;
+  background: var(--bg-subtle); cursor: pointer; transition: transform 0.2s;
+  position: relative;
+}
+.featured-card-photo {
+  height: 160px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  position: relative; overflow: hidden;
+}
+.featured-card-photo .img-letter {
+  font-family: 'Playfair Display', serif; font-size: 80px;
+  color: var(--ink-tertiary); opacity: 0.2;
+}
+.featured-card-photo .photo-shine {
+  position: absolute; top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15), transparent);
+}
+.featured-card-info { padding: 14px 16px; }
+.featured-card-info .brand {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 4px;
+}
+.featured-card-info .name {
+  font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 500;
+  line-height: 1.2; margin-bottom: 4px;
+}
+.featured-card-info .price {
+  font-size: 13px; color: var(--ink); font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.featured-card .status-tag {
+  position: absolute; top: 10px; left: 10px;
+  font-size: 9px; font-weight: 500; padding: 4px 10px; border-radius: 100px;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+  color: var(--status-available); display: flex; align-items: center; gap: 4px;
+  letter-spacing: 0.02em;
+}
+[data-theme="dark"] .featured-card .status-tag {
+  background: rgba(42,34,24,0.92); color: var(--status-available);
+}
+.featured-card .status-tag.lent { color: var(--accent); }
+.featured-card .status-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+/* === SHELF ROWS === */
+.shelf { margin-bottom: 24px; }
+.shelf-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 24px 10px;
+}
+.shelf-header .name {
+  font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 500;
+}
+.shelf-header .count { font-size: 11px; color: var(--ink-tertiary); }
+.shelf-row {
+  display: flex; gap: 12px; padding: 0 24px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.shelf-row::-webkit-scrollbar { display: none; }
+
+.shelf-card {
+  flex: 0 0 130px; cursor: pointer; transition: transform 0.2s;
+}
+.shelf-card-photo {
+  width: 130px; height: 130px; border-radius: var(--radius-sm);
+  overflow: hidden; position: relative; margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+}
+.shelf-card-photo .img-letter {
+  font-family: 'Playfair Display', serif; font-size: 44px;
+  color: var(--ink-tertiary); opacity: 0.2;
+}
+.shelf-card .status-dot {
+  position: absolute; top: 8px; right: 8px;
+  width: 8px; height: 8px; border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--bg-elevated);
+}
+.shelf-card .status-dot.available { background: var(--status-available); }
+.shelf-card .status-dot.lent { background: var(--accent-warm); }
+.shelf-card .brand { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; color: var(--ink); margin-bottom: 1px; }
+.shelf-card .item-name { font-size: 11px; color: var(--ink-secondary); line-height: 1.3; margin-bottom: 2px; }
+.shelf-card .price { font-size: 11px; color: var(--accent); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* === BOTTOM TAB BAR === */
+.tab-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 83px;
+  background: var(--bg-elevated); border-top: 1px solid var(--border-subtle);
+  display: flex; align-items: flex-start; justify-content: space-around;
+  padding-top: 14px; z-index: 50;
+}
+.tab-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 400; color: var(--ink-tertiary); cursor: pointer;
+  width: 60px;
+}
+.tab-item.active { color: var(--accent); font-weight: 500; }
+.tab-item .icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.tab-add {
+  width: 48px; height: 48px; border-radius: 50%; background: var(--accent-gradient);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  margin-top: -24px; font-size: 22px; font-weight: 300;
+  box-shadow: 0 4px 16px rgba(196, 168, 126, 0.5); cursor: pointer;
+}
+
+/* ========================================
+   1. ONBOARDING
+   ======================================== */
+.onboarding-bg {
+  height: 100%; display: flex; flex-direction: column;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-warm) 100%);
+  position: relative; overflow: hidden;
+}
+.onboarding-bg::before {
+  content: ''; position: absolute; top: -100px; right: -100px;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: var(--accent-soft); filter: blur(60px);
+}
+.onboarding-bg::after {
+  content: ''; position: absolute; bottom: -50px; left: -80px;
+  width: 250px; height: 250px; border-radius: 50%;
+  background: var(--accent-soft); filter: blur(60px);
+}
+.onboarding-content {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px 36px; position: relative; z-index: 2;
+}
+.onboarding-logo {
+  width: 88px; height: 88px; border-radius: 24px;
+  background: var(--accent-gradient);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 32px; box-shadow: 0 8px 32px rgba(196, 168, 126, 0.4);
+}
+.onboarding-logo .monogram {
+  font-family: 'Playfair Display', serif; font-size: 44px;
+  font-weight: 600; color: #fff; letter-spacing: -0.02em;
+}
+.onboarding-title {
+  font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 500;
+  letter-spacing: -0.02em; margin-bottom: 12px; text-align: center;
+}
+.onboarding-subtitle {
+  font-size: 14px; color: var(--ink-secondary); font-weight: 300;
+  text-align: center; line-height: 1.7; margin-bottom: 40px;
+  max-width: 280px;
+}
+.invite-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+  align-self: flex-start;
+}
+.invite-input-group {
+  width: 100%; margin-bottom: 20px;
+}
+.invite-code-display {
+  display: flex; gap: 10px; justify-content: center; margin-bottom: 24px;
+}
+.invite-digit {
+  width: 44px; height: 52px; border-radius: var(--radius-sm);
+  background: var(--bg-elevated); border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Jost', sans-serif; font-size: 22px; font-weight: 500;
+  color: var(--ink); transition: all 0.2s;
+}
+.invite-digit.filled { border-color: var(--accent); background: var(--accent-soft); }
+.invite-digit.current { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.onboarding-btn {
+  width: 100%; padding: 16px; background: var(--accent-gradient); color: #fff;
+  border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
+  letter-spacing: 0.03em; cursor: pointer; font-family: 'Jost', sans-serif;
+  box-shadow: 0 4px 16px rgba(196, 168, 126, 0.35);
+  transition: transform 0.15s;
+}
+.onboarding-btn:active { transform: scale(0.97); }
+.onboarding-btn.secondary {
+  background: transparent; color: var(--ink-secondary);
+  box-shadow: none; border: 1px solid var(--border); margin-top: 12px;
+}
+.onboarding-footer {
+  padding: 24px 36px 48px; text-align: center; position: relative; z-index: 2;
+}
+.onboarding-footer .circle-preview {
+  display: flex; gap: 8px; justify-content: center; margin-bottom: 16px;
+}
+.onboarding-footer .circle-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent-gradient); display: flex; align-items: center;
+  justify-content: center; font-size: 13px; font-weight: 600; color: #fff;
+  border: 2px solid var(--bg);
+}
+.onboarding-footer .text {
+  font-size: 12px; color: var(--ink-tertiary); line-height: 1.6;
+}
+.onboarding-footer .text strong { color: var(--ink-secondary); font-weight: 500; }
+
+/* ========================================
+   2. HOME — already covered by shelf patterns above
+   ======================================== */
+
+/* ========================================
+   3. CIRCLE
+   ======================================== */
+.circle-stats {
+  display: flex; gap: 12px; padding: 0 24px 20px;
+}
+.circle-stat-card {
+  flex: 1; background: var(--bg-subtle); border-radius: var(--radius-sm);
+  padding: 14px; text-align: center;
+}
+.circle-stat-card .num {
+  font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600;
+  color: var(--ink); line-height: 1;
+}
+.circle-stat-card .label {
+  font-size: 10px; color: var(--ink-tertiary); margin-top: 4px;
+  letter-spacing: 0.05em;
+}
+.members-list { padding: 0 24px; }
+.member-row {
+  display: flex; align-items: center; gap: 14px; padding: 14px 0;
+  border-bottom: 1px solid var(--border-subtle); cursor: pointer;
+}
+.member-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--accent-gradient); display: flex; align-items: center;
+  justify-content: center; font-size: 18px; font-weight: 600; color: #fff;
+  flex-shrink: 0; position: relative;
+}
+.member-avatar .online-dot {
+  position: absolute; bottom: 2px; right: 2px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--status-available); border: 2px solid var(--bg-elevated);
+}
+.member-info { flex: 1; }
+.member-info .name { font-size: 15px; font-weight: 500; color: var(--ink); }
+.member-info .detail { font-size: 12px; color: var(--ink-tertiary); margin-top: 2px; }
+.member-info .items-count {
+  font-size: 11px; color: var(--accent); font-weight: 500; margin-top: 2px;
+}
+.member-arrow { font-size: 18px; color: var(--ink-tertiary); }
+
+/* Member collection grid (in circle detail) */
+.member-collection-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 24px;
+}
+.grid-card { cursor: pointer; }
+.grid-card-photo {
+  width: 100%; aspect-ratio: 1; border-radius: var(--radius-sm);
+  overflow: hidden; position: relative; margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+}
+.grid-card-photo .img-letter {
+  font-family: 'Playfair Display', serif; font-size: 48px;
+  color: var(--ink-tertiary); opacity: 0.2;
+}
+.grid-card .status-dot {
+  position: absolute; top: 8px; right: 8px;
+  width: 8px; height: 8px; border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--bg-elevated);
+}
+.grid-card .status-dot.available { background: var(--status-available); }
+.grid-card .status-dot.lent { background: var(--accent-warm); }
+.grid-card .brand { font-size: 10px; font-weight: 600; color: var(--ink); }
+.grid-card .item-name { font-size: 11px; color: var(--ink-secondary); line-height: 1.3; }
+.grid-card .price { font-size: 11px; color: var(--accent); font-weight: 500; }
+
+/* ========================================
+   4. ADD ITEM — AI PHOTO FLOW
+   ======================================== */
+/* Camera screen */
+.camera-screen {
+  height: 100%; background: #0a0a0a; position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.camera-viewfinder {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  background: radial-gradient(ellipse at center, #2a2520 0%, #0a0a0a 100%);
+}
+.camera-viewfinder .item-silhouette {
+  font-family: 'Playfair Display', serif; font-size: 140px;
+  color: rgba(196, 168, 126, 0.15);
+}
+.camera-frame-overlay {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 240px; height: 240px; border: 2px solid rgba(255,255,255,0.3);
+  border-radius: var(--radius); pointer-events: none;
+}
+.camera-frame-overlay::before, .camera-frame-overlay::after {
+  content: ''; position: absolute; width: 24px; height: 24px;
+  border: 3px solid #fff; border-radius: 4px;
+}
+.camera-frame-overlay::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+.camera-frame-overlay::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+.camera-hint {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+  font-size: 13px; color: rgba(255,255,255,0.7); text-align: center;
+  letter-spacing: 0.03em; white-space: nowrap;
+}
+.camera-top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 20px; position: relative; z-index: 10;
+}
+.camera-top-bar .close-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 18px; cursor: pointer;
+}
+.camera-top-bar .mode-toggle {
+  display: flex; gap: 4px; background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px); border-radius: 100px; padding: 4px;
+}
+.camera-top-bar .mode {
+  padding: 6px 14px; font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.6);
+  border-radius: 100px; cursor: pointer;
+}
+.camera-top-bar .mode.active { background: #fff; color: #1a1a1a; }
+.camera-bottom-bar {
+  padding: 20px 40px 48px; display: flex; align-items: center;
+  justify-content: space-around; position: relative; z-index: 10;
+}
+.shutter-btn {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: #fff; border: 4px solid rgba(255,255,255,0.3);
+  cursor: pointer; transition: transform 0.15s;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.15);
+}
+.shutter-btn:active { transform: scale(0.92); }
+.camera-side-btn {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 20px; cursor: pointer;
+}
+
+/* AI Analyzing screen */
+.ai-analyzing {
+  height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--bg); padding: 40px; position: relative;
+}
+.ai-analyzing .captured-photo {
+  width: 220px; height: 220px; border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 40px; position: relative; overflow: hidden;
+}
+.ai-analyzing .captured-photo .img-letter {
+  font-family: 'Playfair Display', serif; font-size: 120px;
+  color: var(--ink-tertiary); opacity: 0.2;
+}
+.ai-analyzing .scan-line {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent-warm), transparent);
+  animation: scanMove 2s ease-in-out infinite;
+}
+@keyframes scanMove {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(217px); }
+}
+.ai-spinner {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 3px solid var(--border); border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite; margin-bottom: 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.ai-analyzing .status-text {
+  font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 500;
+  color: var(--ink); margin-bottom: 8px;
+}
+.ai-analyzing .sub-text {
+  font-size: 13px; color: var(--ink-tertiary); text-align: center;
+  line-height: 1.6; max-width: 260px;
+}
+.ai-analyzing .ai-steps {
+  margin-top: 32px; width: 100%; max-width: 280px;
+}
+.ai-step {
+  display: flex; align-items: center; gap: 12px; padding: 8px 0;
+  font-size: 13px; color: var(--ink-tertiary);
+}
+.ai-step .check {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+}
+.ai-step.done .check { background: var(--status-available); color: #fff; }
+.ai-step.active .check { background: var(--accent); color: #fff; }
+.ai-step.pending .check { background: var(--border); color: var(--ink-tertiary); }
+.ai-step.done { color: var(--ink-secondary); }
+.ai-step.active { color: var(--ink); font-weight: 500; }
+
+/* AI Results / Edit form */
+.ai-results-scroll { height: calc(812px - 54px); overflow-y: auto; }
+.ai-results-scroll::-webkit-scrollbar { display: none; }
+.ai-results-photo {
+  height: 220px; background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.ai-results-photo .img-letter {
+  font-family: 'Playfair Display', serif; font-size: 120px;
+  color: var(--ink-tertiary); opacity: 0.2;
+}
+.ai-results-photo .ai-badge {
+  position: absolute; top: 16px; right: 16px;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+  border-radius: 100px; padding: 6px 14px; font-size: 10px; font-weight: 600;
+  color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 6px;
+}
+[data-theme="dark"] .ai-results-photo .ai-badge {
+  background: rgba(42,34,24,0.92);
+}
+.ai-results-photo .retake-btn {
+  position: absolute; bottom: 16px; left: 16px;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+  border-radius: 100px; padding: 8px 16px; font-size: 12px; font-weight: 500;
+  color: var(--ink); cursor: pointer; display: flex; align-items: center; gap: 6px;
+}
+[data-theme="dark"] .ai-results-photo .retake-btn {
+  background: rgba(42,34,24,0.92);
+}
+.ai-results-content { padding: 24px; padding-bottom: 100px; }
+.ai-results-content .section-title {
+  font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 500;
+  margin-bottom: 4px;
+}
+.ai-results-content .section-sub {
+  font-size: 12px; color: var(--ink-tertiary); margin-bottom: 20px;
+}
+.form-field { margin-bottom: 18px; }
+.form-field .field-label {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-tertiary); margin-bottom: 8px;
+}
+.form-field .confidence {
+  font-size: 10px; font-weight: 600; color: var(--status-available);
+  background: rgba(107, 142, 90, 0.1); padding: 2px 8px; border-radius: 100px;
+  letter-spacing: 0.02em; text-transform: none;
+}
+.form-field .confidence.medium { color: var(--status-pending); background: rgba(212, 168, 75, 0.1); }
+.form-field .input {
+  width: 100%; padding: 14px 16px; background: var(--bg-subtle);
+  border: 1.5px solid transparent; border-radius: var(--radius-sm);
+  font-family: 'Jost', sans-serif; font-size: 15px; font-weight: 400;
+  color: var(--ink); transition: border-color 0.2s;
+}
+.form-field .input:focus { outline: none; border-color: var(--accent); }
+.form-field .input.ai-filled {
+  background: var(--accent-soft); border-color: var(--accent-warm);
+}
+.form-field .select-row {
+  display: flex; gap: 8px;
+}
+.form-field .chip {
+  padding: 8px 16px; border-radius: 100px; font-size: 12px; font-weight: 500;
+  background: var(--bg-subtle); color: var(--ink-secondary); cursor: pointer;
+  border: 1.5px solid transparent;
+}
+.form-field .chip.active { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.ai-cta-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 24px 40px;
+  background: var(--bg-elevated); border-top: 1px solid var(--border-subtle);
+  display: flex; gap: 12px;
+}
+.ai-cta-bar button {
+  flex: 1; padding: 16px; border: none; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Jost', sans-serif;
+  letter-spacing: 0.03em;
+}
+.ai-cta-bar .btn-secondary {
+  background: var(--bg-subtle); color: var(--ink-secondary);
+}
+.ai-cta-bar .btn-primary {
+  background: var(--accent-gradient); color: #fff;
+  box-shadow: 0 4px 16px rgba(196, 168, 126, 0.35);
+}
+
+/* ========================================
+   5. ITEM DETAIL — (uses patterns from Variant C)
+   ======================================== */
+.detail-parallax {
+  height: 300px; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  display: flex; align-items: center; justify-content: center;
+}
+.detail-parallax .img-letter {
+  font-family: 'Playfair Display', serif; font-size: 160px;
+  color: var(--ink-tertiary); opacity: 0.15;
+}
+.detail-parallax .photo-shine {
+  position: absolute; top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12), transparent);
+}
+.detail-nav-overlay {
+  position: absolute; top: 16px; left: 16px; right: 16px;
+  display: flex; justify-content: space-between; z-index: 10;
+}
+.detail-nav-overlay .btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--ink); cursor: pointer;
+}
+[data-theme="dark"] .detail-nav-overlay .btn { background: rgba(42,34,24,0.85); color: var(--ink); }
+.detail-photo-dots {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px; z-index: 10;
+}
+.detail-photo-dots .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.4);
+}
+.detail-photo-dots .dot.active { background: #fff; width: 18px; border-radius: 3px; }
+
+.detail-stacked-card {
+  margin: -30px 20px 0; background: var(--bg-elevated);
+  border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow-hover); position: relative; z-index: 5;
+}
+.detail-stacked-card .brand {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+}
+.detail-stacked-card .name {
+  font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 500;
+  line-height: 1.2; margin-bottom: 4px;
+}
+.detail-stacked-card .spec { font-size: 13px; color: var(--ink-secondary); margin-bottom: 16px; }
+.detail-stacked-card .price-row { display: flex; gap: 16px; margin-bottom: 4px; }
+.detail-stacked-card .price-cell .label {
+  font-size: 9px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-tertiary); margin-bottom: 2px;
+}
+.detail-stacked-card .price-cell .value {
+  font-size: 15px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+
+.detail-owner-row {
+  display: flex; align-items: center; gap: 10px; margin-top: 16px;
+  padding-top: 16px; border-top: 1px solid var(--border-subtle);
+}
+.detail-owner-row .avatar {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--accent-gradient);
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+  font-weight: 600; color: #fff;
+}
+.detail-owner-row .info .name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.detail-owner-row .info .role { font-size: 11px; color: var(--ink-tertiary); }
+
+.detail-tabs { margin: 20px 20px 100px; }
+.detail-tab-bar {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+}
+.detail-tab {
+  flex: 1; padding: 10px 0; text-align: center;
+  font-size: 12px; font-weight: 400; color: var(--ink-tertiary);
+  cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+}
+.detail-tab.active { color: var(--accent); font-weight: 500; border-bottom-color: var(--accent); }
+.detail-tab-content { display: none; }
+.detail-tab-content.active { display: block; }
+.detail-tab-content .info-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border-subtle);
+}
+.detail-tab-content .info-row .key { font-size: 12px; color: var(--ink-tertiary); }
+.detail-tab-content .info-row .val { font-size: 13px; color: var(--ink); font-weight: 500; }
+.detail-tab-content .note-box {
+  margin-top: 12px; padding: 14px; background: var(--bg-subtle);
+  border-radius: var(--radius-sm); font-size: 13px; color: var(--ink-secondary); line-height: 1.6;
+}
+.detail-tab-content .history-item {
+  display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-subtle);
+}
+.detail-tab-content .history-item .avatar {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--accent-gradient);
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+  font-weight: 600; color: #fff; flex-shrink: 0;
+}
+.detail-tab-content .history-item .info { flex: 1; }
+.detail-tab-content .history-item .info .person { font-size: 13px; font-weight: 500; color: var(--ink); }
+.detail-tab-content .history-item .info .dates { font-size: 11px; color: var(--ink-tertiary); margin-top: 2px; }
+.detail-tab-content .history-item .status-pill {
+  font-size: 9px; font-weight: 500; padding: 3px 10px; border-radius: 100px;
+  background: var(--accent-soft); color: var(--accent); align-self: center;
+  letter-spacing: 0.03em;
+}
+.detail-tab-content .history-item .status-pill.returned { background: rgba(107,142,90,0.12); color: var(--status-available); }
+.detail-tab-content .history-item .status-pill.active { background: var(--accent-soft); color: var(--accent); }
+
+.timeline-item {
+  display: flex; gap: 14px; padding: 0 0 20px; position: relative;
+}
+.timeline-item .timeline-dot {
+  width: 10px; height: 10px; border-radius: 50%; background: var(--accent);
+  margin-top: 4px; flex-shrink: 0; position: relative; z-index: 1;
+}
+.timeline-item .timeline-dot::after {
+  content: ''; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+  width: 2px; height: calc(100% + 10px); background: var(--border);
+}
+.timeline-item:last-child .timeline-dot::after { display: none; }
+.timeline-item .timeline-content { flex: 1; }
+.timeline-item .timeline-content .event { font-size: 13px; color: var(--ink); font-weight: 400; }
+.timeline-item .timeline-content .event strong { font-weight: 500; }
+.timeline-item .timeline-content .time { font-size: 11px; color: var(--ink-tertiary); margin-top: 2px; }
+
+.detail-cta-fixed {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 16px 20px 40px; background: var(--bg-elevated);
+  border-top: 1px solid var(--border-subtle); z-index: 20;
+}
+.detail-cta-fixed button {
+  width: 100%; padding: 16px; background: var(--accent-gradient); color: #fff;
+  border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
+  letter-spacing: 0.03em; cursor: pointer; font-family: 'Jost', sans-serif;
+  box-shadow: 0 4px 16px rgba(196, 168, 126, 0.35);
+}
+
+/* ========================================
+   6. BORROW FLOW
+   ======================================== */
+/* Modal-style screen (no tab bar) */
+.modal-screen {
+  height: calc(812px - 54px); overflow-y: auto;
+}
+.modal-screen::-webkit-scrollbar { display: none; }
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 20px 16px;
+}
+.modal-header .title {
+  font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 500;
+}
+.modal-header .close {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--bg-subtle);
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+  color: var(--ink-secondary); cursor: pointer;
+}
+.borrow-item-preview {
+  display: flex; gap: 14px; padding: 0 20px 24px;
+  border-bottom: 1px solid var(--border-subtle); margin-bottom: 24px;
+}
+.borrow-item-preview .photo {
+  width: 72px; height: 72px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-size: 36px; color: var(--ink-tertiary); opacity: 0.2;
+  flex-shrink: 0;
+}
+.borrow-item-preview .info { flex: 1; }
+.borrow-item-preview .info .brand { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.borrow-item-preview .info .name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 500; margin-top: 2px; }
+.borrow-item-preview .info .owner { font-size: 12px; color: var(--ink-tertiary); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+.borrow-item-preview .info .owner .avatar {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--accent-gradient);
+  display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: #fff;
+}
+
+.date-picker-section { padding: 0 20px; margin-bottom: 24px; }
+.date-picker-section .field-label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-tertiary); margin-bottom: 10px;
+}
+.date-input-row {
+  display: flex; gap: 12px; align-items: center;
+}
+.date-card {
+  flex: 1; background: var(--bg-subtle); border-radius: var(--radius-sm);
+  padding: 14px; text-align: center; border: 1.5px solid transparent;
+  cursor: pointer; transition: border-color 0.2s;
+}
+.date-card.selected { border-color: var(--accent); background: var(--accent-soft); }
+.date-card .month { font-size: 10px; color: var(--ink-tertiary); text-transform: uppercase; letter-spacing: 0.1em; }
+.date-card .day { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; color: var(--ink); margin: 2px 0; }
+.date-card .weekday { font-size: 10px; color: var(--ink-secondary); }
+.date-arrow { font-size: 20px; color: var(--ink-tertiary); }
+.duration-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--accent-soft); color: var(--accent);
+  padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 500;
+  margin-top: 12px;
+}
+
+.note-section { padding: 0 20px; margin-bottom: 24px; }
+.note-section textarea {
+  width: 100%; min-height: 100px; padding: 14px 16px;
+  background: var(--bg-subtle); border: 1.5px solid transparent;
+  border-radius: var(--radius-sm); font-family: 'Jost', sans-serif;
+  font-size: 14px; color: var(--ink); resize: none; line-height: 1.6;
+  transition: border-color 0.2s;
+}
+.note-section textarea:focus { outline: none; border-color: var(--accent); }
+
+.modal-cta-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 20px 40px;
+  background: var(--bg-elevated); border-top: 1px solid var(--border-subtle); z-index: 20;
+}
+.modal-cta-bar button {
+  width: 100%; padding: 16px; border: none; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Jost', sans-serif;
+  letter-spacing: 0.03em;
+}
+.modal-cta-bar .btn-primary {
+  background: var(--accent-gradient); color: #fff;
+  box-shadow: 0 4px 16px rgba(196, 168, 126, 0.35);
+}
+
+/* Approval notification */
+.notification-screen {
+  height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 40px;
+  text-align: center; position: relative;
+}
+.notification-screen .notif-icon {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--status-available); display: flex; align-items: center;
+  justify-content: center; font-size: 36px; color: #fff; margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(107, 142, 90, 0.3);
+}
+.notification-screen .notif-title {
+  font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 500;
+  margin-bottom: 12px; line-height: 1.2;
+}
+.notification-screen .notif-body {
+  font-size: 14px; color: var(--ink-secondary); line-height: 1.7;
+  max-width: 280px; margin-bottom: 32px;
+}
+.notification-screen .notif-body strong { color: var(--ink); font-weight: 500; }
+.notif-item-card {
+  width: 100%; max-width: 300px; background: var(--bg-subtle);
+  border-radius: var(--radius); padding: 16px; display: flex; gap: 14px;
+  align-items: center; margin-bottom: 32px;
+}
+.notif-item-card .photo {
+  width: 56px; height: 56px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--bg-warm), var(--bg-subtle));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-size: 28px; color: var(--ink-tertiary); opacity: 0.2;
+}
+.notif-item-card .info { flex: 1; text-align: left; }
+.notif-item-card .info .brand { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.notif-item-card .info .name { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 500; }
+.notif-item-card .info .dates { font-size: 11px; color: var(--ink-tertiary); margin-top: 2px; }
+.notification-screen .notif-btn {
+  width: 100%; max-width: 300px; padding: 16px; background: var(--accent-gradient);
+  color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px;
+  font-weight: 500; cursor: pointer; font-family: 'Jost', sans-serif;
+  letter-spacing: 0.03em; box-shadow: 0 4px 16px rgba(196, 168, 126, 0.35);
+}
+
+/* Borrowed status with countdown */
+.borrowed-status-screen { height: 100%; overflow-y: auto; }
+.borrowed-status-screen::-webkit-scrollbar { display: none; }
+.countdown-hero {
+  padding: 24px 24px 32px; text-align: center;
+  background: linear-gradient(180deg, var(--accent-soft), transparent);
+}
+.countdown-hero .label {
+  font-size: 10px; font-weight: 500; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+}
+.countdown-hero .days {
+  font-family: 'Playfair Display', serif; font-size: 72px; font-weight: 600;
+  color: var(--ink); line-height: 1; letter-spacing: -0.02em;
+}
+.countdown-hero .days-label {
+  font-size: 14px; color: var(--ink-secondary); margin-top: 4px;
+}
+.countdown-progress {
+  width: 100%; height: 6px; background: var(--border); border-radius: 3px;
+  margin-top: 20px; overflow: hidden;
+}
+.countdown-progress .fill {
+  height: 100%; background: var(--accent-gradient); border-radius: 3px;
+  width: 35%;
+}
+.countdown-dates {
+  display: flex; justify-content: space-between; margin-top: 10px;
+  font-size: 11px; color: var(--ink-tertiary);
+}
+.borrowed-item-card {
+  margin: 0 24px 24px; background: var(--bg-elevated); border-radius: var(--radius);
+  padding: 16px; box-shadow: var(--shadow); display: flex; gap: 14px; align-items: center;
+}
+.borrowed-item-card .photo {
+  width: 64px; height: 64px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-size: 32px; color: var(--ink-tertiary); opacity: 0.2;
+  flex-shrink: 0;
+}
+.borrowed-item-card .info { flex: 1; }
+.borrowed-item-card .info .brand { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.borrowed-item-card .info .name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 500; }
+.borrowed-item-card .info .lender { font-size: 11px; color: var(--ink-tertiary); margin-top: 2px; }
+
+.borrow-details { padding: 0 24px; }
+.borrow-detail-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--border-subtle);
+}
+.borrow-detail-row .key { font-size: 12px; color: var(--ink-tertiary); }
+.borrow-detail-row .val { font-size: 13px; color: var(--ink); font-weight: 500; }
+.borrow-note-box {
+  margin-top: 16px; padding: 14px; background: var(--bg-subtle);
+  border-radius: var(--radius-sm); font-size: 13px; color: var(--ink-secondary); line-height: 1.6;
+  font-style: italic;
+}
+
+/* ========================================
+   7. WISHLIST
+   ======================================== */
+.wishlist-item {
+  margin: 0 24px 16px; background: var(--bg-elevated); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); cursor: pointer;
+  transition: transform 0.15s;
+}
+.wishlist-item:active { transform: scale(0.98); }
+.wishlist-item-top {
+  display: flex; gap: 14px; padding: 16px;
+}
+.wishlist-item-top .photo {
+  width: 80px; height: 80px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-size: 40px; color: var(--ink-tertiary); opacity: 0.2;
+  flex-shrink: 0; position: relative;
+}
+.wishlist-item-top .photo .priority-tag {
+  position: absolute; top: 6px; left: 6px;
+  font-size: 8px; font-weight: 600; padding: 2px 6px; border-radius: 4px;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.wishlist-item-top .photo .priority-tag.high { background: #D45A4B; color: #fff; }
+.wishlist-item-top .photo .priority-tag.medium { background: var(--status-pending); color: #fff; }
+.wishlist-item-top .info { flex: 1; min-width: 0; }
+.wishlist-item-top .info .brand { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.wishlist-item-top .info .name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 500; line-height: 1.2; margin-top: 2px; margin-bottom: 6px; }
+.wishlist-item-top .info .target {
+  font-size: 11px; color: var(--ink-tertiary); display: flex; gap: 8px; align-items: center;
+}
+.wishlist-item-top .info .target .strike { text-decoration: line-through; }
+
+.wishlist-savings { padding: 0 16px 14px; }
+.wishlist-savings .savings-label {
+  display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;
+}
+.wishlist-savings .savings-label .amount {
+  font-size: 14px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.wishlist-savings .savings-label .amount .total { color: var(--ink-tertiary); font-weight: 400; }
+.wishlist-savings .savings-label .percent {
+  font-size: 12px; font-weight: 600; color: var(--accent);
+}
+.wishlist-progress {
+  width: 100%; height: 8px; background: var(--border); border-radius: 4px;
+  overflow: hidden; position: relative;
+}
+.wishlist-progress .fill {
+  height: 100%; background: var(--accent-gradient); border-radius: 4px;
+  transition: width 0.4s ease;
+}
+.wishlist-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px; background: var(--bg-subtle);
+  border-top: 1px solid var(--border-subtle);
+}
+.wishlist-footer .target-date { font-size: 11px; color: var(--ink-tertiary); }
+.wishlist-footer .price-alert {
+  font-size: 10px; font-weight: 500; color: var(--status-available);
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(107,142,90,0.1); padding: 4px 10px; border-radius: 100px;
+}
+.wishlist-footer .price-alert.drop { color: #D45A4B; background: rgba(212, 90, 75, 0.1); }
+
+.wishlist-add-btn {
+  margin: 8px 24px 0; padding: 16px; background: var(--bg-subtle);
+  border: 1.5px dashed var(--border); border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 13px; color: var(--ink-secondary); font-weight: 500; cursor: pointer;
+  transition: all 0.2s;
+}
+.wishlist-add-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ========================================
+   8. ACTIVITY FEED
+   ======================================== */
+.activity-feed { padding: 0 24px; }
+.activity-item {
+  display: flex; gap: 14px; padding: 16px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-icon {
+  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #fff;
+}
+.activity-icon.lent { background: var(--accent-gradient); }
+.activity-icon.added { background: var(--status-available); }
+.activity-icon.returned { background: #8A9BB5; }
+.activity-icon.wishlist { background: var(--status-pending); }
+.activity-icon.borrowed { background: #B89AC4; }
+.activity-content { flex: 1; min-width: 0; }
+.activity-content .text {
+  font-size: 13px; color: var(--ink); line-height: 1.5;
+}
+.activity-content .text strong { font-weight: 500; }
+.activity-content .text .item-ref {
+  color: var(--accent); font-weight: 500;
+}
+.activity-content .time {
+  font-size: 11px; color: var(--ink-tertiary); margin-top: 4px;
+}
+.activity-thumb {
+  width: 44px; height: 44px; border-radius: var(--radius-xs);
+  background: linear-gradient(135deg, var(--bg-subtle), var(--bg-warm));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-size: 22px; color: var(--ink-tertiary); opacity: 0.2;
+  flex-shrink: 0;
+}
+
+/* ========================================
+   9. PROFILE
+   ======================================== */
+.profile-hero {
+  padding: 8px 24px 24px; text-align: center;
+}
+.profile-avatar-large {
+  width: 88px; height: 88px; border-radius: 50%;
+  background: var(--accent-gradient); display: flex; align-items: center;
+  justify-content: center; font-size: 32px; font-weight: 600; color: #fff;
+  margin: 0 auto 16px; box-shadow: 0 8px 24px rgba(196, 168, 126, 0.3);
+}
+.profile-name {
+  font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 500;
+  margin-bottom: 4px;
+}
+.profile-role {
+  font-size: 12px; color: var(--accent); font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.profile-stats {
+  display: flex; gap: 0; margin: 24px 24px;
+  background: var(--bg-subtle); border-radius: var(--radius); padding: 20px 0;
+}
+.profile-stat {
+  flex: 1; text-align: center; position: relative;
+}
+.profile-stat:not(:last-child)::after {
+  content: ''; position: absolute; right: 0; top: 20%; height: 60%;
+  width: 1px; background: var(--border);
+}
+.profile-stat .num {
+  font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 600;
+  color: var(--ink); line-height: 1;
+}
+.profile-stat .num.score { color: var(--status-available); }
+.profile-stat .label {
+  font-size: 10px; color: var(--ink-tertiary); margin-top: 6px;
+  letter-spacing: 0.05em;
+}
+
+.profile-section { padding: 0 24px; margin-bottom: 24px; }
+.profile-section .section-title {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
+}
+.profile-circle-card {
+  background: var(--bg-subtle); border-radius: var(--radius); padding: 16px;
+  display: flex; align-items: center; gap: 14px;
+}
+.profile-circle-card .circle-icon {
+  width: 48px; height: 48px; border-radius: var(--radius-sm);
+  background: var(--accent-gradient); display: flex; align-items: center;
+  justify-content: center; font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 600; color: #fff;
+}
+.profile-circle-card .info { flex: 1; }
+.profile-circle-card .info .name { font-size: 14px; font-weight: 500; color: var(--ink); }
+.profile-circle-card .info .members { font-size: 11px; color: var(--ink-tertiary); margin-top: 2px; }
+.profile-circle-card .role-badge {
+  font-size: 9px; font-weight: 600; padding: 4px 10px; border-radius: 100px;
+  background: var(--accent-soft); color: var(--accent); letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.settings-list { padding: 0 24px; }
+.settings-item {
+  display: flex; align-items: center; gap: 14px; padding: 14px 0;
+  border-bottom: 1px solid var(--border-subtle); cursor: pointer;
+}
+.settings-item .icon {
+  width: 32px; height: 32px; border-radius: 8px; background: var(--bg-subtle);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--ink-secondary);
+}
+.settings-item .label { flex: 1; font-size: 14px; color: var(--ink); }
+.settings-item .arrow { font-size: 16px; color: var(--ink-tertiary); }
+.settings-item .toggle {
+  width: 44px; height: 26px; border-radius: 100px;
+  background: var(--accent); position: relative; cursor: pointer;
+}
+.settings-item .toggle .knob {
+  position: absolute; top: 3px; right: 3px;
+  width: 20px; height: 20px; border-radius: 50%; background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.settings-item .toggle.off { background: var(--border); }
+.settings-item .toggle.off .knob { right: auto; left: 3px; }
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .page-header, .screen-section { padding-left: 20px; padding-right: 20px; }
+  .phone-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()">
+  <span class="dot"></span>
+  <span id="theme-label">Dark Mode</span>
+</button>
+
+<!-- ========== PAGE HEADER ========== -->
+<div class="page-header">
+  <div class="label">Variant C · Boutique Shelf · Full App Mockup</div>
+  <h1 class="serif">Trésor — Complete App Flow</h1>
+  <p class="subtitle">Comprehensive multi-screen mockup of the entire Trésor experience — from onboarding through profile. Warm Atelier palette, Playfair Display + Jost typography, boutique shelf browsing pattern. Every screen Dwight's team needs to build, in flow order.</p>
+  <div class="meta">
+    <div class="meta-item"><strong>Designer</strong>Muaath</div>
+    <div class="meta-item"><strong>Brief</strong>Nasser</div>
+    <div class="meta-item"><strong>Dev Lead</strong>Dwight</div>
+    <div class="meta-item"><strong>Screens</strong>9 sections · 13 frames</div>
+    <div class="meta-item"><strong>Palette</strong>Warm Atelier</div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== 1. ONBOARDING ========== -->
+<div class="screen-section">
+  <div class="screen-label"><span class="num">1</span> Onboarding / Invite Code</div>
+  <div class="screen-title serif">Welcome to the Circle</div>
+  <p class="screen-desc">Exclusive velvet-rope entry. User enters invite code to join their circle. Warm gradient background, monogram logo, 6-digit code input with focus state. Circle preview at bottom shows who's waiting.</p>
+  <div class="phone-row">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="onboarding-bg" style="height: calc(812px - 54px);">
+          <div class="onboarding-content">
+            <div class="onboarding-logo">
+              <span class="monogram">T</span>
+            </div>
+            <div class="onboarding-title serif">Trésor</div>
+            <div class="onboarding-subtitle">Your private circle for luxury. Track, lend, and discover — together.</div>
+            <div class="invite-input-group">
+              <div class="invite-label">Enter Invite Code</div>
+              <div class="invite-code-display">
+                <div class="invite-digit filled">T</div>
+                <div class="invite-digit filled">R</div>
+                <div class="invite-digit filled">E</div>
+                <div class="invite-digit filled">S</div>
+                <div class="invite-digit filled">O</div>
+                <div class="invite-digit current">R</div>
+              </div>
+            </div>
+            <button class="onboarding-btn">Join Circle</button>
+            <button class="onboarding-btn secondary">I have a phone number instead</button>
+          </div>
+          <div class="onboarding-footer">
+            <div class="circle-preview">
+              <div class="circle-avatar">S</div>
+              <div class="circle-avatar">M</div>
+              <div class="circle-avatar">A</div>
+              <div class="circle-avatar">F</div>
+              <div class="circle-avatar">L</div>
+            </div>
+            <div class="text"><strong>5 members</strong> are waiting for you<br>in <strong>Sarah's Circle</strong></div>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== 2. HOME ========== -->
+<div class="screen-section">
+  <div class="screen-label"><span class="num">2</span> My Trésor (Home)</div>
+  <div class="screen-title serif">Boutique Shelf Home</div>
+  <p class="screen-desc">Featured carousel at top with hero cards. Horizontal category shelves below — Handbags, Jewelry, Watches — each scrolling independently with peek-through. Status dots indicate availability. Bottom tab bar with elevated center Add button.</p>
+  <div class="phone-row">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="scroll-area">
+          <div class="screen-header">
+            <div class="greeting">Good morning, Sarah</div>
+            <div class="title serif">My Trésor</div>
+            <div class="count">47 pieces · 3 lent · 2 borrowed</div>
+          </div>
+
+          <div class="featured-carousel">
+            <div class="featured-card">
+              <div class="featured-card-photo">
+                <span class="img-letter">C</span>
+                <div class="photo-shine"></div>
+              </div>
+              <span class="status-tag"><span class="dot"></span> Available</span>
+              <div class="featured-card-info">
+                <div class="brand">Chanel</div>
+                <div class="name serif">Classic Flap Bag</div>
+                <div class="price">AED 31,200</div>
+              </div>
+            </div>
+            <div class="featured-card">
+              <div class="featured-card-photo">
+                <span class="img-letter">H</span>
+                <div class="photo-shine"></div>
+              </div>
+              <span class="status-tag lent"><span class="dot"></span> Lent</span>
+              <div class="featured-card-info">
+                <div class="brand">Hermès</div>
+                <div class="name serif">Birkin 30 · Togo</div>
+                <div class="price">AED 110,000</div>
+              </div>
+            </div>
+            <div class="featured-card">
+              <div class="featured-card-photo">
+                <span class="img-letter">R</span>
+                <div class="photo-shine"></div>
+              </div>
+              <span class="status-tag"><span class="dot"></span> Available</span>
+              <div class="featured-card-info">
+                <div class="brand">Rolex</div>
+                <div class="name serif">Datejust 36</div>
+                <div class="price">AED 44,000</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="shelf">
+            <div class="shelf-header">
+              <span class="name serif">Handbags</span>
+              <span class="count">12 items</span>
+            </div>
+            <div class="shelf-row">
+              <div class="shelf-card">
+                <div class="shelf-card-photo"><span class="img-letter">C</span><span class="status-dot available"></span></div>
+                <div class="brand">Chanel</div>
+                <div class="item-name">Classic Flap · Med</div>
+                <div class="price">AED 31,200</div>
+              </div>
+              <div class="shelf-card">
+                <div class="shelf-card-photo"><span class="img-letter">H</span><span class="status-dot lent"></span></div>
+                <div class="brand">Hermès</div>
+                <div class="item-name">Birkin 30 · Togo</div>
+                <div class="price">AED 110,000</div>
+              </div>
+              <div class="shelf-card">
+                <div class="shelf-card-photo"><span class="img-letter">D</span><span class="status-dot available"></span></div>
+                <div class="brand">Dior</div>
+                <div class="item-name">Lady Dior · Med</div>
+                <div class="price">AED 18,800</div>
+              </div>
+              <div class="shelf-card">
+                <div class="shelf-card-photo"><span class="img-letter">C</span><span class="status-dot available"></span></div>
+                <div class="brand">Chanel</div>
+                <div class="item-name">Boy Bag · Small</div>
+                <div class="price">AED 24,500</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="shelf">
+            <div class="shelf-header">
+              <span class="name serif">Jewelry</span>
+              <span class="count">8 items</span>
+            </div>
+            <div class="shelf-row">
+              <div class="shelf-card">
+                <div class="shelf-card-photo"><span class="img-letter">C</span><span class="status-dot available"></span></div>
+                <div class="brand">Cartier</div>
+                <div class="item-name">Love Bracelet</div>
+                <div class="price">AED 26,400</div>
+              </div>
+              <div class="shelf-card">
+                <div class="shelf-card-photo"><span class="img-letter">V</span><span class="status-dot lent"></span></div>
+                <div class="brand">Van Cleef</div>
+                <div class="item-name">Alhambra Bracelet</div>
+                <div class="price">AED 14,700</div>
+              </div>
+              <div class="shelf-card">
+                <div class="shelf-card-photo"><span class="img-letter">T</span><span class="status-dot available"></span></div>
+                <div class="brand">Tiffany</div>
+                <div class="item-name">T1 Hinged Bangle</div>
+                <div class="price">AED 12,200</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="shelf">
+            <div class="shelf-header">
+              <span class="name serif">Watches</span>
+              <span class="count">5 items</span>
+            </div>
+            <div class="shelf-row">
+              <div class="shelf-card">
+                <div class="shelf-card-photo"><span class="img-letter">R</span><span class="status-dot available"></span></div>
+                <div class="brand">Rolex</div>
+                <div class="item-name">Datejust 36</div>
+                <div class="price">AED 44,000</div>
+              </div>
+              <div class="shelf-card">
+                <div class="shelf-card-photo"><span class="img-letter">C</span><span class="status-dot available"></span></div>
+                <div class="brand">Cartier</div>
+                <div class="item-name">Tank Française</div>
+                <div class="price">AED 21,300</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item active"><div class="icon">◈</div><span>Trésor</span></div>
+          <div class="tab-item"><div class="icon">◯</div><span>Circle</span></div>
+          <div class="tab-add">+</div>
+          <div class="tab-item"><div class="icon">♡</div><span>Wishlist</span></div>
+          <div class="tab-item"><div class="icon">≡</div><span>Activity</span></div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== 3. CIRCLE ========== -->
+<div class="screen-section">
+  <div class="screen-label"><span class="num">3</span> Circle</div>
+  <div class="screen-title serif">Browse Members' Collections</div>
+  <p class="screen-desc">Circle overview with stats (members, total items). Member list with avatars, online status, item counts. Tapping a member drills into their collection grid. Read-only browsing of friends' inventories.</p>
+  <div class="phone-row">
+    <!-- Circle list -->
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="scroll-area">
+          <div class="screen-header">
+            <div class="greeting">Your private circle</div>
+            <div class="title serif">Sarah's Circle</div>
+            <div class="count">Active since Jan 2026</div>
+          </div>
+
+          <div class="circle-stats">
+            <div class="circle-stat-card">
+              <div class="num">5</div>
+              <div class="label">Members</div>
+            </div>
+            <div class="circle-stat-card">
+              <div class="num">47</div>
+              <div class="label">Total Items</div>
+            </div>
+            <div class="circle-stat-card">
+              <div class="num">12</div>
+              <div class="label">Active Lends</div>
+            </div>
+          </div>
+
+          <div class="shelf-header" style="padding: 0 24px 10px;">
+            <span class="name serif">Members</span>
+            <span class="count">Tap to browse</span>
+          </div>
+
+          <div class="members-list">
+            <div class="member-row">
+              <div class="member-avatar">S<div class="online-dot"></div></div>
+              <div class="member-info">
+                <div class="name">Sarah M.</div>
+                <div class="detail">Circle Admin · Dubai</div>
+                <div class="items-count">14 items · 3 lent out</div>
+              </div>
+              <div class="member-arrow">›</div>
+            </div>
+            <div class="member-row">
+              <div class="member-avatar">M<div class="online-dot"></div></div>
+              <div class="member-info">
+                <div class="name">Mona A.</div>
+                <div class="detail">Member · Abu Dhabi</div>
+                <div class="items-count">11 items · 2 lent out</div>
+              </div>
+              <div class="member-arrow">›</div>
+            </div>
+            <div class="member-row">
+              <div class="member-avatar">A</div>
+              <div class="member-info">
+                <div class="name">Aisha K.</div>
+                <div class="detail">Member · Sharjah</div>
+                <div class="items-count">9 items · 1 lent out</div>
+              </div>
+              <div class="member-arrow">›</div>
+            </div>
+            <div class="member-row">
+              <div class="member-avatar">F</div>
+              <div class="member-info">
+                <div class="name">Fatima R.</div>
+                <div class="detail">Member · Dubai</div>
+                <div class="items-count">8 items · 4 lent out</div>
+              </div>
+              <div class="member-arrow">›</div>
+            </div>
+            <div class="member-row">
+              <div class="member-avatar">L</div>
+              <div class="member-info">
+                <div class="name">Layla S.</div>
+                <div class="detail">Member · Dubai</div>
+                <div class="items-count">5 items · 2 lent out</div>
+              </div>
+              <div class="member-arrow">›</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="icon">◈</div><span>Trésor</span></div>
+          <div class="tab-item active"><div class="icon">◯</div><span>Circle</span></div>
+          <div class="tab-add">+</div>
+          <div class="tab-item"><div class="icon">♡</div><span>Wishlist</span></div>
+          <div class="tab-item"><div class="icon">≡</div><span>Activity</span></div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+
+    <!-- Member collection detail -->
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="scroll-area">
+          <div class="screen-header">
+            <div class="nav-row">
+              <div>
+                <div class="greeting">‹ Back to Circle</div>
+                <div class="title serif">Mona A.</div>
+                <div class="count">11 items · 2 lent · 1 borrowed</div>
+              </div>
+              <div class="member-avatar" style="width: 56px; height: 56px; font-size: 22px;">M</div>
+            </div>
+          </div>
+
+          <div class="circle-stats">
+            <div class="circle-stat-card">
+              <div class="num">11</div>
+              <div class="label">Owned</div>
+            </div>
+            <div class="circle-stat-card">
+              <div class="num">8</div>
+              <div class="label">Available</div>
+            </div>
+            <div class="circle-stat-card">
+              <div class="num">4.9</div>
+              <div class="label">Reliability</div>
+            </div>
+          </div>
+
+          <div class="shelf-header" style="padding: 0 24px 10px;">
+            <span class="name serif">Mona's Collection</span>
+            <span class="count">All categories</span>
+          </div>
+
+          <div class="member-collection-grid">
+            <div class="grid-card">
+              <div class="grid-card-photo"><span class="img-letter">H</span><span class="status-dot available"></span></div>
+              <div class="brand">Hermès</div>
+              <div class="item-name">Birkin 30 · Gold</div>
+              <div class="price">AED 110,000</div>
+            </div>
+            <div class="grid-card">
+              <div class="grid-card-photo"><span class="img-letter">C</span><span class="status-dot available"></span></div>
+              <div class="brand">Cartier</div>
+              <div class="item-name">Love Bracelet</div>
+              <div class="price">AED 26,400</div>
+            </div>
+            <div class="grid-card">
+              <div class="grid-card-photo"><span class="img-letter">D</span><span class="status-dot lent"></span></div>
+              <div class="brand">Dior</div>
+              <div class="item-name">Lady Dior · Med</div>
+              <div class="price">AED 18,800</div>
+            </div>
+            <div class="grid-card">
+              <div class="grid-card-photo"><span class="img-letter">V</span><span class="status-dot available"></span></div>
+              <div class="brand">Van Cleef</div>
+              <div class="item-name">Alhambra Necklace</div>
+              <div class="price">AED 22,500</div>
+            </div>
+            <div class="grid-card">
+              <div class="grid-card-photo"><span class="img-letter">R</span><span class="status-dot available"></span></div>
+              <div class="brand">Rolex</div>
+              <div class="item-name">Datejust 31</div>
+              <div class="price">AED 42,000</div>
+            </div>
+            <div class="grid-card">
+              <div class="grid-card-photo"><span class="img-letter">C</span><span class="status-dot lent"></span></div>
+              <div class="brand">Chanel</div>
+              <div class="item-name">2.55 Reissue</div>
+              <div class="price">AED 28,900</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="icon">◈</div><span>Trésor</span></div>
+          <div class="tab-item active"><div class="icon">◯</div><span>Circle</span></div>
+          <div class="tab-add">+</div>
+          <div class="tab-item"><div class="icon">♡</div><span>Wishlist</span></div>
+          <div class="tab-item"><div class="icon">≡</div><span>Activity</span></div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== 4. ADD ITEM (AI PHOTO FLOW) ========== -->
+<div class="screen-section">
+  <div class="screen-label"><span class="num">4</span> Add Item — AI Photo Flow</div>
+  <div class="screen-title serif">Camera → AI Analysis → Confirm</div>
+  <p class="screen-desc">Three-state flow: (1) Camera viewfinder with framing guides and capture button. (2) AI analyzing with scan animation, spinner, and progressive steps. (3) AI results with auto-filled fields, confidence percentages, and editable form. GPT-4o Vision identifies brand, model, category, and estimates value.</p>
+  <div class="phone-row">
+    <!-- 4a. Camera -->
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="camera-screen">
+          <div class="status-bar" style="color: #fff; background: transparent;">
+            <span>9:41</span>
+            <span class="icons">
+              <span class="signal"><span></span><span></span><span></span><span></span></span>
+              <span class="wifi" style="color:#fff;">▾</span>
+              <span class="battery" style="border-color: #fff;"><span class="fill" style="background: #fff;"></span></span>
+            </span>
+          </div>
+          <div class="camera-top-bar">
+            <div class="close-btn">✕</div>
+            <div class="mode-toggle">
+              <div class="mode active">Photo</div>
+              <div class="mode">Link</div>
+              <div class="mode">Manual</div>
+            </div>
+            <div style="width: 36px;"></div>
+          </div>
+          <div class="camera-viewfinder">
+            <span class="item-silhouette">C</span>
+            <div class="camera-frame-overlay"></div>
+            <div class="camera-hint">Center the item in the frame</div>
+          </div>
+          <div class="camera-bottom-bar">
+            <div class="camera-side-btn">⤢</div>
+            <div class="shutter-btn"></div>
+            <div class="camera-side-btn">♾</div>
+          </div>
+        </div>
+        <div class="home-indicator" style="background: #fff;"></div>
+      </div>
+    </div>
+
+    <!-- 4b. AI Analyzing -->
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="ai-analyzing" style="height: calc(812px - 54px);">
+          <div class="captured-photo">
+            <span class="img-letter">C</span>
+            <div class="scan-line"></div>
+          </div>
+          <div class="ai-spinner"></div>
+          <div class="status-text serif">Identifying...</div>
+          <div class="sub-text">Trésor AI is analyzing your item using visual recognition. This usually takes a few seconds.</div>
+          <div class="ai-steps">
+            <div class="ai-step done">
+              <div class="check">✓</div>
+              <span>Photo captured</span>
+            </div>
+            <div class="ai-step done">
+              <div class="check">✓</div>
+              <span>Brand identified</span>
+            </div>
+            <div class="ai-step active">
+              <div class="check">●</div>
+              <span>Determining model & condition...</span>
+            </div>
+            <div class="ai-step pending">
+              <div class="check">○</div>
+              <span>Estimating market value</span>
+            </div>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+
+    <!-- 4c. AI Results / Edit Form -->
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="ai-results-scroll" style="height: calc(812px - 54px);">
+          <div class="ai-results-photo">
+            <span class="img-letter">C</span>
+            <div class="photo-shine"></div>
+            <div class="ai-badge">✦ AI Identified</div>
+            <div class="retake-btn">‹ Retake</div>
+          </div>
+          <div class="ai-results-content">
+            <div class="section-title serif">Review & Confirm</div>
+            <div class="section-sub">AI pre-filled these details. Edit anything before adding to your collection.</div>
+
+            <div class="form-field">
+              <div class="field-label">
+                <span>Brand</span>
+                <span class="confidence">98% confident</span>
+              </div>
+              <input class="input ai-filled" value="Chanel" readonly>
+            </div>
+
+            <div class="form-field">
+              <div class="field-label">
+                <span>Model</span>
+                <span class="confidence">94% confident</span>
+              </div>
+              <input class="input ai-filled" value="Classic Flap Bag — Medium" readonly>
+            </div>
+
+            <div class="form-field">
+              <div class="field-label">
+                <span>Category</span>
+                <span class="confidence">99% confident</span>
+              </div>
+              <div class="select-row">
+                <div class="chip active">Handbags</div>
+                <div class="chip">Jewelry</div>
+                <div class="chip">Watches</div>
+                <div class="chip">Shoes</div>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <div class="field-label">
+                <span>Material & Color</span>
+                <span class="confidence medium">76% confident</span>
+              </div>
+              <input class="input ai-filled" value="Caviar Leather · Black · Gold Hardware">
+            </div>
+
+            <div class="form-field">
+              <div class="field-label">
+                <span>Estimated Value</span>
+                <span class="confidence">Based on resale data</span>
+              </div>
+              <input class="input ai-filled" value="AED 31,200">
+            </div>
+
+            <div class="form-field">
+              <div class="field-label">
+                <span>Condition</span>
+              </div>
+              <div class="select-row">
+                <div class="chip">New</div>
+                <div class="chip active">Excellent</div>
+                <div class="chip">Very Good</div>
+                <div class="chip">Good</div>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <div class="field-label">
+                <span>Purchase Price (optional)</span>
+              </div>
+              <input class="input" placeholder="AED 0.00">
+            </div>
+
+            <div class="form-field">
+              <div class="field-label">
+                <span>Notes (optional)</span>
+              </div>
+              <input class="input" placeholder="Add any notes about this item...">
+            </div>
+          </div>
+          <div class="ai-cta-bar">
+            <button class="btn-secondary">Edit Details</button>
+            <button class="btn-primary">Add to Trésor</button>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== 5. ITEM DETAIL ========== -->
+<div class="screen-section">
+  <div class="screen-label"><span class="num">5</span> Item Detail</div>
+  <div class="screen-title serif">Parallax Photo · Tabbed Sections</div>
+  <p class="screen-desc">Full item detail with parallax hero photo and navigation overlay. Stacked card with brand, name, specs, value/condition/status. Three tabs: Details (full specs + notes), History (lending timeline with avatars), Lending (stats + availability). Fixed bottom CTA for borrow request. Owner row with avatar.</p>
+  <div class="phone-row">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar" style="position: absolute; top: 0; left: 0; right: 0; z-index: 20; color: var(--ink);">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div style="height: 100%; overflow-y: auto; overflow-x: hidden;">
+          <div style="height: 100%; overflow-y: auto; overflow-x: hidden;" id="detail-scroll">
+            <div class="detail-parallax" style="margin-top: 0;">
+              <div class="detail-nav-overlay">
+                <div class="btn">‹</div>
+                <div class="btn">♡</div>
+              </div>
+              <span class="img-letter">C</span>
+              <div class="photo-shine"></div>
+              <div class="detail-photo-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+              </div>
+            </div>
+
+            <div class="detail-stacked-card">
+              <div class="brand">Chanel</div>
+              <div class="name serif">Classic Flap Bag</div>
+              <div class="spec">Black · Caviar Leather · Gold Hardware · Medium</div>
+              <div class="price-row">
+                <div class="price-cell">
+                  <div class="label">Est. Value</div>
+                  <div class="value">AED 31,200</div>
+                </div>
+                <div class="price-cell">
+                  <div class="label">Condition</div>
+                  <div class="value">Excellent</div>
+                </div>
+                <div class="price-cell">
+                  <div class="label">Status</div>
+                  <div class="value" style="color: var(--status-available);">Available</div>
+                </div>
+              </div>
+              <div class="detail-owner-row">
+                <div class="avatar">S</div>
+                <div class="info">
+                  <div class="name">Sarah M.</div>
+                  <div class="role">Owner · In your circle</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-tabs">
+              <div class="detail-tab-bar">
+                <div class="detail-tab active" onclick="switchTab(event, 'details-5')">Details</div>
+                <div class="detail-tab" onclick="switchTab(event, 'history-5')">History</div>
+                <div class="detail-tab" onclick="switchTab(event, 'lending-5')">Lending</div>
+              </div>
+
+              <div class="detail-tab-content active" id="tab-details-5">
+                <div class="info-row"><span class="key">Owner</span><span class="val">Sarah M.</span></div>
+                <div class="info-row"><span class="key">Purchased</span><span class="val">2022 · Chanel Dubai Mall</span></div>
+                <div class="info-row"><span class="key">Category</span><span class="val">Handbags</span></div>
+                <div class="info-row"><span class="key">Material</span><span class="val">Caviar Leather</span></div>
+                <div class="info-row"><span class="key">Hardware</span><span class="val">Gold Tone</span></div>
+                <div class="info-row"><span class="key">Dimensions</span><span class="val">25 × 16 × 7 cm</span></div>
+                <div class="note-box">Minor corner wear on bottom-right. Hardware shows faint surface scratches consistent with gentle use. Interior lining clean and unmarked. Comes with original box and dust bag.</div>
+              </div>
+
+              <div class="detail-tab-content" id="tab-history-5">
+                <div class="history-item">
+                  <div class="avatar">L</div>
+                  <div class="info">
+                    <div class="person">Layla S.</div>
+                    <div class="dates">Borrowed Mar 2026 · Returned Apr 2026</div>
+                  </div>
+                  <span class="status-pill returned">Returned</span>
+                </div>
+                <div class="history-item">
+                  <div class="avatar">M</div>
+                  <div class="info">
+                    <div class="person">Mona A.</div>
+                    <div class="dates">Borrowed Dec 2025 · Returned Jan 2026</div>
+                  </div>
+                  <span class="status-pill returned">Returned</span>
+                </div>
+                <div class="history-item">
+                  <div class="avatar">F</div>
+                  <div class="info">
+                    <div class="person">Fatima R.</div>
+                    <div class="dates">Borrowed Oct 2025 · Returned Nov 2025</div>
+                  </div>
+                  <span class="status-pill returned">Returned</span>
+                </div>
+                <div class="history-item">
+                  <div class="avatar">A</div>
+                  <div class="info">
+                    <div class="person">Aisha K.</div>
+                    <div class="dates">Borrowed Aug 2025 · Returned Sep 2025</div>
+                  </div>
+                  <span class="status-pill returned">Returned</span>
+                </div>
+              </div>
+
+              <div class="detail-tab-content" id="tab-lending-5">
+                <div class="info-row"><span class="key">Current Status</span><span class="val" style="color: var(--status-available);">Available</span></div>
+                <div class="info-row"><span class="key">Times Lent</span><span class="val">4</span></div>
+                <div class="info-row"><span class="key">Avg Return Time</span><span class="val">24 days</span></div>
+                <div class="info-row"><span class="key">On-time Rate</span><span class="val">100%</span></div>
+                <div class="info-row"><span class="key">Reliability Score</span><span class="val" style="color: var(--status-available);">5.0 / 5.0</span></div>
+                <div class="note-box" style="margin-top: 16px;">This item is available to borrow. Tap below to send a request to Sarah. She typically responds within a few hours.</div>
+              </div>
+            </div>
+            <div style="height: 100px;"></div>
+          </div>
+          <div class="detail-cta-fixed">
+            <button>Request to Borrow</button>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== 6. BORROW FLOW ========== -->
+<div class="screen-section">
+  <div class="screen-label"><span class="num">6</span> Borrow Flow</div>
+  <div class="screen-title serif">Request → Approval → Active Borrow</div>
+  <p class="screen-desc">Three-state flow: (1) Request modal with date picker, duration badge, and note field. (2) Approval notification screen when lender accepts. (3) Active borrow status with return countdown, progress bar, and item details. No tab bar on these modal/flow screens.</p>
+  <div class="phone-row">
+    <!-- 6a. Request to Borrow -->
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="modal-screen">
+          <div class="modal-header">
+            <div class="title serif">Request to Borrow</div>
+            <div class="close">✕</div>
+          </div>
+
+          <div class="borrow-item-preview">
+            <div class="photo">C</div>
+            <div class="info">
+              <div class="brand">Chanel</div>
+              <div class="name serif">Classic Flap Bag</div>
+              <div class="owner">
+                <span class="avatar">S</span>
+                From Sarah M.
+              </div>
+            </div>
+          </div>
+
+          <div class="date-picker-section">
+            <div class="field-label">Select Dates</div>
+            <div class="date-input-row">
+              <div class="date-card selected">
+                <div class="month">Aug</div>
+                <div class="day">07</div>
+                <div class="weekday">Thursday</div>
+              </div>
+              <div class="date-arrow">→</div>
+              <div class="date-card selected">
+                <div class="month">Aug</div>
+                <div class="day">21</div>
+                <div class="weekday">Thursday</div>
+              </div>
+            </div>
+            <div class="duration-badge">◐ 14 days</div>
+          </div>
+
+          <div class="note-section">
+            <div class="field-label" style="font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-tertiary); margin-bottom: 10px;">Note to Sarah (optional)</div>
+            <textarea placeholder="Hi Sarah! I'd love to borrow your Classic Flap for a wedding next weekend. I'll take great care of it! 💛">Hi Sarah! I'd love to borrow your Classic Flap for a wedding next weekend. I'll take great care of it!</textarea>
+          </div>
+        </div>
+        <div class="modal-cta-bar">
+          <button class="btn-primary">Send Request</button>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+
+    <!-- 6b. Approval Notification -->
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="notification-screen" style="height: calc(812px - 54px);">
+          <div class="notif-icon">✓</div>
+          <div class="notif-title serif">Request Approved!</div>
+          <div class="notif-body"><strong>Sarah M.</strong> approved your borrow request. You can now pick up the item. Remember to return it by <strong>Aug 21</strong>.</div>
+
+          <div class="notif-item-card">
+            <div class="photo">C</div>
+            <div class="info">
+              <div class="brand">Chanel</div>
+              <div class="name serif">Classic Flap Bag</div>
+              <div class="dates">Aug 7 — Aug 21 · 14 days</div>
+            </div>
+          </div>
+
+          <button class="notif-btn">View Borrow Details</button>
+          <div style="margin-top: 12px; font-size: 12px; color: var(--ink-tertiary); cursor: pointer;">Done</div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+
+    <!-- 6c. Borrowed Status with Countdown -->
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="borrowed-status-screen" style="height: calc(812px - 54px); position: relative;">
+          <div class="modal-header">
+            <div class="title serif">Borrowed Item</div>
+            <div class="close">✕</div>
+          </div>
+
+          <div class="countdown-hero">
+            <div class="label">Days Until Return</div>
+            <div class="days serif">9</div>
+            <div class="days-label">days remaining</div>
+            <div class="countdown-progress">
+              <div class="fill"></div>
+            </div>
+            <div class="countdown-dates">
+              <span>Picked up Aug 7</span>
+              <span>Return by Aug 21</span>
+            </div>
+          </div>
+
+          <div class="borrowed-item-card">
+            <div class="photo">C</div>
+            <div class="info">
+              <div class="brand">Chanel</div>
+              <div class="name serif">Classic Flap Bag</div>
+              <div class="lender">From Sarah M.</div>
+            </div>
+          </div>
+
+          <div class="borrow-details">
+            <div class="borrow-detail-row">
+              <span class="key">Status</span>
+              <span class="val" style="color: var(--accent);">Active · Borrowed</span>
+            </div>
+            <div class="borrow-detail-row">
+              <span class="key">Pickup Date</span>
+              <span class="val">Aug 7, 2026</span>
+            </div>
+            <div class="borrow-detail-row">
+              <span class="key">Return Date</span>
+              <span class="val">Aug 21, 2026</span>
+            </div>
+            <div class="borrow-detail-row">
+              <span class="key">Duration</span>
+              <span class="val">14 days</span>
+            </div>
+            <div class="borrow-detail-row">
+              <span class="key">Lender</span>
+              <span class="val">Sarah M.</span>
+            </div>
+            <div class="borrow-note-box">"Hi Sarah! I'd love to borrow your Classic Flap for a wedding next weekend. I'll take great care of it! 💛"</div>
+          </div>
+
+          <div style="padding: 24px; padding-bottom: 60px;">
+            <button style="width: 100%; padding: 16px; background: var(--bg-subtle); color: var(--ink); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Jost', sans-serif; letter-spacing: 0.03em;">
+              Mark as Returned
+            </button>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== 7. WISHLIST ========== -->
+<div class="screen-section">
+  <div class="screen-label"><span class="num">7</span> Wishlist</div>
+  <div class="screen-title serif">Savings Goals · Price Alerts</div>
+  <p class="screen-desc">Wishlist items with visual savings progress bars, target prices, and target dates. Price drop alerts when market prices fall. Priority tags (High/Medium) on items. Add new wishlist item button. Same Warm Atelier card treatment.</p>
+  <div class="phone-row">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="scroll-area">
+          <div class="screen-header">
+            <div class="greeting">Dreaming of</div>
+            <div class="title serif">Wishlist</div>
+            <div class="count">5 items · AED 156,000 total saved</div>
+          </div>
+
+          <!-- Wishlist Item 1 -->
+          <div class="wishlist-item">
+            <div class="wishlist-item-top">
+              <div class="photo">
+                <span class="img-letter">H</span>
+                <span class="priority-tag high">High</span>
+              </div>
+              <div class="info">
+                <div class="brand">Hermès</div>
+                <div class="name serif">Birkin 25 · Togo · Gold</div>
+                <div class="target">
+                  <span class="strike">AED 130,000</span>
+                  <span style="color: var(--status-available); font-weight: 500;">AED 110,000</span>
+                </div>
+              </div>
+            </div>
+            <div class="wishlist-savings">
+              <div class="savings-label">
+                <span class="amount">AED 45,000 <span class="total">/ 110,000 saved</span></span>
+                <span class="percent">41%</span>
+              </div>
+              <div class="wishlist-progress">
+                <div class="fill" style="width: 41%;"></div>
+              </div>
+            </div>
+            <div class="wishlist-footer">
+              <span class="target-date">Target: Dec 2026</span>
+              <span class="price-alert drop">▼ Price dropped AED 20,000</span>
+            </div>
+          </div>
+
+          <!-- Wishlist Item 2 -->
+          <div class="wishlist-item">
+            <div class="wishlist-item-top">
+              <div class="photo">
+                <span class="img-letter">C</span>
+                <span class="priority-tag medium">Med</span>
+              </div>
+              <div class="info">
+                <div class="brand">Cartier</div>
+                <div class="name serif">Panthère Necklace · Diamonds</div>
+                <div class="target">
+                  <span>Target: AED 85,000</span>
+                </div>
+              </div>
+            </div>
+            <div class="wishlist-savings">
+              <div class="savings-label">
+                <span class="amount">AED 52,000 <span class="total">/ 85,000 saved</span></span>
+                <span class="percent">61%</span>
+              </div>
+              <div class="wishlist-progress">
+                <div class="fill" style="width: 61%;"></div>
+              </div>
+            </div>
+            <div class="wishlist-footer">
+              <span class="target-date">Target: Oct 2026</span>
+              <span class="price-alert">✓ Price stable</span>
+            </div>
+          </div>
+
+          <!-- Wishlist Item 3 -->
+          <div class="wishlist-item">
+            <div class="wishlist-item-top">
+              <div class="photo">
+                <span class="img-letter">R</span>
+              </div>
+              <div class="info">
+                <div class="brand">Rolex</div>
+                <div class="name serif">Day-Date 36 · Platinum</div>
+                <div class="target">
+                  <span>Target: AED 180,000</span>
+                </div>
+              </div>
+            </div>
+            <div class="wishlist-savings">
+              <div class="savings-label">
+                <span class="amount">AED 38,000 <span class="total">/ 180,000 saved</span></span>
+                <span class="percent">21%</span>
+              </div>
+              <div class="wishlist-progress">
+                <div class="fill" style="width: 21%;"></div>
+              </div>
+            </div>
+            <div class="wishlist-footer">
+              <span class="target-date">Target: Jun 2027</span>
+              <span class="price-alert">✓ Price stable</span>
+            </div>
+          </div>
+
+          <!-- Wishlist Item 4 -->
+          <div class="wishlist-item">
+            <div class="wishlist-item-top">
+              <div class="photo">
+                <span class="img-letter">V</span>
+                <span class="priority-tag high">High</span>
+              </div>
+              <div class="info">
+                <div class="brand">Van Cleef</div>
+                <div class="name serif">Alhambra Long Necklace · 20 motifs</div>
+                <div class="target">
+                  <span class="strike">AED 52,000</span>
+                  <span style="color: var(--status-available); font-weight: 500;">AED 47,500</span>
+                </div>
+              </div>
+            </div>
+            <div class="wishlist-savings">
+              <div class="savings-label">
+                <span class="amount">AED 21,000 <span class="total">/ 47,500 saved</span></span>
+                <span class="percent">44%</span>
+              </div>
+              <div class="wishlist-progress">
+                <div class="fill" style="width: 44%;"></div>
+              </div>
+            </div>
+            <div class="wishlist-footer">
+              <span class="target-date">Target: Nov 2026</span>
+              <span class="price-alert drop">▼ Price dropped AED 4,500</span>
+            </div>
+          </div>
+
+          <div class="wishlist-add-btn">
+            <span style="font-size: 20px;">+</span>
+            <span>Add Wishlist Item</span>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="icon">◈</div><span>Trésor</span></div>
+          <div class="tab-item"><div class="icon">◯</div><span>Circle</span></div>
+          <div class="tab-add">+</div>
+          <div class="tab-item active"><div class="icon">♡</div><span>Wishlist</span></div>
+          <div class="tab-item"><div class="icon">≡</div><span>Activity</span></div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== 8. ACTIVITY FEED ========== -->
+<div class="screen-section">
+  <div class="screen-label"><span class="num">8</span> Activity Feed</div>
+  <div class="screen-title serif">Circle Activity Timeline</div>
+  <p class="screen-desc">Real-time feed of circle events: borrows, returns, new items added, wishlist updates. Each entry has an icon, event text with bolded names and item references, timestamp, and item thumbnail. Chronological, most recent first. Push notifications mirror these events.</p>
+  <div class="phone-row">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="scroll-area">
+          <div class="screen-header">
+            <div class="greeting">What's happening</div>
+            <div class="title serif">Activity</div>
+            <div class="count">Sarah's Circle · Live</div>
+          </div>
+
+          <div class="activity-feed">
+            <div class="activity-item">
+              <div class="activity-icon lent">↗</div>
+              <div class="activity-content">
+                <div class="text"><strong>Sarah M.</strong> lent her <span class="item-ref">Hermès Birkin 30</span> to <strong>Mona A.</strong></div>
+                <div class="time">2 hours ago</div>
+              </div>
+              <div class="activity-thumb">H</div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon added">+</div>
+              <div class="activity-content">
+                <div class="text"><strong>Aisha K.</strong> added a new <span class="item-ref">Cartier Love Bracelet</span> to her collection</div>
+                <div class="time">5 hours ago</div>
+              </div>
+              <div class="activity-thumb">C</div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon returned">↙</div>
+              <div class="activity-content">
+                <div class="text"><strong>Mona A.</strong> returned the <span class="item-ref">Rolex Datejust 36</span> to <strong>Sarah M.</strong></div>
+                <div class="time">Yesterday · 6:30 PM</div>
+              </div>
+              <div class="activity-thumb">R</div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon borrowed">↘</div>
+              <div class="activity-content">
+                <div class="text"><strong>Fatima R.</strong> borrowed the <span class="item-ref">Dior Lady Dior</span> from <strong>Layla S.</strong></div>
+                <div class="time">Yesterday · 2:15 PM</div>
+              </div>
+              <div class="activity-thumb">D</div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon added">+</div>
+              <div class="activity-content">
+                <div class="text"><strong>Layla S.</strong> added a new <span class="item-ref">Van Cleef Alhambra Bracelet</span></div>
+                <div class="time">2 days ago</div>
+              </div>
+              <div class="activity-thumb">V</div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon wishlist">♡</div>
+              <div class="activity-content">
+                <div class="text"><strong>Mona A.</strong> added <span class="item-ref">Chanel Classic Flap</span> to her wishlist</div>
+                <div class="time">3 days ago</div>
+              </div>
+              <div class="activity-thumb">C</div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon returned">↙</div>
+              <div class="activity-content">
+                <div class="text"><strong>Aisha K.</strong> returned the <span class="item-ref">Cartier Love Bracelet</span> to <strong>Sarah M.</strong></div>
+                <div class="time">4 days ago</div>
+              </div>
+              <div class="activity-thumb">C</div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon lent">↗</div>
+              <div class="activity-content">
+                <div class="text"><strong>Sarah M.</strong> lent her <span class="item-ref">Chanel Boy Bag</span> to <strong>Fatima R.</strong></div>
+                <div class="time">5 days ago</div>
+              </div>
+              <div class="activity-thumb">C</div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-icon added">+</div>
+              <div class="activity-content">
+                <div class="text"><strong>Sarah M.</strong> added a new <span class="item-ref">Rolex Datejust 36</span></div>
+                <div class="time">1 week ago</div>
+              </div>
+              <div class="activity-thumb">R</div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="icon">◈</div><span>Trésor</span></div>
+          <div class="tab-item"><div class="icon">◯</div><span>Circle</span></div>
+          <div class="tab-add">+</div>
+          <div class="tab-item"><div class="icon">♡</div><span>Wishlist</span></div>
+          <div class="tab-item active"><div class="icon">≡</div><span>Activity</span></div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== 9. PROFILE ========== -->
+<div class="screen-section">
+  <div class="screen-label"><span class="num">9</span> Profile</div>
+  <div class="screen-title serif">Stats · Circle · Settings</div>
+  <p class="screen-desc">User profile with large avatar, name, and role. Stats row: items owned, items lent, reliability score. Circle membership card with admin badge. Settings list with toggles for dark mode, notifications, Face ID, and navigation items for edit profile, privacy, and help.</p>
+  <div class="phone-row">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span class="icons">
+            <span class="signal"><span></span><span></span><span></span><span></span></span>
+            <span class="wifi">▾</span>
+            <span class="battery"><span class="fill"></span></span>
+          </span>
+        </div>
+        <div class="scroll-area">
+          <div class="profile-hero">
+            <div class="profile-avatar-large">S</div>
+            <div class="profile-name serif">Sarah M.</div>
+            <div class="profile-role">Circle Admin</div>
+          </div>
+
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <div class="num">14</div>
+              <div class="label">Items Owned</div>
+            </div>
+            <div class="profile-stat">
+              <div class="num">8</div>
+              <div class="label">Items Lent</div>
+            </div>
+            <div class="profile-stat">
+              <div class="num score">4.9</div>
+              <div class="label">Reliability</div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <div class="section-title">Circle Membership</div>
+            <div class="profile-circle-card">
+              <div class="circle-icon serif">S</div>
+              <div class="info">
+                <div class="name">Sarah's Circle</div>
+                <div class="members">5 members · 47 items · Since Jan 2026</div>
+              </div>
+              <div class="role-badge">Admin</div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <div class="section-title">Preferences</div>
+            <div class="settings-list" style="padding: 0;">
+              <div class="settings-item">
+                <div class="icon">◐</div>
+                <div class="label">Dark Mode</div>
+                <div class="toggle" onclick="toggleTheme()"><div class="knob"></div></div>
+              </div>
+              <div class="settings-item">
+                <div class="icon">🔔</div>
+                <div class="label">Push Notifications</div>
+                <div class="toggle"><div class="knob"></div></div>
+              </div>
+              <div class="settings-item">
+                <div class="icon">🔒</div>
+                <div class="label">Face ID Lock</div>
+                <div class="toggle"><div class="knob"></div></div>
+              </div>
+              <div class="settings-item">
+                <div class="icon">📡</div>
+                <div class="label">Live Activities</div>
+                <div class="toggle off"><div class="knob"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <div class="section-title">Account</div>
+            <div class="settings-list" style="padding: 0;">
+              <div class="settings-item">
+                <div class="icon">✎</div>
+                <div class="label">Edit Profile</div>
+                <div class="arrow">›</div>
+              </div>
+              <div class="settings-item">
+                <div class="icon">🛡</div>
+                <div class="label">Privacy & Security</div>
+                <div class="arrow">›</div>
+              </div>
+              <div class="settings-item">
+                <div class="icon">📤</div>
+                <div class="label">Export Inventory</div>
+                <div class="arrow">›</div>
+              </div>
+              <div class="settings-item">
+                <div class="icon">❓</div>
+                <div class="label">Help & Support</div>
+                <div class="arrow">›</div>
+              </div>
+              <div class="settings-item">
+                <div class="icon" style="color: #D45A4B;">⏻</div>
+                <div class="label" style="color: #D45A4B;">Sign Out</div>
+                <div class="arrow">›</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding: 0 24px 40px; text-align: center;">
+            <div style="font-size: 11px; color: var(--ink-tertiary); letter-spacing: 0.05em;">Trésor · Version 1.0.0</div>
+            <div style="font-size: 10px; color: var(--ink-tertiary); margin-top: 4px; opacity: 0.6;">Made with care in Dubai</div>
+          </div>
+        </div>
+        <div class="tab-bar">
+          <div class="tab-item"><div class="icon">◈</div><span>Trésor</span></div>
+          <div class="tab-item"><div class="icon">◯</div><span>Circle</span></div>
+          <div class="tab-add">+</div>
+          <div class="tab-item"><div class="icon">♡</div><span>Wishlist</span></div>
+          <div class="tab-item active"><div class="icon">≡</div><span>Activity</span></div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="warm-rule"></div>
+
+<!-- ========== FOOTER ========== -->
+<div style="max-width: 1400px; margin: 0 auto; padding: 0 40px 80px; text-align: center;">
+  <div class="serif" style="font-size: 20px; font-weight: 500; color: var(--ink); margin-bottom: 8px;">End of Flow</div>
+  <div style="font-size: 13px; color: var(--ink-tertiary); line-height: 1.7;">
+    Trésor — Full App Mockup · Variant C Boutique Shelf Design System<br>
+    9 sections · 13 phone frames · Warm Atelier palette<br>
+    <span style="font-size: 11px; opacity: 0.7;">Designer: Muaath · Brief: Nasser · Dev Lead: Dwight</span>
+  </div>
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  const label = document.getElementById('theme-label');
+  if (label) label.textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
+
+  // Update dark mode toggle in profile settings
+  const profileToggle = document.querySelector('.settings-item .toggle');
+  if (profileToggle) {
+    if (next === 'dark') {
+      profileToggle.classList.remove('off');
+    } else {
+      profileToggle.classList.add('off');
+    }
+  }
+}
+
+function switchTab(e, tabId) {
+  // Find the parent detail-tabs container
+  const tabsContainer = e.currentTarget.closest('.detail-tabs');
+  if (!tabsContainer) return;
+
+  // Remove active from all tabs and contents within this container
+  tabsContainer.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+  tabsContainer.querySelectorAll('.detail-tab-content').forEach(c => c.classList.remove('active'));
+
+  // Add active to clicked tab and corresponding content
+  e.currentTarget.classList.add('active');
+  const content = document.getElementById('tab-' + tabId);
+  if (content) content.classList.add('active');
+}
+
+// Initialize profile dark mode toggle state
+document.addEventListener('DOMContentLoaded', function() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const profileToggle = document.querySelector('.settings-item .toggle');
+  if (profileToggle && !isDark) {
+    profileToggle.classList.add('off');
+  }
+});
+</script>
+
+</body>
+</html>

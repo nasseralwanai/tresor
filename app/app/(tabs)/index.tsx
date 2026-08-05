@@ -14,23 +14,37 @@ import { Avatar } from '@/components/Avatar';
 import { Skeleton } from '@/components/Skeleton';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
 import { hapticLight } from '@/lib/haptics';
-import { getMyItems, getCollectionInsights } from '@/lib/mockApi';
+import { getMyItems } from '@/lib/items';
+import { getCollectionInsights } from '@/lib/profile';
 import { formatCurrency, formatCurrencyCompact, capitalize } from '@/lib/format';
-import type { Item, CollectionInsights } from '@/types/items';
+import { useAuth } from '@/hooks/useAuth';
+import type { Item } from '@/types/items';
 
 const CATEGORY_LABELS: Record<string, string> = { bag: 'Bags', jewelry: 'Jewelry', watch: 'Watches', shoes: 'Shoes', clothing: 'Clothing', accessories: 'Accessories', other: 'Other' };
 
 export default function MyTresorScreen() {
   const colors = useThemeColors();
+  const { user } = useAuth();
   const [items, setItems] = useState<Item[]>([]);
-  const [insights, setInsights] = useState<CollectionInsights | null>(null);
+  const [insights, setInsights] = useState<{
+    totalValue: number;
+    totalItems: number;
+    currency: string;
+    mostValuableItem: { brand: string; estimated_value: number | null; currency: string } | null;
+    leastUsedItem: { brand: string; category: string | null } | null;
+    itemsLent: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadData = useCallback(async () => {
-    const [itemsData, insightsData] = await Promise.all([getMyItems(), getCollectionInsights()]);
+    if (!user?.id) { setLoading(false); return; }
+    const [itemsData, insightsData] = await Promise.all([
+      getMyItems(user.id),
+      getCollectionInsights(user.id),
+    ]);
     setItems(itemsData); setInsights(insightsData); setLoading(false); setRefreshing(false);
-  }, []);
+  }, [user?.id]);
   useMemo(() => { loadData(); }, []);
   const onRefresh = useCallback(() => { setRefreshing(true); loadData(); }, [loadData]);
 

@@ -15,14 +15,18 @@ import { ItemPhotoPlaceholder } from "@/components/ItemPhotoPlaceholder";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { Skeleton } from "@/components/Skeleton";
 import { hapticLight, hapticSuccess } from "@/lib/haptics";
-import { getMyWishlist, getFriendsWishlist, createWishlistItem } from "@/lib/mockApi";
+import { getMyWishlist, getFriendsWishlist, createWishlistItem } from "@/lib/wishlist";
 import { formatCurrency, formatRelativeTime } from "@/lib/format";
+import { useAuth } from "@/hooks/useAuth";
+import { useCircleId } from "@/hooks/useCircleId";
 import type { WishlistItem } from "@/types/items";
 
 type Tab = "mine" | "friends";
 
 export default function WishlistScreen() {
   const colors = useThemeColors();
+  const { user } = useAuth();
+  const { circleId } = useCircleId();
   const [tab, setTab] = useState<Tab>("mine");
   const [myItems, setMyItems] = useState<WishlistItem[]>([]);
   const [friendItems, setFriendItems] = useState<WishlistItem[]>([]);
@@ -31,9 +35,13 @@ export default function WishlistScreen() {
   const [showAddModal, setShowAddModal] = useState(false);
 
   const loadData = useCallback(async () => {
-    const [mine, friends] = await Promise.all([getMyWishlist(), getFriendsWishlist()]);
+    if (!user?.id) { setLoading(false); return; }
+    const [mine, friends] = await Promise.all([
+      getMyWishlist(user.id),
+      circleId ? getFriendsWishlist(user.id, circleId) : Promise.resolve([]),
+    ]);
     setMyItems(mine); setFriendItems(friends); setLoading(false); setRefreshing(false);
-  }, []);
+  }, [user?.id, circleId]);
   useMemo(() => { loadData(); }, []);
   const onRefresh = useCallback(() => { setRefreshing(true); loadData(); }, [loadData]);
 
@@ -105,13 +113,14 @@ function FriendCard({ item }: { item: WishlistItem }) {
 
 function AddModal({ visible, onClose, onAdded }: { visible: boolean; onClose: () => void; onAdded: () => void }) {
   const colors = useThemeColors();
+  const { user } = useAuth();
   const [brand, setBrand] = useState(""); const [model, setModel] = useState("");
   const [targetPrice, setTargetPrice] = useState(""); const [notes, setNotes] = useState("");
   const [isPrivate, setIsPrivate] = useState(false); const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async () => {
-    if (!brand.trim()) return;
+    if (!brand.trim() || !user?.id) return;
     setSubmitting(true);
-    await createWishlistItem({ brand: brand.trim(), model_name: model.trim() || null, target_price: targetPrice ? parseFloat(targetPrice) : null, notes: notes.trim() || null, is_private: isPrivate });
+    await createWishlistItem({ userId: user.id, brand: brand.trim(), model_name: model.trim() || null, target_price: targetPrice ? parseFloat(targetPrice) : null, notes: notes.trim() || null });
     setSubmitting(false); setBrand(""); setModel(""); setTargetPrice(""); setNotes(""); setIsPrivate(false);
     hapticSuccess(); onAdded(); onClose();
   };

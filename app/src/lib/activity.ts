@@ -6,7 +6,8 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import type { ActivityEntry } from '@/types';
+import type { ActivityType } from '@/types';
+import type { ActivityEntry } from '@/types/items';
 
 /**
  * Get the activity feed for a circle.
@@ -18,13 +19,18 @@ export async function getActivityFeed(
 ): Promise<ActivityEntry[]> {
   const { data, error } = await supabase
     .from('activity_feed')
-    .select('*')
+    .select('*, items!activity_feed_item_id_fkey(brand)')
     .eq('circle_id', circleId)
     .order('created_at', { ascending: false })
     .limit(limit);
 
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []).map((row: any) => ({
+    ...row,
+    actor_name: row.actor_name ?? 'Unknown',
+    summary: row.summary ?? '',
+    item_brand: row.items?.brand ?? null,
+  }));
 }
 
 /**
@@ -58,4 +64,13 @@ export async function addActivityEntry(params: {
 
   if (error) throw error;
   return data;
+}
+
+/**
+ * Mark a borrow as returned (via the activity feed action).
+ * Delegates to the borrow lib's markReturned function.
+ */
+export async function markReturned(borrowId: string): Promise<void> {
+  const { markReturned: markReturnedBorrow } = await import('@/lib/borrow');
+  await markReturnedBorrow(borrowId);
 }

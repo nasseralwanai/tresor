@@ -8,7 +8,8 @@
 
 import { supabase } from '@/lib/supabase';
 import { addActivityEntry } from '@/lib/activity';
-import type { Wishlist, WishlistItem, Database } from '@/types';
+import type { Wishlist, Database } from '@/types';
+import type { WishlistItem as WishlistItemUI } from '@/types/items';
 
 type WishlistItemInsert = Database['public']['Tables']['wishlist_items']['Insert'];
 type WishlistItemUpdate = Database['public']['Tables']['wishlist_items']['Update'];
@@ -40,7 +41,7 @@ export async function ensureWishlist(userId: string): Promise<string> {
 /**
  * Get the current user's wishlist items.
  */
-export async function getWishlist(userId: string): Promise<WishlistItem[]> {
+export async function getWishlist(userId: string): Promise<WishlistItemUI[]> {
   const { data, error } = await supabase
     .from('wishlist_items')
     .select('*')
@@ -58,7 +59,7 @@ export async function getWishlist(userId: string): Promise<WishlistItem[]> {
  */
 export async function addToWishlist(data: Omit<WishlistItemInsert, 'wishlist_id' | 'user_id'> & {
   userId: string;
-}): Promise<WishlistItem> {
+}): Promise<WishlistItemUI> {
   const wishlistId = await ensureWishlist(data.userId);
 
   const { data: item, error } = await supabase
@@ -96,7 +97,7 @@ export async function removeFromWishlist(id: string): Promise<void> {
 /**
  * Update the savings amount for a wishlist item.
  */
-export async function updateSavings(id: string, amount: number): Promise<WishlistItem> {
+export async function updateSavings(id: string, amount: number): Promise<WishlistItemUI> {
   const { data, error } = await supabase
     .from('wishlist_items')
     .update({ current_savings: amount })
@@ -114,7 +115,7 @@ export async function updateSavings(id: string, amount: number): Promise<Wishlis
 export async function updateWishlistItem(
   id: string,
   updates: WishlistItemUpdate
-): Promise<WishlistItem> {
+): Promise<WishlistItemUI> {
   const { data, error } = await supabase
     .from('wishlist_items')
     .update(updates)
@@ -160,7 +161,7 @@ export async function dropHint(
  * Only returns non-private wishlist items.
  */
 export async function getCircleWishlists(circleId: string): Promise<
-  (WishlistItem & {
+  (WishlistItemUI & {
     profiles?: { display_name: string | null; avatar_url: string | null } | null;
   })[]
 > {
@@ -182,4 +183,100 @@ export async function getCircleWishlists(circleId: string): Promise<
 
   if (error) throw error;
   return data ?? [];
+}
+
+/**
+ * Get the current user's wishlist items.
+ * Wrapper around getWishlist that enriches with owner_name.
+ */
+export async function getMyWishlist(userId: string): Promise<WishlistItemUI[]> {
+  const items = await getWishlist(userId);
+  return items.map((item) => ({
+    ...item,
+    brand: item.brand ?? '',
+    owner_name: 'You',
+    currency: 'AED',
+  }));
+}
+
+/**
+ * Get wishlist items from circle members (friends' dreams).
+ * Returns non-private wishlist items from other circle members.
+ */
+export async function getFriendsWishlist(
+  userId: string,
+  circleId: string
+): Promise<WishlistItemUI[]> {
+  const { data: members, error: membersError } = await supabase
+    .from('circle_members')
+    .select('user_id')
+    .eq('circle_id', circleId)
+    .neq('user_id', userId);
+
+  if (membersError) throw membersError;
+
+  const userIds = (members ?? []).map((m) => m.user_id);
+  if (userIds.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from('wishlist_items')
+    .select('*, profiles!wishlist_items_user_id_fkey(display_name)')
+    .in('user_id', userIds)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []).map((item: any) => ({
+    ...item,
+    brand: item.brand ?? '',
+    owner_name: item.profiles?.display_name ?? 'Unknown',
+    currency: 'AED',
+  }));
+}
+
+/**
+ * Create a new wishlist item for the current user.
+ * Auto-creates a wishlist row if the user doesn't have one yet.
+ */
+export async function createWishlistItem(input: {
+  userId: string;
+  brand: string;
+  model_name?: string | null;
+  category?: string | null;
+  target_price?: number | null;
+  notes?: string | null;
+  is_private?: boolean;
+}): Promise<WishlistItemUI> {
+  const wishlistId = await ensureWishlist(input.userId);
+
+  const { data: item, error } = await supabase
+    .from('wishlist_items')
+    .insert({
+      wishlist_id: wishlistId,
+      user_id: input.userId,
+      brand: input.brand,
+      model_name: input.model_name ?? null,
+      category: (input.category as any) ?? null,
+      target_price: input.target_price ?? null,
+      notes: input.notes ?? null,
+      priority: 1,
+      current_savings: 0,
+      fulfilled: false,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return {
+    ...item,
+    brand: item.brand ?? '',
+    owner_name: 'You',
+    currency: 'AED',
+  };
+}
+
+/**
+ * Update the savings amount for a wishlist item.
+ */
+export async function updateWishlistSavings(id: string, amount: number): Promise<void> {
+  await updateSavings(id, amount);
 }

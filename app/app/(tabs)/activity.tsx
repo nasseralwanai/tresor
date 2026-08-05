@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useMemo } from "react";
-import { View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
+import { TouchableOpacity, View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { Stack } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useThemeColors, typography, spacing, radius } from "@/theme";
@@ -13,7 +13,9 @@ import { Avatar } from "@/components/Avatar";
 import { ItemPhotoPlaceholder } from "@/components/ItemPhotoPlaceholder";
 import { Skeleton } from "@/components/Skeleton";
 import { hapticLight, hapticSuccess } from "@/lib/haptics";
-import { getActivityFeed, markReturned, getCurrentUser } from "@/lib/mockApi";
+import { getActivityFeed, markReturned } from "@/lib/activity";
+import { useCircleId } from "@/hooks/useCircleId";
+import { useAuth } from "@/hooks/useAuth";
 import { formatRelativeTime, capitalize } from "@/lib/format";
 import type { ActivityEntry } from "@/types/items";
 
@@ -35,16 +37,19 @@ const COLORS_MAP: Record<string, string> = {
 
 export default function ActivityScreen() {
   const colors = useThemeColors();
+  const { user } = useAuth();
+  const { circleId } = useCircleId();
   const [activities, setActivities] = useState<ActivityEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [voteSelected, setVoteSelected] = useState<number | null>(null);
-  const currentUser = useMemo(() => getCurrentUser(), []);
+  const currentUserId = user?.id ?? '';
 
   const loadData = useCallback(async () => {
-    const data = await getActivityFeed();
+    if (!circleId) { setLoading(false); return; }
+    const data = await getActivityFeed(circleId);
     setActivities(data); setLoading(false); setRefreshing(false);
-  }, []);
+  }, [circleId]);
   useMemo(() => { loadData(); }, []);
   const onRefresh = useCallback(() => { setRefreshing(true); loadData(); }, [loadData]);
   const handleMarkReturned = async (id: string) => { hapticSuccess(); await markReturned(id); loadData(); };
@@ -74,7 +79,7 @@ export default function ActivityScreen() {
             {activities.map((a) => {
               const iconName = ICONS[a.type] ?? "bell-outline";
               const iconColor = COLORS_MAP[a.type] ?? colors.textSecondary;
-              const showRet = a.type === "borrow_active" && a.borrow_id && currentUser.id !== a.user_id;
+              const showRet = a.type === "borrow_active" && a.borrow_id && currentUserId !== a.user_id;
               return (
                 <Card key={a.id} style={styles.activityCard}>
                   <View style={styles.activityTop}>
@@ -102,8 +107,6 @@ export default function ActivityScreen() {
     </>
   );
 }
-
-import { TouchableOpacity } from "react-native";
 
 const styles = StyleSheet.create({
   container: { flex: 1 },

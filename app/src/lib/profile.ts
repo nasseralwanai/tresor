@@ -130,3 +130,81 @@ export async function ensureBucket(name: string, publicBucket: boolean = false):
 
   if (createError) throw createError;
 }
+
+/**
+ * Get the current user's profile info for UI display.
+ * Returns a simplified object with display_name, avatar_url, phone, and created_at.
+ */
+export async function getCurrentUserInfo(userId: string): Promise<{
+  id: string;
+  full_name: string;
+  avatar_url: string | null;
+  phone: string | null;
+  created_at: string;
+} | null> {
+  const profile = await getProfile(userId);
+  if (!profile) return null;
+  return {
+    id: profile.id,
+    full_name: profile.display_name ?? 'Unknown',
+    avatar_url: profile.avatar_url,
+    phone: profile.phone ?? null,
+    created_at: profile.created_at,
+  };
+}
+
+/**
+ * Get collection insights for the home screen.
+ * Returns total value, item count, most valuable item, least used item, and items lent.
+ */
+export async function getCollectionInsights(userId: string): Promise<{
+  totalValue: number;
+  totalItems: number;
+  currency: string;
+  mostValuableItem: { brand: string; estimated_value: number | null; currency: string } | null;
+  leastUsedItem: { brand: string; category: string | null } | null;
+  itemsLent: number;
+}> {
+  const { data: items, error } = await supabase
+    .from('items')
+    .select('*')
+    .eq('owner_id', userId);
+
+  if (error) throw error;
+
+  const myItems = items ?? [];
+  const totalValue = myItems.reduce((sum, item) => sum + (item.estimated_value ?? 0), 0);
+  const itemsLent = myItems.filter((item) => item.status === 'borrowed').length;
+
+  const mostValuable =
+    myItems.reduce(
+      (max, item) =>
+        (item.estimated_value ?? 0) > (max?.estimated_value ?? 0) ? item : max,
+      null as (typeof myItems)[number] | null
+    ) ?? null;
+
+  const leastUsed =
+    myItems
+      .filter((item) => item.status === 'available')
+      .sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      )[0] ?? null;
+
+  return {
+    totalValue,
+    totalItems: myItems.length,
+    currency: 'AED',
+    mostValuableItem: mostValuable
+      ? {
+          brand: mostValuable.brand,
+          estimated_value: mostValuable.estimated_value,
+          currency: mostValuable.currency,
+        }
+      : null,
+    leastUsedItem: leastUsed
+      ? { brand: leastUsed.brand, category: leastUsed.category }
+      : null,
+    itemsLent,
+  };
+}

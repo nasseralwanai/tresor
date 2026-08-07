@@ -39,7 +39,6 @@ function RootNavigator() {
         <Stack.Screen name="add" />
         <Stack.Screen name="item" />
         <Stack.Screen name="borrow" />
-        <Stack.Screen name="profile" />
       </Stack>
       <Redirect href={isAuthenticated ? '/(tabs)' : '/(auth)/welcome'} />
     </>

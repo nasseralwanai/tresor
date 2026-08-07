@@ -120,7 +120,7 @@ function AddModal({ visible, onClose, onAdded }: { visible: boolean; onClose: ()
   const handleSubmit = async () => {
     if (!brand.trim() || !user?.id) return;
     setSubmitting(true);
-    await createWishlistItem({ userId: user.id, brand: brand.trim(), model_name: model.trim() || null, target_price: targetPrice ? parseFloat(targetPrice) : null, notes: notes.trim() || null });
+    await createWishlistItem({ userId: user.id, brand: brand.trim(), model_name: model.trim() || null, target_price: targetPrice ? parseFloat(targetPrice) : null, notes: notes.trim() || null, is_private: isPrivate });
     setSubmitting(false); setBrand(""); setModel(""); setTargetPrice(""); setNotes(""); setIsPrivate(false);
     hapticSuccess(); onAdded(); onClose();
   };

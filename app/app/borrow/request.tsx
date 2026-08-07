@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
@@ -40,11 +40,13 @@ export default function BorrowRequestScreen() {
         note: note.trim() || null,
       });
       hapticSuccess();
-    } catch {
+    } catch (e: any) {
       hapticError();
-    } finally {
+      Alert.alert('Error', e?.message ?? 'Could not send borrow request.');
       setSubmitting(false);
+      return;
     }
+    setSubmitting(false);
     router.back();
   };
 

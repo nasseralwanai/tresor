@@ -23,6 +23,7 @@ import { formatCurrencyCompact, capitalize } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
 import type { CircleMemberWithItems } from "@/lib/circle";
 import type { Item } from "@/types/items";
+import { EmptyState } from "@/components/EmptyState";
 
 export default function CircleScreen() {
   const colors = useThemeColors();
@@ -142,7 +143,7 @@ export default function CircleScreen() {
               <Text style={[styles.filterText, { color: onlyLendable ? colors.charcoal : colors.textSecondary }]}>Only show lendable</Text>
             </TouchableOpacity>
             {loadingItems ? (<View style={styles.gridLoading}><ActivityIndicator color={colors.accent} /></View>) : displayItems.length === 0 ? (
-              <View style={styles.emptyGrid}><MaterialCommunityIcons name="package-variant" size={48} color={colors.textSecondary} /><Text style={[styles.emptyGridText, { color: colors.textSecondary }]}>No lendable items available</Text></View>
+              <EmptyState icon="package-variant" title="No Items to Show" subtitle={onlyLendable ? "No lendable pieces in this collection yet" : "This member hasn't added any items yet"} />
             ) : (
               <FlatList data={displayItems} keyExtractor={(item) => item.id} numColumns={2} scrollEnabled={false} contentContainerStyle={styles.grid} renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => { hapticLight(); handleItemPress(item); }} activeOpacity={0.85} style={[styles.gridCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
@@ -173,22 +174,26 @@ export default function CircleScreen() {
       <Stack.Screen options={{ title: "Circle" }} />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}>
-          <View style={styles.listWrap}>
-            {members.map((member) => (
-              <TouchableOpacity key={member.id} onPress={() => handleMemberPress(member)} activeOpacity={0.85}>
-                <Card style={styles.memberCard}>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.md }}>
-                    <Avatar name={member.display_name ?? 'Unknown'} size="md" />
-                    <View style={{ flex: 1 }}>
-                      <Text style={[styles.memberListName, { color: colors.textPrimary }]}>{member.display_name ?? 'Unknown'}</Text>
-                      <Text style={[styles.memberListCount, { color: colors.textSecondary }]}>{member.item_count} items</Text>
+          {members.length === 0 ? (
+            <EmptyState icon="account-group-outline" title="Your Circle Is Empty" subtitle="Invite friends to start sharing your collections" />
+          ) : (
+            <View style={styles.listWrap}>
+              {members.map((member) => (
+                <TouchableOpacity key={member.id} onPress={() => handleMemberPress(member)} activeOpacity={0.85}>
+                  <Card style={styles.memberCard}>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.md }}>
+                      <Avatar name={member.display_name ?? 'Unknown'} size="md" />
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.memberListName, { color: colors.textPrimary }]}>{member.display_name ?? 'Unknown'}</Text>
+                        <Text style={[styles.memberListCount, { color: colors.textSecondary }]}>{member.item_count} items</Text>
+                      </View>
+                      <MaterialCommunityIcons name="chevron-right" size={22} color={colors.textSecondary} />
                     </View>
-                    <MaterialCommunityIcons name="chevron-right" size={22} color={colors.textSecondary} />
-                  </View>
-                </Card>
-              </TouchableOpacity>
-            ))}
-          </View>
+                  </Card>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
           <View style={{ height: spacing.xl }} />
         </ScrollView>
       </View>

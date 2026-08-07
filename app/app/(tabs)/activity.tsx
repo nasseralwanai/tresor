@@ -26,6 +26,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, spacing, radius } from '@/theme';
 import { Skeleton } from '@/components/Skeleton';
 import { NotificationBell } from '@/components/NotificationBell';
+import { EmptyState } from '@/components/EmptyState';
 import { getFeedData, type FeedData, type ShareCard } from '@/lib/feed';
 import { useCircleId } from '@/hooks/useCircleId';
 import { useAuth } from '@/hooks/useAuth';
@@ -195,27 +196,12 @@ export default function ActivityScreen() {
     return (
       <>
         <Stack.Screen options={{ title: 'Activity', headerShown: false }} />
-        <View
-          style={[
-            styles.container,
-            {
-              backgroundColor: colors.background,
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-          ]}
-        >
-          <MaterialCommunityIcons
-            name="bell-outline"
-            size={48}
-            color={colors.textSecondary}
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <EmptyState
+            icon="bell-off-outline"
+            title="No Activity Yet"
+            subtitle="Borrow requests, new items, and shares will appear here"
           />
-          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-            No Activity Yet
-          </Text>
-          <Text style={[styles.emptySub, { color: colors.textSecondary }]}>
-            Borrow requests, new items, and shares will appear here
-          </Text>
         </View>
       </>
     );

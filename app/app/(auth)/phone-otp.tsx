@@ -16,7 +16,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useAuth } from '@/hooks/useAuth';
@@ -32,6 +32,7 @@ export default function PhoneOtpScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { circleId } = useLocalSearchParams<{ circleId?: string }>();
 
   const handleSubmit = async () => {
     if (!email.trim() || !password.trim()) return;
@@ -40,16 +41,15 @@ export default function PhoneOtpScreen() {
     try {
       if (mode === 'signin') {
         await signIn(email.trim(), password);
+        router.replace('/(tabs)');
       } else {
         await signUp(email.trim(), password);
-      }
-      hapticSuccess();
-      // Auth state listener will switch to tabs automatically.
-      // If signing up and email confirmation is required, inform the user.
-      if (mode === 'signup') {
-        setError(null);
-        // Check if session was set (local dev = no email confirmation)
-        // The onAuthStateChange will navigate if session is set.
+        hapticSuccess();
+        // New user: go to profile setup, pass circleId for circle joining
+        router.replace({
+          pathname: '/(auth)/profile-setup',
+          params: circleId ? { circleId } : {},
+        });
       }
     } catch (e: any) {
       hapticError();

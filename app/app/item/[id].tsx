@@ -477,7 +477,7 @@ function LendingTab({
           )}
           {isOwner && (
             <TouchableOpacity
-              onPress={() => hapticLight()}
+              onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'Nudge notifications will be available soon.'); }}
               style={[styles.nudgeBtn, { borderColor: colors.border }]}
             >
               <MaterialCommunityIcons name="bell-outline" size={16} color={colors.textPrimary} />

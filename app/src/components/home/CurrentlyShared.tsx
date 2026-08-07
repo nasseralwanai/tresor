@@ -3,6 +3,7 @@
  * "With [person] · [duration]", and Nudge button.
  */
 
+import { memo, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { View as MotiView } from 'moti';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
@@ -25,7 +26,7 @@ type CurrentlySharedProps = {
   delay?: number;
 };
 
-export function CurrentlyShared({
+function CurrentlySharedInner({
   lentItems,
   onPressItem,
   delay = 500,
@@ -33,6 +34,11 @@ export function CurrentlyShared({
   const colors = useThemeColors();
 
   if (lentItems.length === 0) return null;
+
+  const handlePressItem = useCallback((item: Item) => {
+    hapticLight();
+    onPressItem?.(item);
+  }, [onPressItem]);
 
   return (
     <View>
@@ -48,10 +54,10 @@ export function CurrentlyShared({
           {lentItems.map((lent, idx) => (
             <Pressable
               key={lent.item.id}
-              onPress={() => {
-                hapticLight();
-                onPressItem?.(lent.item);
-              }}
+              onPress={() => handlePressItem(lent.item)}
+              accessibilityRole="button"
+              accessibilityLabel={`${lent.item.brand} ${lent.item.model_name}, with ${lent.borrowerName} for ${lent.durationLabel}`}
+              accessibilityHint="View item details"
               style={({ pressed }) => [
                 styles.card,
                 {
@@ -104,6 +110,8 @@ export function CurrentlyShared({
     </View>
   );
 }
+
+export const CurrentlyShared = memo(CurrentlySharedInner);
 
 const styles = StyleSheet.create({
   sectionLabel: {

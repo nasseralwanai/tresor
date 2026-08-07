@@ -114,7 +114,12 @@ export default function YourCollectionScreen() {
   }, [user?.id, circleId]);
 
   useEffect(() => {
-    loadData();
+    let cancelled = false;
+    const load = async () => {
+      if (!cancelled) await loadData();
+    };
+    load();
+    return () => { cancelled = true; };
   }, [loadData]);
 
   const onRefresh = useCallback(() => {
@@ -123,9 +128,23 @@ export default function YourCollectionScreen() {
     loadData();
   }, [loadData]);
 
-  const handleItemPress = (item: Item) => {
+  const handleItemPress = useCallback((item: Item) => {
     router.push(`/item/${item.id}` as any);
-  };
+  }, []);
+
+  const handleAddItem = useCallback(() => {
+    hapticLight();
+    router.push('/(tabs)/activity' as any);
+  }, []);
+
+  const handleSeeAllActivity = useCallback(() => {
+    router.push('/(tabs)/activity' as any);
+  }, []);
+
+  const handleGentleNudgePress = useCallback(() => {
+    hapticLight();
+    router.push('/(tabs)/circle' as any);
+  }, []);
 
   // Derived data for sections
   const itemsByCategory = useMemo(() => {
@@ -168,6 +187,12 @@ export default function YourCollectionScreen() {
     const updated = new Date(styleOfWeek.updated_at).getTime();
     return Math.max(0, Math.floor((Date.now() - updated) / 86400000));
   }, [styleOfWeek]);
+
+  const handleStyleOfWeekPress = useCallback(() => {
+    if (styleOfWeek) {
+      handleItemPress(styleOfWeek);
+    }
+  }, [styleOfWeek, handleItemPress]);
 
   // Currently shared: items I've lent out (borrower_id != me, lender_id == me, status active)
   const lentItems: LentItem[] = useMemo(() => {
@@ -303,10 +328,7 @@ export default function YourCollectionScreen() {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => {
-                hapticLight();
-                router.push('/(tabs)/activity' as any);
-              }}
+              onPress={handleAddItem}
               style={[styles.iconButton, { backgroundColor: colors.surface }]}
             >
               <MaterialCommunityIcons
@@ -343,10 +365,7 @@ export default function YourCollectionScreen() {
                 title={getNudgeTitle()!}
                 subtitle={getNudgeSubtitle()}
                 iconName={getNudgeIcon()}
-                onPress={() => {
-                  hapticLight();
-                  router.push('/(tabs)/circle' as any);
-                }}
+                onPress={handleGentleNudgePress}
                 delay={350}
               />
             </View>
@@ -358,8 +377,8 @@ export default function YourCollectionScreen() {
               <StyleOfTheWeek
                 item={styleOfWeek}
                 restingDays={styleOfWeekRestingDays}
-                onPress={() => handleItemPress(styleOfWeek)}
-                onStyle={() => handleItemPress(styleOfWeek)}
+                onPress={handleStyleOfWeekPress}
+                onStyle={handleStyleOfWeekPress}
                 delay={400}
               />
             </View>
@@ -392,7 +411,7 @@ export default function YourCollectionScreen() {
             <View style={[styles.section, { paddingHorizontal: 0 }]}>
               <CircleActivityPreview
                 activities={activities}
-                onSeeAll={() => router.push('/(tabs)/activity' as any)}
+                onSeeAll={handleSeeAllActivity}
                 delay={550}
               />
             </View>

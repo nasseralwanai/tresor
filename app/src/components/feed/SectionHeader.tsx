@@ -3,6 +3,7 @@
  * optional "See All" link. Used across all feed sections.
  */
 
+import { memo, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors } from '@/theme';
@@ -14,8 +15,13 @@ type SectionHeaderProps = {
   onSeeAll?: () => void;
 };
 
-export function SectionHeader({ title, showSeeAll, onSeeAll }: SectionHeaderProps) {
+function SectionHeaderInner({ title, showSeeAll, onSeeAll }: SectionHeaderProps) {
   const colors = useThemeColors();
+
+  const handleSeeAll = useCallback(() => {
+    hapticLight();
+    onSeeAll?.();
+  }, [onSeeAll]);
 
   return (
     <View style={styles.container}>
@@ -23,11 +29,12 @@ export function SectionHeader({ title, showSeeAll, onSeeAll }: SectionHeaderProp
       <View style={[styles.divider, { backgroundColor: colors.border }]} />
       {showSeeAll && (
         <TouchableOpacity
-          onPress={() => {
-            hapticLight();
-            onSeeAll?.();
-          }}
+          onPress={handleSeeAll}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={`See all ${title}`}
+          accessibilityHint="View full list"
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           style={styles.seeAll}
         >
           <Text style={[styles.seeAllText, { color: colors.gold }]}>See All</Text>
@@ -37,6 +44,8 @@ export function SectionHeader({ title, showSeeAll, onSeeAll }: SectionHeaderProp
     </View>
   );
 }
+
+export const SectionHeader = memo(SectionHeaderInner);
 
 const styles = StyleSheet.create({
   container: {

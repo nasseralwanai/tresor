@@ -4,7 +4,7 @@
  * Shows a dimmed background, grab handle, comment list, and input field.
  */
 
-import { useState, useCallback } from 'react';
+import { memo, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -27,7 +27,7 @@ type CommentSheetProps = {
   onDismiss: () => void;
 };
 
-export function CommentSheet({ share, onDismiss }: CommentSheetProps) {
+function CommentSheetInner({ share, onDismiss }: CommentSheetProps) {
   const colors = useThemeColors();
   const [commentText] = useState('');
 
@@ -145,6 +145,10 @@ export function CommentSheet({ share, onDismiss }: CommentSheetProps) {
             <TouchableOpacity
               disabled
               activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel="Send comment"
+              accessibilityHint="Comments coming soon"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <LinearGradient
                 colors={[colors.goldLight, colors.gold]}
@@ -164,6 +168,8 @@ export function CommentSheet({ share, onDismiss }: CommentSheetProps) {
     </BottomSheet>
   );
 }
+
+export const CommentSheet = memo(CommentSheetInner);
 
 const styles = StyleSheet.create({
   sheetContent: {

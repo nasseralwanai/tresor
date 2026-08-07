@@ -4,7 +4,7 @@
  * and an active borrows summary card.
  */
 
-import { useState, useCallback } from 'react';
+import { memo, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { View as MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -20,7 +20,7 @@ type FeaturedSectionProps = {
   onViewBorrows?: () => void;
 };
 
-export function FeaturedSection({
+function FeaturedSectionInner({
   voteCandidates,
   activeBorrowCount,
   onViewBorrows,
@@ -32,6 +32,11 @@ export function FeaturedSection({
     hapticSuccess();
     setVoteSelected(idx);
   }, []);
+
+  const handleViewBorrows = useCallback(() => {
+    hapticLight();
+    onViewBorrows?.();
+  }, [onViewBorrows]);
 
   if (voteCandidates.length === 0 && activeBorrowCount === 0) return null;
 
@@ -85,6 +90,9 @@ export function FeaturedSection({
                   key={candidate.itemId}
                   onPress={() => handleVote(idx)}
                   activeOpacity={0.85}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Vote for ${candidate.ownerName.split(' ')[0]}, ${pct}% with ${candidate.voteCount} votes`}
+                  accessibilityHint="Vote for this candidate"
                   style={[
                     styles.voteCandidate,
                     {
@@ -126,6 +134,10 @@ export function FeaturedSection({
                 <Pressable
                   key={candidate.itemId}
                   onPress={() => handleVote(idx)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Vote ${candidate.ownerName.split(' ')[0]}`}
+                  accessibilityHint="Cast your vote"
+                  hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
                   style={({ pressed }) => [
                     styles.voteBtn,
                     idx === 0
@@ -155,11 +167,11 @@ export function FeaturedSection({
       {/* Active borrows summary */}
       {activeBorrowCount > 0 && (
         <TouchableOpacity
-          onPress={() => {
-            hapticLight();
-            onViewBorrows?.();
-          }}
+          onPress={handleViewBorrows}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel={`${activeBorrowCount} ${activeBorrowCount === 1 ? 'item' : 'items'} currently borrowed`}
+          accessibilityHint="View all active borrows"
           style={[
             styles.borrowSummary,
             {
@@ -191,6 +203,8 @@ export function FeaturedSection({
     </MotiView>
   );
 }
+
+export const FeaturedSection = memo(FeaturedSectionInner);
 
 const styles = StyleSheet.create({
   container: {

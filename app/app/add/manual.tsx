@@ -6,7 +6,7 @@
  * On submit: calls createItem() or createCoOwnedItem() and navigates back.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform,
   ScrollView, Alert, TouchableOpacity, ActivityIndicator,
@@ -76,9 +76,11 @@ export default function ManualAddScreen() {
   // Fetch circle members when co-ownership is toggled on
   useEffect(() => {
     if (isCoOwned && user?.id && members.length === 0) {
+      let cancelled = false;
       setMembersLoading(true);
       getCircleMembers(user.id)
         .then((m) => {
+          if (cancelled) return;
           setMembers(m);
           // Pre-select the current user as a co-owner with 100% share
           const me = m.find((mem) => mem.id === user.id);
@@ -95,9 +97,12 @@ export default function ManualAddScreen() {
           }
         })
         .catch((e) => {
-          console.warn('[add/manual] Failed to load circle members:', e);
+          if (!cancelled) console.warn('[add/manual] Failed to load circle members:', e);
         })
-        .finally(() => setMembersLoading(false));
+        .finally(() => {
+          if (!cancelled) setMembersLoading(false);
+        });
+      return () => { cancelled = true; };
     }
   }, [isCoOwned, user?.id, members.length]);
 
@@ -108,7 +113,7 @@ export default function ManualAddScreen() {
   );
   const sharesValid = Math.abs(shareTotal - 100) < 0.01;
 
-  const pickPhoto = async () => {
+  const pickPhoto = useCallback(async () => {
     hapticLight();
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -122,10 +127,10 @@ export default function ManualAddScreen() {
     if (!result.canceled && result.assets[0]) {
       setPhotoUri(result.assets[0].uri);
     }
-  };
+  }, []);
 
   // Co-owner management helpers
-  const handleAddCoOwner = (member: CircleMemberWithItems) => {
+  const handleAddCoOwner = useCallback((member: CircleMemberWithItems) => {
     hapticLight();
     if (selectedOwners.some((o) => o.userId === member.id)) return;
     setSelectedOwners((prev) => [
@@ -140,26 +145,56 @@ export default function ManualAddScreen() {
     ]);
     setSearchQuery('');
     setShowMemberPicker(false);
-  };
+  }, [selectedOwners]);
 
-  const handleRemoveCoOwner = (userId: string) => {
+  const handleRemoveCoOwner = useCallback((userId: string) => {
     hapticLight();
     setSelectedOwners((prev) => prev.filter((o) => o.userId !== userId));
-  };
+  }, []);
 
-  const handleShareChange = (userId: string, value: string) => {
+  const handleShareChange = useCallback((userId: string, value: string) => {
     setSelectedOwners((prev) =>
       prev.map((o) => (o.userId === userId ? { ...o, share: value } : o))
     );
-  };
+  }, []);
 
-  const handleAmountChange = (userId: string, value: string) => {
+  const handleAmountChange = useCallback((userId: string, value: string) => {
     setSelectedOwners((prev) =>
       prev.map((o) => (o.userId === userId ? { ...o, amountPaid: value } : o))
     );
-  };
+  }, []);
 
-  const filteredMembers = members.filter((m) => {
+  const handleCategoryPress = useCallback((value: ItemCategory) => {
+    hapticLight();
+    setCategory(value);
+  }, []);
+
+  const handleConditionPress = useCallback((value: ItemCondition) => {
+    hapticLight();
+    setCondition(value);
+  }, []);
+
+  const handleCoOwnedToggle = useCallback((v: boolean) => {
+    hapticLight();
+    setIsCoOwned(v);
+    if (!v) {
+      setSelectedOwners([]);
+      setShowMemberPicker(false);
+    }
+  }, []);
+
+  const handleShowMemberPicker = useCallback(() => {
+    hapticLight();
+    setShowMemberPicker(true);
+  }, []);
+
+  const handleCloseMemberPicker = useCallback(() => {
+    hapticLight();
+    setShowMemberPicker(false);
+    setSearchQuery('');
+  }, []);
+
+  const filteredMembers = useMemo(() => members.filter((m) => {
     // Exclude already-selected members
     if (selectedOwners.some((o) => o.userId === m.id)) return false;
     // Filter by search query
@@ -169,9 +204,9 @@ export default function ManualAddScreen() {
         .includes(searchQuery.toLowerCase());
     }
     return true;
-  });
+  }), [members, selectedOwners, searchQuery]);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!brand.trim() || !user?.id) return;
 
     // Validate co-ownership shares
@@ -232,7 +267,7 @@ export default function ManualAddScreen() {
       hapticError();
       Alert.alert('Error', e?.message ?? 'Could not save item.');
     } finally { setLoading(false); }
-  };
+  }, [brand, user?.id, isCoOwned, selectedOwners, sharesValid, shareTotal, circleId, photoUri, modelName, category, color, condition, estimatedValue, notes, isPrivate, isLendable]);
 
   return (
     <>
@@ -262,7 +297,7 @@ export default function ManualAddScreen() {
             <Text style={[styles.label, { color: colors.textSecondary }]}>Category</Text>
             <View style={styles.chipRow}>
               {CATEGORIES.map((cat) => (
-                <Chip key={cat.value} label={cat.label} selected={category === cat.value} onPress={() => { hapticLight(); setCategory(cat.value); }} />
+                <Chip key={cat.value} label={cat.label} selected={category === cat.value} onPress={() => handleCategoryPress(cat.value)} />
               ))}
             </View>
             <Text style={[styles.label, { color: colors.textSecondary }]}>Color</Text>
@@ -270,7 +305,7 @@ export default function ManualAddScreen() {
             <Text style={[styles.label, { color: colors.textSecondary }]}>Condition</Text>
             <View style={styles.chipRow}>
               {CONDITIONS.map((cond) => (
-                <Chip key={cond.value} label={cond.label} selected={condition === cond.value} onPress={() => { hapticLight(); setCondition(cond.value); }} />
+                <Chip key={cond.value} label={cond.label} selected={condition === cond.value} onPress={() => handleConditionPress(cond.value)} />
               ))}
             </View>
             <Text style={[styles.label, { color: colors.textSecondary }]}>Estimated Value (AED)</Text>
@@ -311,14 +346,7 @@ export default function ManualAddScreen() {
                     Share ownership with circle members
                   </Text>
                 </View>
-                <Toggle value={isCoOwned} onValueChange={(v) => {
-                  hapticLight();
-                  setIsCoOwned(v);
-                  if (!v) {
-                    setSelectedOwners([]);
-                    setShowMemberPicker(false);
-                  }
-                }} />
+                <Toggle value={isCoOwned} onValueChange={handleCoOwnedToggle} />
               </View>
             </Card>
 
@@ -465,7 +493,7 @@ export default function ManualAddScreen() {
                         autoFocus
                       />
                       <TouchableOpacity
-                        onPress={() => { hapticLight(); setShowMemberPicker(false); setSearchQuery(''); }}
+                        onPress={handleCloseMemberPicker}
                         activeOpacity={0.7}
                       >
                         <MaterialCommunityIcons
@@ -518,7 +546,7 @@ export default function ManualAddScreen() {
                   </View>
                 ) : (
                   <TouchableOpacity
-                    onPress={() => { hapticLight(); setShowMemberPicker(true); }}
+                    onPress={handleShowMemberPicker}
                     activeOpacity={0.85}
                     style={[
                       styles.addOwnerBtn,

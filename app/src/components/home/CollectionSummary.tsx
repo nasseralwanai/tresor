@@ -3,6 +3,7 @@
  * Numbers in serif (Playfair-style), labels in small caps.
  */
 
+import { memo, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { View as MotiView } from 'moti';
 import { useThemeColors, typography } from '@/theme';
@@ -21,7 +22,7 @@ type CollectionSummaryProps = {
   inCircle: number;
 };
 
-export function CollectionSummary({
+function CollectionSummaryInner({
   pieces,
   aedValue,
   lentOut,
@@ -29,12 +30,12 @@ export function CollectionSummary({
 }: CollectionSummaryProps) {
   const colors = useThemeColors();
 
-  const cells: StatCell[] = [
+  const cells: StatCell[] = useMemo(() => [
     { value: String(pieces), label: 'Pieces', flex: 1 },
     { value: aedValue, label: 'AED Value', isAccent: true, flex: 1.3 },
     { value: String(lentOut), label: 'Lent Out', flex: 1 },
     { value: String(inCircle), label: 'In Circle', flex: 1 },
-  ];
+  ], [pieces, aedValue, lentOut, inCircle]);
 
   return (
     <MotiView
@@ -79,6 +80,8 @@ export function CollectionSummary({
     </MotiView>
   );
 }
+
+export const CollectionSummary = memo(CollectionSummaryInner);
 
 const styles = StyleSheet.create({
   container: {

@@ -12,7 +12,7 @@
  * Warm Atelier styling: gold accent, Georgia headings, Jost body.
  */
 
-import { useState, useCallback } from 'react';
+import { memo, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -49,7 +49,7 @@ type CustodyTransferProps = {
 
 type Phase = 'confirm' | 'loading' | 'success' | 'error';
 
-export function CustodyTransfer({
+function CustodyTransferInner({
   itemId,
   currentCustodian,
   requesterUserId,
@@ -71,9 +71,10 @@ export function CustodyTransfer({
       hapticSuccess();
       setPhase('success');
       // Auto-dismiss after showing success
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         onSuccess?.();
       }, 1500);
+      return () => clearTimeout(timer);
     } catch (e: any) {
       hapticError();
       setErrorMessage(
@@ -91,10 +92,11 @@ export function CustodyTransfer({
   const handleDismissWithReset = useCallback(() => {
     onDismiss();
     // Reset after dismiss animation
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setPhase('confirm');
       setErrorMessage('');
     }, 300);
+    return () => clearTimeout(timer);
   }, [onDismiss]);
 
   return (
@@ -292,6 +294,8 @@ export function CustodyTransfer({
     </BottomSheet>
   );
 }
+
+export const CustodyTransfer = memo(CustodyTransferInner);
 
 const styles = StyleSheet.create({
   sheetContent: {

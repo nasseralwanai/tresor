@@ -285,6 +285,8 @@ export interface Database {
           return_condition_note: string | null;
           condition_before: Database['public']['Enums']['item_condition'] | null;
           condition_after: Database['public']['Enums']['item_condition'] | null;
+          last_nudged_at: string | null;
+          nudge_count: number;
           created_at: string;
           updated_at: string;
         };
@@ -306,6 +308,8 @@ export interface Database {
           return_condition_note?: string | null;
           condition_before?: Database['public']['Enums']['item_condition'] | null;
           condition_after?: Database['public']['Enums']['item_condition'] | null;
+          last_nudged_at?: string | null;
+          nudge_count?: number;
           created_at?: string;
           updated_at?: string;
         };
@@ -584,6 +588,103 @@ export interface Database {
           },
         ];
       };
+
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          circle_id: string | null;
+          type: string;
+          title: string;
+          body: string | null;
+          data: Json | null;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          circle_id?: string | null;
+          type: string;
+          title: string;
+          body?: string | null;
+          data?: Json | null;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          circle_id?: string | null;
+          type?: string;
+          title?: string;
+          body?: string | null;
+          data?: Json | null;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notifications_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'notifications_circle_id_fkey';
+            columns: ['circle_id'];
+            referencedRelation: 'circles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+
+      borrow_nudges: {
+        Row: {
+          id: string;
+          borrow_id: string;
+          lender_id: string;
+          borrower_id: string;
+          message_variant: string;
+          nudged_at: string;
+        };
+        Insert: {
+          id?: string;
+          borrow_id: string;
+          lender_id: string;
+          borrower_id: string;
+          message_variant?: string;
+          nudged_at?: string;
+        };
+        Update: {
+          id?: string;
+          borrow_id?: string;
+          lender_id?: string;
+          borrower_id?: string;
+          message_variant?: string;
+          nudged_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'borrow_nudges_borrow_id_fkey';
+            columns: ['borrow_id'];
+            referencedRelation: 'borrow_transactions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'borrow_nudges_lender_id_fkey';
+            columns: ['lender_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'borrow_nudges_borrower_id_fkey';
+            columns: ['borrower_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
 
     Views: {
@@ -594,6 +695,10 @@ export interface Database {
       is_circle_member: {
         Args: { _circle_id: string };
         Returns: boolean;
+      };
+      nudge_borrower: {
+        Args: { _borrow_id: string; _lender_id: string };
+        Returns: Json;
       };
       is_circle_admin: {
         Args: { _circle_id: string };

@@ -4,7 +4,7 @@
 const brandColors = {
   gold: '#C9A961',
   goldLight: '#E0C98A',
-  goldDark: '#A8884A',
+  goldDark: '#82602C',
   cream: '#F5F2ED',
   charcoal: '#0A0A0B',
   darkSurface: '#1A1A1C',

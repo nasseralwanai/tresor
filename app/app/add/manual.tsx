@@ -322,7 +322,7 @@ export default function ManualAddScreen() {
                     {isPrivate ? 'Hidden from circle' : 'Visible to circle'}
                   </Text>
                 </View>
-                <Toggle value={isPrivate} onValueChange={setIsPrivate} />
+                <Toggle value={isPrivate} onValueChange={setIsPrivate} accessibilityLabel="Private item" />
               </View>
               <View style={[styles.settingRow, { marginTop: spacing.md }]}>
                 <View style={{ flex: 1 }}>
@@ -331,7 +331,7 @@ export default function ManualAddScreen() {
                     {isLendable ? 'Available for lending' : 'Not for lending'}
                   </Text>
                 </View>
-                <Toggle value={isLendable} onValueChange={setIsLendable} />
+                <Toggle value={isLendable} onValueChange={setIsLendable} accessibilityLabel="Lendable" />
               </View>
             </Card>
 
@@ -346,7 +346,7 @@ export default function ManualAddScreen() {
                     Share ownership with circle members
                   </Text>
                 </View>
-                <Toggle value={isCoOwned} onValueChange={handleCoOwnedToggle} />
+                <Toggle value={isCoOwned} onValueChange={handleCoOwnedToggle} accessibilityLabel="Co-owned" />
               </View>
             </Card>
 
@@ -591,7 +591,7 @@ export default function ManualAddScreen() {
 function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   const colors = useThemeColors();
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.chip, { backgroundColor: selected ? colors.accent : colors.surface, borderColor: selected ? colors.accent : colors.border }]} >
+    <TouchableOpacity onPress={onPress} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected }} hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }} style={[styles.chip, { backgroundColor: selected ? colors.accent : colors.surface, borderColor: selected ? colors.accent : colors.border }]} >
       <Text style={[styles.chipText, { color: selected ? colors.charcoal : colors.textPrimary }]}>{label}</Text>
     </TouchableOpacity>
   );

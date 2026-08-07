@@ -10,9 +10,11 @@ type ToggleProps = {
   value: boolean;
   onValueChange: (value: boolean) => void;
   disabled?: boolean;
+  /** Accessibility label describing what this toggle controls. */
+  accessibilityLabel?: string;
 };
 
-export function Toggle({ value, onValueChange, disabled = false }: ToggleProps) {
+export function Toggle({ value, onValueChange, disabled = false, accessibilityLabel }: ToggleProps) {
   const colors = useThemeColors();
 
   const handlePress = () => {

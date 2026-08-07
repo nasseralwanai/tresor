@@ -32,13 +32,13 @@ export function Badge({ variant, label, icon }: BadgeProps) {
   const colorMap: Record<string, string> = {
     success: colors.success,
     gold: colors.gold,
-    pending: '#B8902E',
+    pending: '#856917',
     textSecondary: colors.textSecondary,
   };
   const bgMap: Record<string, string> = {
     successBg: 'rgba(48,164,108,0.10)',
     goldBg: 'rgba(201,169,97,0.10)',
-    pendingBg: 'rgba(184,144,46,0.10)',
+    pendingBg: 'rgba(133,105,23,0.10)',
     surfaceElevated: colors.surfaceElevated,
   };
 

@@ -40,13 +40,13 @@ const ICONS: Record<string, string> = {
 };
 
 const ICON_COLORS: Record<string, string> = {
-  borrow_requested: '#C9A961',
+  borrow_requested: '#82602C',
   borrow_approved: '#30A46C',
-  borrow_active: '#C9A961',
+  borrow_active: '#82602C',
   borrow_returned: '#30A46C',
   borrow_completed: '#30A46C',
   borrow_declined: '#E5484D',
-  item_added: '#C9A961',
+  item_added: '#82602C',
   wishlist_item_added: '#C9A961',
   member_joined: '#30A46C',
   member_left: '#E5484D',

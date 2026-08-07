@@ -94,19 +94,15 @@ export default function YourCollectionScreen() {
       setInsights(insightsData);
       setBorrows(borrowsData);
 
-      // Fetch circle members + activity in parallel (non-blocking)
+      // Fetch circle members + activity in parallel (awaited within try/catch
+      // to avoid fire-and-forget race conditions / state updates on unmounted component)
       if (circleId) {
-        Promise.all([
+        const [members, activityData] = await Promise.all([
           getCircleMembers(user.id),
           getActivityFeed(circleId, 10),
-        ])
-          .then(([members, activityData]) => {
-            setCircleMemberCount(members.length);
-            setActivities(activityData);
-          })
-          .catch((e) =>
-            console.warn('[home] circle/activity fetch failed:', e)
-          );
+        ]);
+        setCircleMemberCount(members.length);
+        setActivities(activityData);
       }
     } catch (e: any) {
       console.error('[home] loadData error:', e);
@@ -207,14 +203,11 @@ export default function YourCollectionScreen() {
       });
   }, [borrows, items, user?.id]);
 
-  // Sparkline data (derived from items value — mock trend)
+  // Sparkline data — no historical price data yet; use flat zeros to avoid
+  // presenting fabricated trends as real.
   const sparkData = useMemo(() => {
-    if (!insights || insights.totalValue === 0) return [40, 55, 48, 65, 60, 75, 70, 85, 92, 100];
-    const base = insights.totalValue / 100;
-    return [60, 65, 62, 70, 68, 75, 78, 82, 90, 100].map((pct) =>
-      Math.round((base * pct) / 10)
-    );
-  }, [insights]);
+    return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  }, []);
 
   const firstName = useMemo(() => {
     const name = profile?.display_name ?? user?.email ?? 'there';
@@ -343,11 +336,11 @@ export default function YourCollectionScreen() {
             </View>
           )}
 
-          {/* 4. Gentle Nudge Card */}
-          {!empty && (
+          {/* 4. Gentle Nudge Card — hidden until real nudge data source exists */}
+          {getNudgeTitle() && !empty && (
             <View style={styles.section}>
               <GentleNudgeCard
-                title={getNudgeTitle()}
+                title={getNudgeTitle()!}
                 subtitle={getNudgeSubtitle()}
                 iconName={getNudgeIcon()}
                 onPress={() => {
@@ -410,7 +403,7 @@ export default function YourCollectionScreen() {
             <View style={styles.section}>
               <CollectionValueCard
                 totalValue={formatCurrency(insights.totalValue, insights.currency)}
-                quarterlyChange={`+AED ${Math.round(insights.totalValue * 0.05 / 1000)}k`}
+                quarterlyChange="+AED 0k"
                 quarterlyChangePositive
                 pieceCount={insights.totalItems}
                 sparkData={sparkData}
@@ -474,13 +467,16 @@ function getGreeting(): string {
   return 'Good evening';
 }
 
-/** Determine a contextual nudge message based on day/time. */
-function getNudgeTitle(): string {
-  return "Maya's birthday is in 6 days";
+/**
+ * Determine a contextual nudge message based on day/time.
+ * Returns null until a real data source (birthdays, events) is connected.
+ */
+function getNudgeTitle(): string | null {
+  return null;
 }
 
 function getNudgeSubtitle(): string {
-  return "Consider lending her a piece she's admired";
+  return '';
 }
 
 function getNudgeIcon(): string {

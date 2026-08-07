@@ -19,7 +19,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColors, spacing, radius } from '@/theme';
 import { Avatar } from '@/components/Avatar';
-import { hapticLight } from '@/lib/haptics';
 import { formatRelativeTime } from '@/lib/format';
 import type { ShareCard, ShareComment } from '@/lib/feed';
 
@@ -30,31 +29,16 @@ type CommentSheetProps = {
 
 export function CommentSheet({ share, onDismiss }: CommentSheetProps) {
   const colors = useThemeColors();
-  const [commentText, setCommentText] = useState('');
-  const [localComments, setLocalComments] = useState<ShareComment[]>([]);
+  const [commentText] = useState('');
 
   const isPresented = share !== null;
 
-  const allComments = share
-    ? [...localComments, ...share.comments]
-    : [];
-
-  const handleSubmit = useCallback(() => {
-    if (!commentText.trim() || !share) return;
-    hapticLight();
-    const newComment: ShareComment = {
-      id: `local-${Date.now()}`,
-      authorName: 'You',
-      text: commentText.trim(),
-      createdAt: new Date().toISOString(),
-    };
-    setLocalComments((prev) => [newComment, ...prev]);
-    setCommentText('');
-  }, [commentText, share]);
+  // Comments are not yet persisted — no comments table exists.
+  // Show existing comments from the share (currently empty) with a
+  // "Comments coming soon" placeholder instead of a functional input.
+  const allComments: ShareComment[] = share ? share.comments : [];
 
   const handleDismiss = useCallback(() => {
-    setLocalComments([]);
-    setCommentText('');
     onDismiss();
   }, [onDismiss]);
 
@@ -111,9 +95,23 @@ export function CommentSheet({ share, onDismiss }: CommentSheetProps) {
                 </View>
               </View>
             ))}
+
+            {/* Coming soon placeholder */}
+            {allComments.length === 0 && (
+              <View style={styles.comingSoonWrap}>
+                <MaterialCommunityIcons
+                  name="chat-outline"
+                  size={32}
+                  color={colors.textSecondary}
+                />
+                <Text style={[styles.comingSoonText, { color: colors.textSecondary }]}>
+                  Comments coming soon
+                </Text>
+              </View>
+            )}
           </View>
 
-          {/* Comment input */}
+          {/* Disabled comment input — no persistence yet */}
           <View
             style={[
               styles.inputRow,
@@ -133,8 +131,8 @@ export function CommentSheet({ share, onDismiss }: CommentSheetProps) {
             </View>
             <TextInput
               value={commentText}
-              onChangeText={setCommentText}
-              placeholder="Add a comment..."
+              editable={false}
+              placeholder="Comments coming soon"
               placeholderTextColor={colors.textSecondary}
               style={[
                 styles.input,
@@ -143,12 +141,9 @@ export function CommentSheet({ share, onDismiss }: CommentSheetProps) {
                   color: colors.textPrimary,
                 },
               ]}
-              onSubmitEditing={handleSubmit}
-              returnKeyType="send"
             />
             <TouchableOpacity
-              onPress={handleSubmit}
-              disabled={!commentText.trim()}
+              disabled
               activeOpacity={0.85}
             >
               <LinearGradient
@@ -157,7 +152,7 @@ export function CommentSheet({ share, onDismiss }: CommentSheetProps) {
                 end={{ x: 1, y: 1 }}
                 style={[
                   styles.sendBtn,
-                  !commentText.trim() && { opacity: 0.4 },
+                  { opacity: 0.4 },
                 ]}
               >
                 <MaterialCommunityIcons name="send" size={14} color="#FFFFFF" />
@@ -257,5 +252,17 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  comingSoonWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    gap: 10,
+  },
+  comingSoonText: {
+    fontFamily: 'Jost',
+    fontSize: 13,
+    fontWeight: '300',
   },
 });

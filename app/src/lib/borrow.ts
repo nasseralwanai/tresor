@@ -201,7 +201,8 @@ export async function getActiveBorrows(userId: string): Promise<BorrowTransactio
     )
     .or(`borrower_id.eq.${userId},lender_id.eq.${userId}`)
     .in('status', ['requested', 'approved', 'active', 'returned_pending'])
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
 
   if (error) throw error;
   return (data ?? []).map((row: any) => ({
@@ -228,7 +229,8 @@ export async function getBorrowHistory(itemId: string): Promise<BorrowTransactio
       `
     )
     .eq('item_id', itemId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
 
   if (error) throw error;
   return (data ?? []).map((row: any) => ({

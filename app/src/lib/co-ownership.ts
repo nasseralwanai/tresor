@@ -147,7 +147,8 @@ export async function getCoOwners(itemId: string): Promise<CoOwner[]> {
       )
       .eq('item_id', itemId)
       .eq('is_active', true)
-      .order('joined_at', { ascending: true });
+      .order('joined_at', { ascending: true })
+      .limit(50);
 
     if (error) throw error;
     return (data ?? []).map((row: any) => enrichCoOwner(row));
@@ -178,7 +179,8 @@ export async function getOwnedItems(userId: string): Promise<Item[]> {
       )
       .eq('user_id', userId)
       .eq('is_active', true)
-      .order('joined_at', { ascending: false });
+      .order('joined_at', { ascending: false })
+      .limit(50);
 
     if (error) throw error;
 
@@ -366,7 +368,8 @@ export async function getOwnershipHistory(
         payer:profiles!ownership_ledger_payer_id_fkey(display_name)`
       )
       .eq('item_id', itemId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(50);
 
     if (error) throw error;
     return (data ?? []).map((row: any) => enrichLedgerEntry(row));
@@ -398,7 +401,8 @@ export async function getCustodyTransfers(
         to_user:profiles!custody_transfers_to_user_id_fkey(display_name)`
       )
       .eq('item_id', itemId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(50);
 
     if (error) throw error;
     return (data ?? []).map((row: any) => enrichCustodyTransfer(row));

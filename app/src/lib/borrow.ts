@@ -188,24 +188,53 @@ export async function declineBorrow(transactionId: string): Promise<BorrowTransa
 /**
  * Get active borrows for a user (items they've borrowed or lent).
  * Returns enriched transactions with item and party names.
+ *
+ * Uses two parameterized queries (by borrower_id and lender_id) instead of
+ * a string-interpolated `.or()` filter to avoid PostgREST filter injection.
  */
 export async function getActiveBorrows(userId: string): Promise<BorrowTransactionEnriched[]> {
-  const { data, error } = await supabase
-    .from('borrow_transactions')
-    .select(
-      `*,
+  const activeStatuses = ['requested', 'approved', 'active', 'returned_pending'];
+  const select = `*,
       items!borrow_transactions_item_id_fkey(brand, model_name),
       borrower:profiles!borrow_transactions_borrower_id_fkey(display_name),
       lender:profiles!borrow_transactions_lender_id_fkey(display_name)
-      `
-    )
-    .or(`borrower_id.eq.${userId},lender_id.eq.${userId}`)
-    .in('status', ['requested', 'approved', 'active', 'returned_pending'])
+      `;
+
+  // Query borrows where the user is the borrower (parameterized — no interpolation)
+  const { data: borrowed, error: borrowerError } = await supabase
+    .from('borrow_transactions')
+    .select(select)
+    .eq('borrower_id', userId)
+    .in('status', activeStatuses)
     .order('created_at', { ascending: false })
     .limit(50);
 
-  if (error) throw error;
-  return (data ?? []).map((row: any) => ({
+  if (borrowerError) throw borrowerError;
+
+  // Query borrows where the user is the lender (parameterized — no interpolation)
+  const { data: lent, error: lenderError } = await supabase
+    .from('borrow_transactions')
+    .select(select)
+    .eq('lender_id', userId)
+    .in('status', activeStatuses)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (lenderError) throw lenderError;
+
+  // Merge, deduplicate by id, and sort by created_at descending
+  const seen = new Set<string>();
+  const merged = [...(borrowed ?? []), ...(lent ?? [])].filter((row: any) => {
+    if (seen.has(row.id)) return false;
+    seen.add(row.id);
+    return true;
+  });
+  merged.sort(
+    (a: any, b: any) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  return merged.map((row: any) => ({
     ...row,
     item_brand: row.items?.brand ?? 'Unknown',
     item_model: row.items?.model_name ?? null,

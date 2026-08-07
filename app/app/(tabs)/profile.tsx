@@ -11,6 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -18,6 +19,7 @@ import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { Card } from '@/components/Card';
 import { Avatar } from '@/components/Avatar';
 import { Toggle } from '@/components/Toggle';
+import { Skeleton } from '@/components/Skeleton';
 import { hapticLight, hapticSuccess } from '@/lib/haptics';
 import { getCurrentUserInfo } from '@/lib/profile';
 import { getMyItems } from '@/lib/items';
@@ -43,6 +45,8 @@ export default function ProfileScreen() {
   const [items, setItems] = useState<Item[]>([]);
   const [circle, setCircle] = useState<{ id: string; name: string } | null>(null);
   const [error, setError] = useState<AppError | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const loadData = useCallback(async () => {
     if (!user?.id) return;
@@ -60,10 +64,17 @@ export default function ProfileScreen() {
       console.error('[profile] loadData error:', e);
       setError(classifyError(e));
     } finally {
-      // No loading state in this component currently
+      setLoading(false);
+      setRefreshing(false);
     }
   }, [user?.id]);
   useEffect(() => { loadData(); }, [loadData]);
+
+  const onRefresh = useCallback(() => {
+    hapticLight();
+    setRefreshing(true);
+    loadData();
+  }, [loadData]);
 
   const itemsLent = items.filter((i) => i.status === 'borrowed').length;
   const stats = [
@@ -103,11 +114,67 @@ export default function ProfileScreen() {
     );
   }
 
+  // Loading skeleton — shown on initial load (not during pull-to-refresh)
+  if (loading) {
+    return (
+      <>
+        <Stack.Screen options={{ title: 'Profile' }} />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* Profile header skeleton */}
+            <View style={styles.profileHeader}>
+              <View style={styles.skeletonAvatar} />
+              <Skeleton width={160} height={22} style={{ marginTop: spacing.sm }} />
+              <Skeleton width={120} height={14} style={{ marginTop: spacing.xs }} />
+            </View>
+
+            {/* Stats skeleton */}
+            <View style={styles.statsRow}>
+              {[1, 2].map((i) => (
+                <View
+                  key={i}
+                  style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                >
+                  <Skeleton width={22} height={22} borderRadius={4} />
+                  <Skeleton width={40} height={20} style={{ marginTop: 4 }} />
+                  <Skeleton width={60} height={10} style={{ marginTop: 2 }} />
+                </View>
+              ))}
+            </View>
+
+            {/* Section skeletons */}
+            {[1, 2].map((i) => (
+              <Card key={i} style={styles.section}>
+                <Skeleton width={100} height={12} style={{ marginBottom: spacing.md }} />
+                <Skeleton width="100%" height={18} style={{ marginBottom: 8 }} />
+                <Skeleton width="60%" height={14} />
+              </Card>
+            ))}
+
+            {/* Sign out button skeleton */}
+            <Skeleton width="90%" height={50} borderRadius={radius.pill} style={{ marginTop: spacing.md, alignSelf: 'center' }} />
+
+            <View style={{ height: spacing.xxl }} />
+          </ScrollView>
+        </View>
+      </>
+    );
+  }
+
   return (
     <>
       <Stack.Screen options={{ title: 'Profile' }} />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.accent}
+            />
+          }
+        >
           {/* Profile header */}
           <View style={styles.profileHeader}>
             <Avatar name={userInfo?.full_name ?? 'User'} size="lg" />
@@ -241,6 +308,12 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  skeletonAvatar: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: 'rgba(128,128,128,0.2)',
+  },
   profileHeader: {
     alignItems: 'center',
     paddingTop: spacing.lg,

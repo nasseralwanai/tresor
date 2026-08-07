@@ -32,7 +32,7 @@ export async function createProfile(params: {
         id: params.userId,
         display_name: params.fullName,
         avatar_url: params.avatarUrl ?? null,
-        phone: params.phone ?? '',
+        phone: params.phone ?? null,
         bio: params.bio ?? null,
       },
       { onConflict: 'id' }

@@ -184,10 +184,12 @@ export async function getCollectionInsights(userId: string): Promise<{
     ) ?? null;
 
   // Query borrow counts per item for items owned by this user
-  const { data: borrowCounts } = await supabase
+  const { data: borrowCounts, error: borrowCountsError } = await supabase
     .from('borrow_transactions')
     .select('item_id')
     .eq('lender_id', userId);
+
+  if (borrowCountsError) throw borrowCountsError;
 
   const borrowCountMap = new Map<string, number>();
   for (const bt of borrowCounts ?? []) {

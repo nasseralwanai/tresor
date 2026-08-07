@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { Card } from '@/components/Card';
@@ -58,7 +58,18 @@ export default function ProfileScreen() {
     hapticSuccess();
     Alert.alert('Sign Out', 'This will sign you out of Trésor.', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: () => signOut() },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await signOut();
+            router.replace('/(auth)/welcome');
+          } catch (e: any) {
+            Alert.alert('Error', e?.message ?? 'Could not sign out.');
+          }
+        },
+      },
     ]);
   };
 

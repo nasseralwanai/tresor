@@ -2,13 +2,14 @@
  * Manual Add Item screen — form for entering item details manually.
  * Includes: brand, model, category picker, color, condition picker,
  * estimated value, notes, photo picker, privacy + lendable toggles.
- * On submit: call createItem() and navigate back.
+ * Supports co-ownership: toggle to add co-owners with share percentages.
+ * On submit: calls createItem() or createCoOwnedItem() and navigates back.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform,
-  ScrollView, Alert, TouchableOpacity,
+  ScrollView, Alert, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, router } from 'expo-router';
@@ -17,10 +18,13 @@ import * as ImagePicker from 'expo-image-picker';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { Card } from '@/components/Card';
 import { Toggle } from '@/components/Toggle';
+import { Avatar } from '@/components/Avatar';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useAuth } from '@/hooks/useAuth';
 import { useCircleId } from '@/hooks/useCircleId';
 import { createItem } from '@/lib/items';
+import { createCoOwnedItem } from '@/lib/co-ownership';
+import { getCircleMembers, type CircleMemberWithItems } from '@/lib/circle';
 import { hapticLight, hapticSuccess, hapticError } from '@/lib/haptics';
 import type { ItemCategory, ItemCondition } from '@/types';
 
@@ -35,6 +39,15 @@ const CONDITIONS: { label: string; value: ItemCondition }[] = [
   { label: 'New', value: 'new' }, { label: 'Like New', value: 'like_new' },
   { label: 'Good', value: 'good' }, { label: 'Fair', value: 'fair' }, { label: 'Poor', value: 'poor' },
 ];
+
+/** A selected co-owner with their share percentage. */
+type SelectedCoOwner = {
+  userId: string;
+  displayName: string;
+  avatarUrl: string | null;
+  share: string; // string for TextInput, parsed on submit
+  amountPaid: string; // string for TextInput
+};
 
 export default function ManualAddScreen() {
   const colors = useThemeColors();
@@ -52,6 +65,49 @@ export default function ManualAddScreen() {
   const [isLendable, setIsLendable] = useState(true);
   const [loading, setLoading] = useState(false);
 
+  // Co-ownership state
+  const [isCoOwned, setIsCoOwned] = useState(false);
+  const [members, setMembers] = useState<CircleMemberWithItems[]>([]);
+  const [membersLoading, setMembersLoading] = useState(false);
+  const [selectedOwners, setSelectedOwners] = useState<SelectedCoOwner[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showMemberPicker, setShowMemberPicker] = useState(false);
+
+  // Fetch circle members when co-ownership is toggled on
+  useEffect(() => {
+    if (isCoOwned && user?.id && members.length === 0) {
+      setMembersLoading(true);
+      getCircleMembers(user.id)
+        .then((m) => {
+          setMembers(m);
+          // Pre-select the current user as a co-owner with 100% share
+          const me = m.find((mem) => mem.id === user.id);
+          if (me) {
+            setSelectedOwners([
+              {
+                userId: me.id,
+                displayName: me.display_name ?? 'You',
+                avatarUrl: me.avatar_url,
+                share: '100',
+                amountPaid: '',
+              },
+            ]);
+          }
+        })
+        .catch((e) => {
+          console.warn('[add/manual] Failed to load circle members:', e);
+        })
+        .finally(() => setMembersLoading(false));
+    }
+  }, [isCoOwned, user?.id, members.length]);
+
+  // Calculate share total for validation
+  const shareTotal = selectedOwners.reduce(
+    (sum, o) => sum + (parseFloat(o.share) || 0),
+    0
+  );
+  const sharesValid = Math.abs(shareTotal - 100) < 0.01;
+
   const pickPhoto = async () => {
     hapticLight();
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -68,19 +124,108 @@ export default function ManualAddScreen() {
     }
   };
 
+  // Co-owner management helpers
+  const handleAddCoOwner = (member: CircleMemberWithItems) => {
+    hapticLight();
+    if (selectedOwners.some((o) => o.userId === member.id)) return;
+    setSelectedOwners((prev) => [
+      ...prev,
+      {
+        userId: member.id,
+        displayName: member.display_name ?? 'Unknown',
+        avatarUrl: member.avatar_url,
+        share: '',
+        amountPaid: '',
+      },
+    ]);
+    setSearchQuery('');
+    setShowMemberPicker(false);
+  };
+
+  const handleRemoveCoOwner = (userId: string) => {
+    hapticLight();
+    setSelectedOwners((prev) => prev.filter((o) => o.userId !== userId));
+  };
+
+  const handleShareChange = (userId: string, value: string) => {
+    setSelectedOwners((prev) =>
+      prev.map((o) => (o.userId === userId ? { ...o, share: value } : o))
+    );
+  };
+
+  const handleAmountChange = (userId: string, value: string) => {
+    setSelectedOwners((prev) =>
+      prev.map((o) => (o.userId === userId ? { ...o, amountPaid: value } : o))
+    );
+  };
+
+  const filteredMembers = members.filter((m) => {
+    // Exclude already-selected members
+    if (selectedOwners.some((o) => o.userId === m.id)) return false;
+    // Filter by search query
+    if (searchQuery.trim()) {
+      return (m.display_name ?? '')
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+    }
+    return true;
+  });
+
   const handleSave = async () => {
     if (!brand.trim() || !user?.id) return;
+
+    // Validate co-ownership shares
+    if (isCoOwned) {
+      if (selectedOwners.length < 2) {
+        hapticError();
+        Alert.alert('Co-Ownership', 'At least two co-owners are required.');
+        return;
+      }
+      if (!sharesValid) {
+        hapticError();
+        Alert.alert(
+          'Co-Ownership',
+          `Ownership shares must sum to exactly 100%. Current total: ${shareTotal}%`
+        );
+        return;
+      }
+    }
+
     setLoading(true);
     try {
-      await createItem({
-        owner_id: user.id, circle_id: circleId,
-        brand: brand.trim(), model_name: modelName.trim() || null,
-        category, color: color.trim() || null, condition, status: 'available',
-        estimated_value: estimatedValue ? parseFloat(estimatedValue) : null,
-        currency: 'AED', notes: notes.trim() || null,
-        primary_image_url: photoUri,
-        is_private: isPrivate, is_lendable: isLendable,
-      });
+      if (isCoOwned) {
+        // Create co-owned item
+        await createCoOwnedItem({
+          brand: brand.trim(),
+          model_name: modelName.trim() || null,
+          category,
+          color: color.trim() || null,
+          condition,
+          estimated_value: estimatedValue ? parseFloat(estimatedValue) : null,
+          currency: 'AED',
+          notes: notes.trim() || null,
+          is_private: isPrivate,
+          is_lendable: isLendable,
+          primary_image_url: photoUri,
+          circle_id: circleId,
+          owners: selectedOwners.map((o) => ({
+            user_id: o.userId,
+            share_percentage: parseFloat(o.share),
+            amount_paid: o.amountPaid ? parseFloat(o.amountPaid) : 0,
+          })),
+        });
+      } else {
+        // Create sole-owned item
+        await createItem({
+          owner_id: user.id, circle_id: circleId,
+          brand: brand.trim(), model_name: modelName.trim() || null,
+          category, color: color.trim() || null, condition, status: 'available',
+          estimated_value: estimatedValue ? parseFloat(estimatedValue) : null,
+          currency: 'AED', notes: notes.trim() || null,
+          primary_image_url: photoUri,
+          is_private: isPrivate, is_lendable: isLendable,
+        });
+      }
       hapticSuccess();
       router.back();
     } catch (e: any) {
@@ -154,9 +299,260 @@ export default function ManualAddScreen() {
                 <Toggle value={isLendable} onValueChange={setIsLendable} />
               </View>
             </Card>
+
+            {/* Co-ownership toggle */}
+            <Card style={styles.settingsCard}>
+              <View style={styles.settingRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.settingTitle, { color: colors.textPrimary }]}>
+                    This item is co-owned
+                  </Text>
+                  <Text style={[styles.settingSub, { color: colors.textSecondary }]}>
+                    Share ownership with circle members
+                  </Text>
+                </View>
+                <Toggle value={isCoOwned} onValueChange={(v) => {
+                  hapticLight();
+                  setIsCoOwned(v);
+                  if (!v) {
+                    setSelectedOwners([]);
+                    setShowMemberPicker(false);
+                  }
+                }} />
+              </View>
+            </Card>
+
+            {/* Co-ownership section */}
+            {isCoOwned && (
+              <View style={styles.coOwnSection}>
+                {/* Section header */}
+                <View style={styles.coOwnHeader}>
+                  <MaterialCommunityIcons name="account-group-outline" size={16} color={colors.gold} />
+                  <Text style={[styles.coOwnHeaderText, { color: colors.textPrimary }]}>
+                    Co-Owners
+                  </Text>
+                  <View style={[
+                    styles.shareTotalBadge,
+                    {
+                      backgroundColor: sharesValid
+                        ? 'rgba(48, 164, 108, 0.12)'
+                        : 'rgba(229, 72, 77, 0.12)',
+                    },
+                  ]}>
+                    <Text style={[
+                      styles.shareTotalText,
+                      { color: sharesValid ? colors.success : colors.error },
+                    ]}>
+                      {shareTotal.toFixed(0)}%
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Validation message */}
+                {selectedOwners.length >= 2 && !sharesValid && (
+                  <Text style={[styles.validationText, { color: colors.error }]}>
+                    Shares must sum to 100%. Current: {shareTotal.toFixed(0)}%
+                  </Text>
+                )}
+
+                {/* Selected co-owners list */}
+                {selectedOwners.map((owner) => {
+                  const isMe = owner.userId === user?.id;
+                  return (
+                    <View
+                      key={owner.userId}
+                      style={[
+                        styles.coOwnerRow,
+                        {
+                          backgroundColor: colors.surface,
+                          borderColor: colors.border,
+                        },
+                      ]}
+                    >
+                      {/* Avatar + name */}
+                      <View style={styles.coOwnerInfo}>
+                        <Avatar name={owner.displayName} size="sm" />
+                        <Text
+                          style={[styles.coOwnerName, { color: colors.textPrimary }]}
+                          numberOfLines={1}
+                        >
+                          {isMe ? 'You' : owner.displayName}
+                        </Text>
+                      </View>
+
+                      {/* Amount paid input */}
+                      <TextInput
+                        style={[
+                          styles.shareInput,
+                          styles.amountInput,
+                          {
+                            backgroundColor: colors.surfaceElevated,
+                            color: colors.textPrimary,
+                          },
+                        ]}
+                        placeholder="Paid"
+                        placeholderTextColor={colors.textSecondary}
+                        value={owner.amountPaid}
+                        onChangeText={(v) => handleAmountChange(owner.userId, v)}
+                        keyboardType="numeric"
+                      />
+
+                      {/* Share input */}
+                      <View style={styles.shareInputWrap}>
+                        <TextInput
+                          style={[
+                            styles.shareInput,
+                            styles.sharePercentInput,
+                            {
+                              backgroundColor: colors.surfaceElevated,
+                              color: colors.textPrimary,
+                            },
+                          ]}
+                          placeholder="0"
+                          placeholderTextColor={colors.textSecondary}
+                          value={owner.share}
+                          onChangeText={(v) => handleShareChange(owner.userId, v)}
+                          keyboardType="numeric"
+                        />
+                        <Text style={[styles.percentSign, { color: colors.textSecondary }]}>
+                          %
+                        </Text>
+                      </View>
+
+                      {/* Remove button (don't allow removing yourself) */}
+                      {!isMe && (
+                        <TouchableOpacity
+                          onPress={() => handleRemoveCoOwner(owner.userId)}
+                          activeOpacity={0.7}
+                          style={styles.removeBtn}
+                        >
+                          <MaterialCommunityIcons
+                            name="close"
+                            size={16}
+                            color={colors.textSecondary}
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  );
+                })}
+
+                {/* Add co-owner button / member picker */}
+                {showMemberPicker ? (
+                  <View style={[
+                    styles.memberPicker,
+                    {
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                    },
+                  ]}>
+                    {/* Search input */}
+                    <View style={[
+                      styles.searchRow,
+                      { borderBottomColor: colors.border },
+                    ]}>
+                      <MaterialCommunityIcons
+                        name="magnify"
+                        size={16}
+                        color={colors.textSecondary}
+                      />
+                      <TextInput
+                        style={[styles.searchInput, { color: colors.textPrimary }]}
+                        placeholder="Search circle members..."
+                        placeholderTextColor={colors.textSecondary}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        autoFocus
+                      />
+                      <TouchableOpacity
+                        onPress={() => { hapticLight(); setShowMemberPicker(false); setSearchQuery(''); }}
+                        activeOpacity={0.7}
+                      >
+                        <MaterialCommunityIcons
+                          name="close"
+                          size={16}
+                          color={colors.textSecondary}
+                        />
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Members list */}
+                    {membersLoading ? (
+                      <View style={styles.membersLoading}>
+                        <ActivityIndicator color={colors.gold} size="small" />
+                      </View>
+                    ) : filteredMembers.length === 0 ? (
+                      <View style={styles.membersEmpty}>
+                        <Text style={[styles.membersEmptyText, { color: colors.textSecondary }]}>
+                          {searchQuery ? 'No members found' : 'No circle members available'}
+                        </Text>
+                      </View>
+                    ) : (
+                      <ScrollView style={styles.membersList} nestedScrollEnabled>
+                        {filteredMembers.map((member) => (
+                          <TouchableOpacity
+                            key={member.id}
+                            onPress={() => handleAddCoOwner(member)}
+                            activeOpacity={0.7}
+                            style={[
+                              styles.memberItem,
+                              { borderBottomColor: colors.border },
+                            ]}
+                          >
+                            <Avatar name={member.display_name ?? '?'} size="sm" />
+                            <Text
+                              style={[styles.memberName, { color: colors.textPrimary }]}
+                              numberOfLines={1}
+                            >
+                              {member.display_name ?? 'Unknown'}
+                            </Text>
+                            <MaterialCommunityIcons
+                              name="plus"
+                              size={16}
+                              color={colors.gold}
+                            />
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
+                    )}
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => { hapticLight(); setShowMemberPicker(true); }}
+                    activeOpacity={0.85}
+                    style={[
+                      styles.addOwnerBtn,
+                      {
+                        backgroundColor: colors.surface,
+                        borderColor: colors.border,
+                      },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name="account-plus-outline"
+                      size={16}
+                      color={colors.gold}
+                    />
+                    <Text style={[styles.addOwnerText, { color: colors.gold }]}>
+                      Add Co-Owner
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                {/* Helper text */}
+                <Text style={[styles.helperText, { color: colors.textSecondary }]}>
+                  Shares must total exactly 100%. Enter amount paid (AED) for each owner.
+                </Text>
+              </View>
+            )}
           </ScrollView>
           <View style={styles.footer}>
-            <PrimaryButton label="Save Item" loading={loading} disabled={!brand.trim()} onPress={handleSave} />
+            <PrimaryButton
+              label={isCoOwned ? 'Save Co-Owned Item' : 'Save Item'}
+              loading={loading}
+              disabled={!brand.trim() || (isCoOwned && (!sharesValid || selectedOwners.length < 2))}
+              onPress={handleSave}
+            />
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -167,7 +563,7 @@ export default function ManualAddScreen() {
 function Chip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   const colors = useThemeColors();
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.chip, { backgroundColor: selected ? colors.accent : colors.surface, borderColor: selected ? colors.accent : colors.border }]}>
+    <TouchableOpacity onPress={onPress} style={[styles.chip, { backgroundColor: selected ? colors.accent : colors.surface, borderColor: selected ? colors.accent : colors.border }]} >
       <Text style={[styles.chipText, { color: selected ? colors.charcoal : colors.textPrimary }]}>{label}</Text>
     </TouchableOpacity>
   );
@@ -189,7 +585,165 @@ const styles = StyleSheet.create({
   chipText: { ...typography.footnote, fontWeight: '500' },
   settingsCard: { marginTop: spacing.md },
   settingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  settingTitle: { ...typography.bodyEmphasized, fontSize: 15 },
-  settingSub: { ...typography.caption1, fontSize: 12, marginTop: 2 },
+  settingTitle: { fontFamily: 'Jost', fontSize: 15, fontWeight: '500' },
+  settingSub: { fontFamily: 'Jost', fontSize: 12, fontWeight: '300', marginTop: 2 },
   footer: { padding: spacing.lg },
+  // Co-ownership styles
+  coOwnSection: {
+    marginTop: spacing.md,
+    gap: spacing.sm,
+  },
+  coOwnHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs + 2,
+    paddingHorizontal: spacing.xs,
+  },
+  coOwnHeaderText: {
+    fontFamily: 'Georgia',
+    fontSize: 15,
+    fontWeight: '500',
+    flex: 1,
+  },
+  shareTotalBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.pill,
+  },
+  shareTotalText: {
+    fontFamily: 'Jost',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  validationText: {
+    fontFamily: 'Jost',
+    fontSize: 11,
+    fontWeight: '400',
+    marginLeft: spacing.xs,
+  },
+  coOwnerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: radius.md,
+    borderWidth: 0.5,
+  },
+  coOwnerInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs + 2,
+    flex: 1,
+    minWidth: 0,
+  },
+  coOwnerName: {
+    fontFamily: 'Jost',
+    fontSize: 13,
+    fontWeight: '500',
+    flexShrink: 1,
+  },
+  shareInput: {
+    height: 34,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.sm,
+    borderWidth: 0.5,
+    borderColor: 'transparent',
+    fontSize: 13,
+    fontFamily: 'Jost',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  amountInput: {
+    width: 64,
+  },
+  shareInputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  sharePercentInput: {
+    width: 40,
+  },
+  percentSign: {
+    fontFamily: 'Jost',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  removeBtn: {
+    padding: spacing.xs,
+  },
+  addOwnerBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs + 2,
+    height: 42,
+    borderRadius: radius.md,
+    borderWidth: 0.5,
+    borderStyle: 'dashed',
+  },
+  addOwnerText: {
+    fontFamily: 'Jost',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  helperText: {
+    fontFamily: 'Jost',
+    fontSize: 11,
+    fontWeight: '300',
+    paddingHorizontal: spacing.xs,
+    lineHeight: 16,
+  },
+  // Member picker
+  memberPicker: {
+    borderRadius: radius.md,
+    borderWidth: 0.5,
+    overflow: 'hidden',
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs + 2,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderBottomWidth: 0.5,
+  },
+  searchInput: {
+    flex: 1,
+    height: 32,
+    fontSize: 14,
+    fontFamily: 'Jost',
+    fontWeight: '400',
+  },
+  membersLoading: {
+    paddingVertical: spacing.lg,
+    alignItems: 'center',
+  },
+  membersEmpty: {
+    paddingVertical: spacing.lg,
+    alignItems: 'center',
+  },
+  membersEmptyText: {
+    fontFamily: 'Jost',
+    fontSize: 13,
+    fontWeight: '300',
+  },
+  membersList: {
+    maxHeight: 200,
+  },
+  memberItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderBottomWidth: 0.5,
+  },
+  memberName: {
+    flex: 1,
+    fontFamily: 'Jost',
+    fontSize: 13,
+    fontWeight: '400',
+  },
 });

@@ -1,8 +1,16 @@
 /**
- * Active Borrow Screen — shows "Item is with [person]" + Mark Returned + Nudge buttons.
+ * Active Borrow Screen — shows borrow transactions across their full lifecycle.
+ *
+ * Statuses handled:
+ *   requested        → lender sees Approve/Decline; borrower sees 'Awaiting Approval'
+ *   active           → lender can Nudge; borrower can Mark Returned
+ *   returned_pending → borrower confirms receipt; lender waits for confirmation
+ *
+ * Flow: requested → active → returned_pending → completed
+ *       (or declined / cancelled at any point)
  */
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,15 +20,21 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { Card } from '@/components/Card';
 import { Avatar } from '@/components/Avatar';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
 import { PrimaryButton } from '@/components/PrimaryButton';
-import { hapticLight, hapticSuccess } from '@/lib/haptics';
-import { getActiveBorrows, markReturned } from '@/lib/borrow';
+import { hapticLight, hapticSuccess, hapticError } from '@/lib/haptics';
+import {
+  getActiveBorrows,
+  acceptBorrow,
+  declineBorrow,
+  markReturned,
+  confirmReceived,
+} from '@/lib/borrow';
 import { formatDate, formatRelativeTime } from '@/lib/format';
 import { useAuth } from '@/hooks/useAuth';
 import type { BorrowTransactionEnriched } from '@/lib/borrow';
@@ -31,6 +45,9 @@ export default function ActiveBorrowScreen() {
   const [borrows, setBorrows] = useState<BorrowTransactionEnriched[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Track which transaction is currently being mutated, so its action buttons
+  // can show an ActivityIndicator while the request is in flight.
+  const [pendingAction, setPendingAction] = useState<{ id: string; action: string } | null>(null);
 
   const loadData = useCallback(async () => {
     if (!user?.id) { setLoading(false); return; }
@@ -50,13 +67,62 @@ export default function ActiveBorrowScreen() {
     loadData();
   }, [loadData]);
 
-  const handleMarkReturned = async (borrowId: string) => {
-    hapticSuccess();
+  const isBusy = (borrowId: string, action: string) =>
+    pendingAction?.id === borrowId && pendingAction?.action === action;
+
+  const handleApprove = async (borrowId: string) => {
+    setPendingAction({ id: borrowId, action: 'approve' });
     try {
-      await markReturned(borrowId);
+      await acceptBorrow(borrowId);
+      hapticSuccess();
       loadData();
     } catch (e: any) {
+      hapticError();
+      Alert.alert('Error', e?.message ?? 'Could not approve the request.');
+    } finally {
+      setPendingAction(null);
+    }
+  };
+
+  const handleDecline = async (borrowId: string) => {
+    setPendingAction({ id: borrowId, action: 'decline' });
+    try {
+      await declineBorrow(borrowId);
+      hapticSuccess();
+      loadData();
+    } catch (e: any) {
+      hapticError();
+      Alert.alert('Error', e?.message ?? 'Could not decline the request.');
+    } finally {
+      setPendingAction(null);
+    }
+  };
+
+  const handleMarkReturned = async (borrowId: string) => {
+    setPendingAction({ id: borrowId, action: 'markReturned' });
+    try {
+      await markReturned(borrowId);
+      hapticSuccess();
+      loadData();
+    } catch (e: any) {
+      hapticError();
       Alert.alert('Error', e?.message ?? 'Could not mark as returned.');
+    } finally {
+      setPendingAction(null);
+    }
+  };
+
+  const handleConfirmReceived = async (borrowId: string) => {
+    setPendingAction({ id: borrowId, action: 'confirmReceived' });
+    try {
+      await confirmReceived(borrowId);
+      hapticSuccess();
+      loadData();
+    } catch (e: any) {
+      hapticError();
+      Alert.alert('Error', e?.message ?? 'Could not confirm receipt.');
+    } finally {
+      setPendingAction(null);
     }
   };
 
@@ -115,19 +181,35 @@ export default function ActiveBorrowScreen() {
           {borrows.map((borrow) => {
             const isLender = borrow.lender_id === user?.id;
             const otherPerson = isLender ? borrow.borrower_name : borrow.lender_name;
+            const status = borrow.status;
+
+            // Choose the badge label based on the transaction status.
+            let badgeLabel: string;
+            if (status === 'requested') {
+              badgeLabel = 'Pending Request';
+            } else if (status === 'returned_pending') {
+              badgeLabel = 'Return Pending';
+            } else {
+              // 'active' and 'approved' — role-based label, unchanged from before.
+              badgeLabel = isLender ? 'Lent Out' : 'Borrowing';
+            }
+            const badgeColor = colors.accent;
+
+            // Relative timestamp — fall back to requested_at when not yet borrowed.
+            const timestamp = borrow.borrowed_at ?? borrow.requested_at;
 
             return (
               <Card key={borrow.id} style={styles.borrowCard}>
                 {/* Status badge */}
                 <View style={styles.statusRow}>
                   <View style={[styles.statusBadge, { backgroundColor: 'rgba(201,169,97,0.10)' }]}>
-                    <View style={[styles.statusDot, { backgroundColor: colors.accent }]} />
-                    <Text style={[styles.statusText, { color: colors.accent }]}>
-                      {isLender ? 'Lent Out' : 'Borrowing'}
+                    <View style={[styles.statusDot, { backgroundColor: badgeColor }]} />
+                    <Text style={[styles.statusText, { color: badgeColor }]}>
+                      {badgeLabel}
                     </Text>
                   </View>
                   <Text style={[styles.timeText, { color: colors.textSecondary }]}>
-                    {formatRelativeTime(borrow.borrowed_at ?? borrow.requested_at)}
+                    {formatRelativeTime(timestamp)}
                   </Text>
                 </View>
 
@@ -156,7 +238,7 @@ export default function ActiveBorrowScreen() {
                     </Text>
                   </View>
                   <Text style={[styles.sinceDate, { color: colors.textSecondary }]}>
-                    Since {formatDate(borrow.borrowed_at ?? borrow.requested_at)}
+                    Since {formatDate(timestamp)}
                   </Text>
                 </View>
 
@@ -165,27 +247,77 @@ export default function ActiveBorrowScreen() {
                   <View style={[styles.noteBox, { backgroundColor: colors.surfaceElevated }]}>
                     <Text style={[styles.noteLabel, { color: colors.textSecondary }]}>NOTE</Text>
                     <Text style={[styles.noteText, { color: colors.textPrimary }]}>
-                      "{borrow.borrower_note}"
+                      &ldquo;{borrow.borrower_note}&rdquo;
                     </Text>
                   </View>
                 )}
 
-                {/* Actions */}
-                {isLender ? (
-                  <TouchableOpacity
-                    onPress={() => handleNudge(borrow.id)}
-                    style={[styles.nudgeBtn, { borderColor: colors.border }]}
-                  >
-                    <MaterialCommunityIcons name="bell-outline" size={16} color={colors.textPrimary} />
-                    <Text style={[styles.nudgeBtnText, { color: colors.textPrimary }]}>
-                      Nudge {borrow.borrower_name}
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <PrimaryButton
-                    label="Mark Returned"
-                    onPress={() => handleMarkReturned(borrow.id)}
-                  />
+                {/* Actions — driven by status + role */}
+                {status === 'requested' && (
+                  isLender ? (
+                    <View style={styles.actionRow}>
+                      <PrimaryButton
+                        label="Approve"
+                        onPress={() => handleApprove(borrow.id)}
+                        loading={isBusy(borrow.id, 'approve')}
+                        disabled={pendingAction?.id === borrow.id}
+                        style={styles.actionButton}
+                      />
+                      <DeclineButton
+                        label="Decline"
+                        onPress={() => handleDecline(borrow.id)}
+                        loading={isBusy(borrow.id, 'decline')}
+                        disabled={pendingAction?.id === borrow.id}
+                        colors={colors}
+                      />
+                    </View>
+                  ) : (
+                    <View style={[styles.infoBox, { backgroundColor: colors.surfaceElevated }]}>
+                      <MaterialCommunityIcons name="clock-outline" size={16} color={colors.textSecondary} />
+                      <Text style={[styles.infoText, { color: colors.textSecondary }]}>
+                        Awaiting approval from {borrow.lender_name}
+                      </Text>
+                    </View>
+                  )
+                )}
+
+                {status === 'active' && (
+                  isLender ? (
+                    <TouchableOpacity
+                      onPress={() => handleNudge(borrow.id)}
+                      style={[styles.nudgeBtn, { borderColor: colors.border }]}
+                    >
+                      <MaterialCommunityIcons name="bell-outline" size={16} color={colors.textPrimary} />
+                      <Text style={[styles.nudgeBtnText, { color: colors.textPrimary }]}>
+                        Nudge {borrow.borrower_name}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <PrimaryButton
+                      label="Mark Returned"
+                      onPress={() => handleMarkReturned(borrow.id)}
+                      loading={isBusy(borrow.id, 'markReturned')}
+                      disabled={pendingAction?.id === borrow.id}
+                    />
+                  )
+                )}
+
+                {status === 'returned_pending' && (
+                  isLender ? (
+                    <View style={[styles.infoBox, { backgroundColor: colors.surfaceElevated }]}>
+                      <MaterialCommunityIcons name="clock-outline" size={16} color={colors.textSecondary} />
+                      <Text style={[styles.infoText, { color: colors.textSecondary }]}>
+                        Waiting for {borrow.borrower_name} to confirm receipt
+                      </Text>
+                    </View>
+                  ) : (
+                    <PrimaryButton
+                      label="Confirm Received"
+                      onPress={() => handleConfirmReceived(borrow.id)}
+                      loading={isBusy(borrow.id, 'confirmReceived')}
+                      disabled={pendingAction?.id === borrow.id}
+                    />
+                  )
                 )}
               </Card>
             );
@@ -194,6 +326,44 @@ export default function ActiveBorrowScreen() {
         </ScrollView>
       </View>
     </>
+  );
+}
+
+/**
+ * DeclineButton — secondary, destructive-styled action paired with the Approve button.
+ * Kept inline so the borrow screen remains self-contained; uses the warm Atelier
+ * palette (error red text on a hairline border) rather than a full red fill.
+ */
+function DeclineButton({
+  label,
+  onPress,
+  loading,
+  disabled,
+  colors,
+}: {
+  label: string;
+  onPress: () => void;
+  loading?: boolean;
+  disabled?: boolean;
+  colors: ReturnType<typeof useThemeColors>;
+}) {
+  const isDisabled = disabled || loading;
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={isDisabled}
+      activeOpacity={0.85}
+      style={[
+        styles.declineBtn,
+        { borderColor: colors.border, opacity: isDisabled ? 0.5 : 1 },
+      ]}
+    >
+      {loading ? (
+        <ActivityIndicator color={colors.error} />
+      ) : (
+        <Text style={[styles.declineBtnText, { color: colors.error }]}>{label}</Text>
+      )}
+    </TouchableOpacity>
   );
 }
 
@@ -287,6 +457,37 @@ const styles = StyleSheet.create({
   noteText: {
     ...typography.body,
     fontSize: 14,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  actionButton: {
+    flex: 1,
+  },
+  declineBtn: {
+    flex: 1,
+    height: 54,
+    borderRadius: radius.pill,
+    borderWidth: 0.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  declineBtnText: {
+    ...typography.headline,
+    fontSize: 17,
+  },
+  infoBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    borderRadius: radius.md,
+    padding: spacing.md - 2,
+  },
+  infoText: {
+    ...typography.body,
+    fontSize: 14,
+    flex: 1,
   },
   nudgeBtn: {
     flexDirection: 'row',

@@ -156,6 +156,9 @@ export interface Database {
           primary_image_url: string | null;
           is_private: boolean;
           is_lendable: boolean;
+          ownership_type: Database['public']['Enums']['ownership_type'];
+          current_custodian_id: string | null;
+          co_borrow_approval: Database['public']['Enums']['co_borrow_approval'];
           created_at: string;
           updated_at: string;
         };
@@ -184,6 +187,9 @@ export interface Database {
           primary_image_url?: string | null;
           is_private?: boolean;
           is_lendable?: boolean;
+          ownership_type?: Database['public']['Enums']['ownership_type'];
+          current_custodian_id?: string | null;
+          co_borrow_approval?: Database['public']['Enums']['co_borrow_approval'];
           created_at?: string;
           updated_at?: string;
         };
@@ -212,6 +218,9 @@ export interface Database {
           primary_image_url?: string | null;
           is_private?: boolean;
           is_lendable?: boolean;
+          ownership_type?: Database['public']['Enums']['ownership_type'];
+          current_custodian_id?: string | null;
+          co_borrow_approval?: Database['public']['Enums']['co_borrow_approval'];
           created_at?: string;
           updated_at?: string;
         };
@@ -226,6 +235,12 @@ export interface Database {
             foreignKeyName: 'items_circle_id_fkey';
             columns: ['circle_id'];
             referencedRelation: 'circles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'items_current_custodian_id_fkey';
+            columns: ['current_custodian_id'];
+            referencedRelation: 'profiles';
             referencedColumns: ['id'];
           },
         ];
@@ -287,6 +302,7 @@ export interface Database {
           condition_after: Database['public']['Enums']['item_condition'] | null;
           last_nudged_at: string | null;
           nudge_count: number;
+          is_co_owned_borrow: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -310,6 +326,7 @@ export interface Database {
           condition_after?: Database['public']['Enums']['item_condition'] | null;
           last_nudged_at?: string | null;
           nudge_count?: number;
+          is_co_owned_borrow?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -331,6 +348,7 @@ export interface Database {
           return_condition_note?: string | null;
           condition_before?: Database['public']['Enums']['item_condition'] | null;
           condition_after?: Database['public']['Enums']['item_condition'] | null;
+          is_co_owned_borrow?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -685,6 +703,207 @@ export interface Database {
           },
         ];
       };
+
+      item_owners: {
+        Row: {
+          id: string;
+          item_id: string;
+          user_id: string | null;
+          share_percentage: number;
+          amount_paid: number;
+          currency: string;
+          joined_at: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          item_id: string;
+          user_id: string;
+          share_percentage: number;
+          amount_paid?: number;
+          currency?: string;
+          joined_at?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          item_id?: string;
+          user_id?: string | null;
+          share_percentage?: number;
+          amount_paid?: number;
+          currency?: string;
+          joined_at?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'item_owners_item_id_fkey';
+            columns: ['item_id'];
+            referencedRelation: 'items';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'item_owners_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+
+      ownership_ledger: {
+        Row: {
+          id: string;
+          item_id: string;
+          payer_id: string;
+          entry_type: Database['public']['Enums']['ledger_entry_type'];
+          amount: number;
+          currency: string;
+          description: string | null;
+          splits: Json | null;
+          affected_owner_id: string | null;
+          new_share_percentage: number | null;
+          created_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          item_id: string;
+          payer_id: string;
+          entry_type: Database['public']['Enums']['ledger_entry_type'];
+          amount: number;
+          currency?: string;
+          description?: string | null;
+          splits?: Json | null;
+          affected_owner_id?: string | null;
+          new_share_percentage?: number | null;
+          created_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          item_id?: string;
+          payer_id?: string;
+          entry_type?: Database['public']['Enums']['ledger_entry_type'];
+          amount?: number;
+          currency?: string;
+          description?: string | null;
+          splits?: Json | null;
+          affected_owner_id?: string | null;
+          new_share_percentage?: number | null;
+          created_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'ownership_ledger_item_id_fkey';
+            columns: ['item_id'];
+            referencedRelation: 'items';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'ownership_ledger_payer_id_fkey';
+            columns: ['payer_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'ownership_ledger_affected_owner_id_fkey';
+            columns: ['affected_owner_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'ownership_ledger_created_by_fkey';
+            columns: ['created_by'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+
+      custody_transfers: {
+        Row: {
+          id: string;
+          item_id: string;
+          from_user_id: string;
+          to_user_id: string;
+          circle_id: string | null;
+          status: Database['public']['Enums']['custody_status'];
+          requested_at: string;
+          approved_at: string | null;
+          handed_off_at: string | null;
+          completed_at: string | null;
+          requester_note: string | null;
+          approver_note: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          item_id: string;
+          from_user_id: string;
+          to_user_id: string;
+          circle_id?: string | null;
+          status?: Database['public']['Enums']['custody_status'];
+          requested_at?: string;
+          approved_at?: string | null;
+          handed_off_at?: string | null;
+          completed_at?: string | null;
+          requester_note?: string | null;
+          approver_note?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          item_id?: string;
+          from_user_id?: string;
+          to_user_id?: string;
+          circle_id?: string | null;
+          status?: Database['public']['Enums']['custody_status'];
+          requested_at?: string;
+          approved_at?: string | null;
+          handed_off_at?: string | null;
+          completed_at?: string | null;
+          requester_note?: string | null;
+          approver_note?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'custody_transfers_item_id_fkey';
+            columns: ['item_id'];
+            referencedRelation: 'items';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'custody_transfers_from_user_id_fkey';
+            columns: ['from_user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'custody_transfers_to_user_id_fkey';
+            columns: ['to_user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'custody_transfers_circle_id_fkey';
+            columns: ['circle_id'];
+            referencedRelation: 'circles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
 
     Views: {
@@ -732,6 +951,51 @@ export interface Database {
         Args: Record<string, never>;
         Returns: void;
       };
+      create_co_owned_item: {
+        Args: {
+          p_brand: string;
+          p_model_name: string | null;
+          p_category: Database['public']['Enums']['item_category'] | null;
+          p_color: string | null;
+          p_condition: Database['public']['Enums']['item_condition'] | null;
+          p_estimated_value: number | null;
+          p_currency: string | null;
+          p_notes: string | null;
+          p_is_private: boolean | null;
+          p_is_lendable: boolean | null;
+          p_primary_image_url: string | null;
+          p_purchase_price: number | null;
+          p_purchase_date: string | null;
+          p_circle_id: string | null;
+          p_co_borrow_approval: Database['public']['Enums']['co_borrow_approval'] | null;
+          p_owners: Json;
+        };
+        Returns: Json;
+      };
+      process_buyout: {
+        Args: {
+          p_item_id: string;
+          p_buyer_id: string;
+          p_seller_id: string;
+          p_shares_bought: number;
+          p_buyout_amount: number;
+          p_currency: string | null;
+          p_notes: string | null;
+        };
+        Returns: Json;
+      };
+      set_default_custodian: {
+        Args: Record<string, never>;
+        Returns: void;
+      };
+      validate_item_ownership_shares: {
+        Args: Record<string, never>;
+        Returns: void;
+      };
+      update_custodian_on_borrow: {
+        Args: Record<string, never>;
+        Returns: void;
+      };
     };
 
     Enums: {
@@ -766,7 +1030,30 @@ export interface Database {
         | 'wishlist_item_added'
         | 'price_alert'
         | 'member_joined'
-        | 'member_left';
+        | 'member_left'
+        | 'co_ownership_created'
+        | 'custody_requested'
+        | 'custody_transferred'
+        | 'co_owner_added'
+        | 'co_owner_removed'
+        | 'share_buyout';
+      ownership_type: 'sole' | 'co_owned';
+      co_borrow_approval: 'custodian' | 'any_owner';
+      ledger_entry_type:
+        | 'purchase'
+        | 'maintenance'
+        | 'insurance'
+        | 'storage'
+        | 'buyout'
+        | 'resale_proceeds'
+        | 'adjustment';
+      custody_status:
+        | 'requested'
+        | 'approved'
+        | 'active'
+        | 'completed'
+        | 'declined'
+        | 'cancelled';
     };
 
     CompositeTypes: {

@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
@@ -93,7 +93,7 @@ export default function MyTresorScreen() {
               <Text style={[styles.title, { color: colors.textPrimary }]}>My Trésor</Text>
               <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{insights ? `${insights.totalItems} items` : `${items.length} items`}{insights && insights.itemsLent > 0 ? ` · ${insights.itemsLent} currently lent` : ''}</Text>
             </View>
-            <TouchableOpacity onPress={() => hapticLight()} style={[styles.iconButton, { backgroundColor: colors.surface }]}>
+            <TouchableOpacity onPress={() => { hapticLight(); router.push('/(tabs)/activity'); }} style={[styles.iconButton, { backgroundColor: colors.surface }]}>
               <MaterialCommunityIcons name="bell-outline" size={18} color={colors.textPrimary} />
             </TouchableOpacity>
           </View>
@@ -130,7 +130,7 @@ export default function MyTresorScreen() {
                   <Text style={[styles.nudgeItem, { color: colors.textPrimary }]} numberOfLines={1}>Chanel Classic Flap</Text>
                   <Text style={[styles.nudgeSub, { color: colors.textSecondary }]}>Still with Mona A. — two weeks</Text>
                 </View>
-                <TouchableOpacity onPress={() => hapticLight()} style={[styles.nudgeBtn, { backgroundColor: colors.surface }]}><Text style={[styles.nudgeBtnText, { color: colors.textPrimary }]}>Nudge</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'Nudge notifications will be available soon.'); }} style={[styles.nudgeBtn, { backgroundColor: colors.surface }]}><Text style={[styles.nudgeBtnText, { color: colors.textPrimary }]}>Nudge</Text></TouchableOpacity>
               </View>
             </View>
           )}

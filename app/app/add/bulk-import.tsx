@@ -15,9 +15,10 @@ import {
   TouchableOpacity,
   Image,
   Modal,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
@@ -97,11 +98,7 @@ export default function BulkImportScreen() {
 
   const handleProcess = () => {
     hapticSuccess();
-    // TODO(phase2-review): Navigate to bulk-import-review screen
-    // For now, pass selected photos as params (in a real app, use a store/context)
-    router.setParams({ count: String(photos.length) });
-    // Placeholder: just go back — review screen will be built next
-    router.back();
+    Alert.alert('Coming Soon', 'Bulk processing will be available in a future update.');
   };
 
   const renderPhoto = ({ item, index }: { item: Photo; index: number }) => (

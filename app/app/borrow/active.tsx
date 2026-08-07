@@ -20,7 +20,7 @@ import { Avatar } from '@/components/Avatar';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { hapticLight, hapticSuccess } from '@/lib/haptics';
-import { getActiveBorrows, markReturned, nudgeBorrower } from '@/lib/borrow';
+import { getActiveBorrows, markReturned } from '@/lib/borrow';
 import { formatDate, formatRelativeTime } from '@/lib/format';
 import { useAuth } from '@/hooks/useAuth';
 import type { BorrowTransactionEnriched } from '@/lib/borrow';
@@ -60,14 +60,9 @@ export default function ActiveBorrowScreen() {
     }
   };
 
-  const handleNudge = async (borrowId: string) => {
+  const handleNudge = async (_borrowId: string) => {
     hapticLight();
-    try {
-      await nudgeBorrower(borrowId);
-      Alert.alert('Nudge Sent', 'A gentle reminder has been sent.', [{ text: 'OK' }]);
-    } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Could not send nudge.');
-    }
+    Alert.alert('Coming Soon', 'Push notifications for nudges will be available in a future update.', [{ text: 'OK' }]);
   };
 
   if (loading) {

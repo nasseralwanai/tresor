@@ -243,6 +243,7 @@ export async function getBorrowHistory(itemId: string): Promise<BorrowTransactio
 /**
  * Send a gentle nudge reminder to a borrower.
  * Currently a no-op placeholder — in production this would send a push notification.
+ * UI callers show a "Coming Soon" alert; this function can remain a silent no-op.
  */
 export async function nudgeBorrower(_transactionId: string): Promise<void> {
   // TODO(phase3): Send a push notification via expo-notifications

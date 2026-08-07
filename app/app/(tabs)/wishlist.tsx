@@ -108,8 +108,8 @@ function MyCard({ item }: { item: WishlistItem }) {
       )}
       {item.notes && <Text style={[styles.wishlistNotes, { color: colors.textSecondary }]} numberOfLines={2}>{item.notes}</Text>}
       <View style={styles.wishlistActions}>
-        <TouchableOpacity onPress={() => hapticLight()} style={[styles.actionBtn, { borderColor: colors.border }]}><MaterialCommunityIcons name="bell-outline" size={14} color={colors.textPrimary} /><Text style={[styles.actionBtnText, { color: colors.textPrimary }]}>Drop Hint</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => hapticLight()} style={[styles.actionBtn, { borderColor: colors.border }]}><MaterialCommunityIcons name="pencil-outline" size={14} color={colors.textPrimary} /><Text style={[styles.actionBtnText, { color: colors.textPrimary }]}>Edit</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'This feature will be available in a future update.'); }} style={[styles.actionBtn, { borderColor: colors.border }]}><MaterialCommunityIcons name="bell-outline" size={14} color={colors.textPrimary} /><Text style={[styles.actionBtnText, { color: colors.textPrimary }]}>Drop Hint</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'This feature will be available in a future update.'); }} style={[styles.actionBtn, { borderColor: colors.border }]}><MaterialCommunityIcons name="pencil-outline" size={14} color={colors.textPrimary} /><Text style={[styles.actionBtnText, { color: colors.textPrimary }]}>Edit</Text></TouchableOpacity>
       </View>
     </Card>
   );
@@ -126,10 +126,10 @@ function FriendCard({ item }: { item: WishlistItem }) {
       <View style={styles.friendItemRow}><ItemPhotoPlaceholder letter={item.brand} size={56} style={styles.friendPhoto} /><View style={{ flex: 1 }}><Text style={[styles.friendBrand, { color: colors.accent }]}>{item.brand.toUpperCase()}</Text><Text style={[styles.friendModel, { color: colors.textPrimary }]} numberOfLines={1}>{item.model_name || "—"}</Text>{item.target_price && <Text style={[styles.friendPrice, { color: colors.textSecondary }]}>Target: {formatCurrency(item.target_price, item.currency)}</Text>}</View></View>
       {item.notes && <Text style={[styles.friendNotes, { color: colors.textSecondary }]}>{item.notes}</Text>}
       <View style={styles.friendActions}>
-        <TouchableOpacity onPress={() => { hapticLight(); setReacted(!reacted); }} style={styles.friendAction}><MaterialCommunityIcons name={reacted ? "heart" : "heart-outline"} size={16} color={reacted ? colors.accent : colors.textSecondary} /><Text style={[styles.friendActionText, { color: reacted ? colors.accent : colors.textSecondary }]}>React</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => { hapticLight(); setReacted(!reacted); Alert.alert('Coming Soon', 'Reactions will be shared with your circle soon.'); }} style={styles.friendAction}><MaterialCommunityIcons name={reacted ? "heart" : "heart-outline"} size={16} color={reacted ? colors.accent : colors.textSecondary} /><Text style={[styles.friendActionText, { color: reacted ? colors.accent : colors.textSecondary }]}>React</Text></TouchableOpacity>
         <TouchableOpacity onPress={() => { hapticLight(); setShowComment(!showComment); }} style={styles.friendAction}><MaterialCommunityIcons name="comment-outline" size={16} color={colors.textSecondary} /><Text style={[styles.friendActionText, { color: colors.textSecondary }]}>Comment</Text></TouchableOpacity>
       </View>
-      {showComment && <View style={[styles.commentBox, { backgroundColor: colors.surfaceElevated }]}><TextInput style={[styles.commentInput, { color: colors.textPrimary }]} value={comment} onChangeText={setComment} placeholder="Write a comment..." placeholderTextColor={colors.textSecondary} /><TouchableOpacity onPress={() => { hapticSuccess(); setComment(""); setShowComment(false); }}><MaterialCommunityIcons name="send" size={20} color={colors.accent} /></TouchableOpacity></View>}
+      {showComment && <View style={[styles.commentBox, { backgroundColor: colors.surfaceElevated }]}><TextInput style={[styles.commentInput, { color: colors.textPrimary }]} value={comment} onChangeText={setComment} placeholder="Write a comment..." placeholderTextColor={colors.textSecondary} /><TouchableOpacity onPress={() => { hapticSuccess(); Alert.alert('Coming Soon', 'Comments will be available soon.'); setComment(""); setShowComment(false); }}><MaterialCommunityIcons name="send" size={20} color={colors.accent} /></TouchableOpacity></View>}
     </Card>
   );
 }

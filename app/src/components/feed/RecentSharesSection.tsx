@@ -101,7 +101,7 @@ function ShareCardItem({
   ];
 
   const visibleComments = share.comments.slice(0, 2);
-  const totalCommentCount = share.comments.length + 3;
+  const totalCommentCount = share.comments.length;
 
   return (
     <View

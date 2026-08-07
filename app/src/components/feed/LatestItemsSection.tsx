@@ -86,7 +86,7 @@ export function LatestItemsSection({
                     color={colors.textSecondary}
                   />
                   <Text style={[styles.likeCount, { color: colors.textSecondary }]}>
-                    {Math.floor(item.estimated_value ? item.estimated_value / 1000 : 3)}
+                    {item.estimated_value ? `${(item.estimated_value / 1000).toFixed(0)}k` : ''}
                   </Text>
                 </View>
               </View>

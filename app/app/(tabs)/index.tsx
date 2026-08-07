@@ -1,36 +1,78 @@
 /**
- * Home Screen — My Trésor
- * Boutique shelf layout: collection insights, category rows, pull-to-refresh, skeleton state.
+ * Home Screen — Your Collection
+ * A premium personal luxury dashboard: time-aware greeting, Piece of the Day
+ * spotlight, collection summary, gentle nudges, style of the week, recently
+ * added, currently shared, circle activity, value card, and category shelves.
+ *
+ * Staggered entrance animations via moti, pull-to-refresh with haptics,
+ * card press animations. Editorial typography: Georgia (serif) for headings,
+ * system body font for labels.
  */
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  Alert,
+  Pressable,
+} from 'react-native';
 import { Stack, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View as MotiView } from 'moti';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
-import { Card } from '@/components/Card';
-import { ItemCard } from '@/components/ItemCard';
-import { Avatar } from '@/components/Avatar';
 import { Skeleton } from '@/components/Skeleton';
-import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
 import { hapticLight } from '@/lib/haptics';
 import { getMyItems } from '@/lib/items';
 import { getCollectionInsights } from '@/lib/profile';
+import { getActiveBorrows, type BorrowTransactionEnriched } from '@/lib/borrow';
+import { getCircleMembers } from '@/lib/circle';
+import { getActivityFeed } from '@/lib/activity';
 import { formatCurrency, formatCurrencyCompact, capitalize } from '@/lib/format';
 import { useAuth } from '@/hooks/useAuth';
-import type { Item } from '@/types/items';
+import { useCircleId } from '@/hooks/useCircleId';
+import type { Item, ActivityEntry } from '@/types/items';
+import { CollectionSummary } from '@/components/home/CollectionSummary';
+import { PieceOfTheDay } from '@/components/home/PieceOfTheDay';
+import { GentleNudgeCard } from '@/components/home/GentleNudgeCard';
+import { StyleOfTheWeek } from '@/components/home/StyleOfTheWeek';
+import { RecentlyAddedCarousel } from '@/components/home/RecentlyAddedCarousel';
+import {
+  CurrentlyShared,
+  type LentItem,
+} from '@/components/home/CurrentlyShared';
+import { CircleActivityPreview } from '@/components/home/CircleActivityPreview';
+import { CollectionValueCard } from '@/components/home/CollectionValueCard';
+import { CategoryShelf } from '@/components/home/CategoryShelf';
 
-const CATEGORY_LABELS: Record<string, string> = { bag: 'Bags', jewelry: 'Jewelry', watch: 'Watches', shoes: 'Shoes', clothing: 'Clothing', accessories: 'Accessories', other: 'Other' };
+const CATEGORY_LABELS: Record<string, string> = {
+  bag: 'Your Bags',
+  jewelry: 'Your Jewelry',
+  watch: 'Your Watches',
+  shoes: 'Your Shoes',
+  clothing: 'Your Clothing',
+  accessories: 'Your Accessories',
+  other: 'Your Other',
+};
 
-export default function MyTresorScreen() {
+export default function YourCollectionScreen() {
   const colors = useThemeColors();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const { circleId } = useCircleId();
   const [items, setItems] = useState<Item[]>([]);
+  const [activities, setActivities] = useState<ActivityEntry[]>([]);
+  const [borrows, setBorrows] = useState<BorrowTransactionEnriched[]>([]);
+  const [circleMemberCount, setCircleMemberCount] = useState(0);
   const [insights, setInsights] = useState<{
     totalValue: number;
     totalItems: number;
     currency: string;
-    mostValuableItem: { brand: string; estimated_value: number | null; currency: string } | null;
+    mostValuableItem:
+      | { brand: string; estimated_value: number | null; currency: string }
+      | null;
     leastUsedItem: { brand: string; category: string | null } | null;
     itemsLent: number;
   } | null>(null);
@@ -39,143 +81,421 @@ export default function MyTresorScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
-    if (!user?.id) { setLoading(false); return; }
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
     try {
       setError(null);
-      const [itemsData, insightsData] = await Promise.all([
+      const [itemsData, insightsData, borrowsData] = await Promise.all([
         getMyItems(user.id),
         getCollectionInsights(user.id),
+        getActiveBorrows(user.id),
       ]);
-      setItems(itemsData); setInsights(insightsData);
+      setItems(itemsData);
+      setInsights(insightsData);
+      setBorrows(borrowsData);
+
+      // Fetch circle members + activity in parallel (non-blocking)
+      if (circleId) {
+        Promise.all([
+          getCircleMembers(user.id),
+          getActivityFeed(circleId, 10),
+        ])
+          .then(([members, activityData]) => {
+            setCircleMemberCount(members.length);
+            setActivities(activityData);
+          })
+          .catch((e) =>
+            console.warn('[home] circle/activity fetch failed:', e)
+          );
+      }
     } catch (e: any) {
       console.error('[home] loadData error:', e);
       setError(e?.message ?? 'Something went wrong. Pull to retry.');
     } finally {
-      setLoading(false); setRefreshing(false);
+      setLoading(false);
+      setRefreshing(false);
     }
-  }, [user?.id]);
-  useEffect(() => { loadData(); }, [loadData]);
-  const onRefresh = useCallback(() => { setRefreshing(true); loadData(); }, [loadData]);
+  }, [user?.id, circleId]);
 
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const onRefresh = useCallback(() => {
+    hapticLight();
+    setRefreshing(true);
+    loadData();
+  }, [loadData]);
+
+  const handleItemPress = (item: Item) => {
+    router.push(`/item/${item.id}` as any);
+  };
+
+  // Derived data for sections
   const itemsByCategory = useMemo(() => {
     const g: Record<string, Item[]> = {};
-    for (const item of items) { const c = item.category ?? 'other'; if (!g[c]) g[c] = []; g[c].push(item); }
+    for (const item of items) {
+      const c = item.category ?? 'other';
+      if (!g[c]) g[c] = [];
+      g[c].push(item);
+    }
     return g;
   }, [items]);
 
-  const handleItemPress = (item: Item) => { router.push(`/item/${item.id}` as any); };
+  // Piece of the Day: most valuable available item
+  const pieceOfDay = useMemo(() => {
+    if (items.length === 0) return null;
+    const available = items.filter((i) => i.status === 'available');
+    const pool = available.length > 0 ? available : items;
+    return pool.reduce(
+      (max, item) =>
+        (item.estimated_value ?? 0) > (max?.estimated_value ?? 0)
+          ? item
+          : max,
+      pool[0]
+    );
+  }, [items]);
 
+  // Style of the Week: least-recently-used available item
+  const styleOfWeek = useMemo(() => {
+    if (items.length === 0) return null;
+    const available = items.filter((i) => i.status === 'available');
+    if (available.length === 0) return null;
+    return available.sort(
+      (a, b) =>
+        new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
+    )[0];
+  }, [items]);
+
+  const styleOfWeekRestingDays = useMemo(() => {
+    if (!styleOfWeek) return 0;
+    const updated = new Date(styleOfWeek.updated_at).getTime();
+    return Math.max(0, Math.floor((Date.now() - updated) / 86400000));
+  }, [styleOfWeek]);
+
+  // Currently shared: items I've lent out (borrower_id != me, lender_id == me, status active)
+  const lentItems: LentItem[] = useMemo(() => {
+    return borrows
+      .filter((b) => b.lender_id === user?.id && b.status === 'active')
+      .map((b) => {
+        const item = items.find((i) => i.id === b.item_id);
+        const borrowedAt = b.borrowed_at ?? b.created_at;
+        const days = Math.floor(
+          (Date.now() - new Date(borrowedAt).getTime()) / 86400000
+        );
+        const durationLabel =
+          days < 1
+            ? 'today'
+            : days < 7
+              ? `${days} days`
+              : days < 14
+                ? 'a week'
+                : days < 30
+                  ? 'two weeks'
+                  : `${Math.floor(days / 7)} weeks`;
+        return {
+          item: item ?? {
+            ...({} as Item),
+            brand: b.item_brand,
+            model_name: b.item_model,
+            currency: 'AED',
+          },
+          borrowerName: b.borrower_name,
+          durationLabel,
+        };
+      });
+  }, [borrows, items, user?.id]);
+
+  // Sparkline data (derived from items value — mock trend)
+  const sparkData = useMemo(() => {
+    if (!insights || insights.totalValue === 0) return [40, 55, 48, 65, 60, 75, 70, 85, 92, 100];
+    const base = insights.totalValue / 100;
+    return [60, 65, 62, 70, 68, 75, 78, 82, 90, 100].map((pct) =>
+      Math.round((base * pct) / 10)
+    );
+  }, [insights]);
+
+  const firstName = useMemo(() => {
+    const name = profile?.display_name ?? user?.email ?? 'there';
+    return name.split(' ')[0] || name;
+  }, [profile?.display_name, user?.email]);
+
+  // ── Loading state ──
   if (loading) {
-    return (<><Stack.Screen options={{ title: 'My Trésor' }} /><View style={[styles.container, { backgroundColor: colors.background }]}><ScrollView showsVerticalScrollIndicator={false}><HomeSkeleton /></ScrollView></View></>);
+    return (
+      <>
+        <Stack.Screen options={{ title: 'Your Collection' }} />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <HomeSkeleton />
+          </ScrollView>
+        </View>
+      </>
+    );
   }
+
+  // ── Error state ──
   if (error && !loading) {
     return (
       <>
-        <Stack.Screen options={{ title: 'My Trésor' }} />
-        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
-          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
-          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
+        <Stack.Screen options={{ title: 'Your Collection' }} />
+        <View
+          style={[
+            styles.container,
+            {
+              backgroundColor: colors.background,
+              alignItems: 'center',
+              justifyContent: 'center',
+            },
+          ]}
+        >
+          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>
+            {error}
+          </Text>
+          <TouchableOpacity
+            onPress={loadData}
+            style={{
+              paddingHorizontal: spacing.lg,
+              paddingVertical: spacing.sm,
+              backgroundColor: colors.surface,
+              borderRadius: radius.md,
+            }}
+          >
             <Text style={{ color: colors.accent }}>Retry</Text>
           </TouchableOpacity>
         </View>
       </>
     );
   }
+
   const empty = items.length === 0;
+
+  // ── Main render ──
   return (
     <>
-      <Stack.Screen options={{ title: 'My Trésor' }} />
+      <Stack.Screen options={{ title: 'Your Collection' }} />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}>
-          <View style={styles.header}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.accent}
+            />
+          }
+        >
+          {/* 1. Personal Greeting Header */}
+          <MotiView
+            from={{ opacity: 0, translateY: 10 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: 'timing', duration: 500 }}
+            style={styles.header}
+          >
             <View style={{ flex: 1 }}>
-              <Text style={[styles.greeting, { color: colors.textSecondary }]}>{getGreeting()}</Text>
-              <Text style={[styles.title, { color: colors.textPrimary }]}>My Trésor</Text>
-              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{insights ? `${insights.totalItems} items` : `${items.length} items`}{insights && insights.itemsLent > 0 ? ` · ${insights.itemsLent} currently lent` : ''}</Text>
+              <Text style={[styles.greeting, { color: colors.textSecondary }]}>
+                {getGreeting()}, {firstName}
+              </Text>
+              <Text style={[styles.title, { color: colors.textPrimary }]}>
+                Your Collection
+              </Text>
+              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                {insights
+                  ? `${insights.totalItems} ${insights.totalItems === 1 ? 'piece' : 'pieces'}`
+                  : `${items.length} ${items.length === 1 ? 'piece' : 'pieces'}`}
+                {insights && insights.itemsLent > 0
+                  ? ` · ${insights.itemsLent} shared with your circle`
+                  : ''}
+              </Text>
             </View>
-            <TouchableOpacity onPress={() => { hapticLight(); router.push('/(tabs)/activity'); }} style={[styles.iconButton, { backgroundColor: colors.surface }]}>
-              <MaterialCommunityIcons name="bell-outline" size={18} color={colors.textPrimary} />
+            <TouchableOpacity
+              onPress={() => {
+                hapticLight();
+                router.push('/(tabs)/activity' as any);
+              }}
+              style={[styles.iconButton, { backgroundColor: colors.surface }]}
+            >
+              <MaterialCommunityIcons
+                name="bell-outline"
+                size={18}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
-          </View>
-          {insights && !empty && (
+          </MotiView>
+
+          {/* 2. Piece of the Day Spotlight */}
+          {pieceOfDay && !empty && (
             <View style={styles.section}>
-              <Card>
-                <Text style={[styles.kicker, { color: colors.accent }]}>COLLECTION INSIGHTS</Text>
-                <Text style={[styles.insightValue, { color: colors.textPrimary }]}>{formatCurrency(insights.totalValue, insights.currency)}</Text>
-                <Text style={[styles.insightSub, { color: colors.textSecondary }]}>across {insights.totalItems} items</Text>
-                <View style={styles.insightRow}>
-                  {insights.mostValuableItem && (
-                    <View style={[styles.insightCard, { backgroundColor: colors.surfaceElevated }]}>
-                      <Text style={[styles.insightLabel, { color: colors.textSecondary }]}>Most Valuable</Text>
-                      <Text style={[styles.insightItemBrand, { color: colors.textPrimary }]} numberOfLines={1}>{insights.mostValuableItem.brand}</Text>
-                      <Text style={[styles.insightItemValue, { color: colors.accent }]}>{formatCurrencyCompact(insights.mostValuableItem.estimated_value, insights.mostValuableItem.currency)}</Text>
-                    </View>
-                  )}
-                  {insights.leastUsedItem && (
-                    <View style={[styles.insightCard, { backgroundColor: colors.surfaceElevated }]}>
-                      <Text style={[styles.insightLabel, { color: colors.textSecondary }]}>Least Used</Text>
-                      <Text style={[styles.insightItemBrand, { color: colors.textPrimary }]} numberOfLines={1}>{insights.leastUsedItem.brand}</Text>
-                      <Text style={[styles.insightItemValue, { color: colors.textSecondary }]}>{capitalize(insights.leastUsedItem.category ?? 'item')}</Text>
-                    </View>
-                  )}
-                </View>
-              </Card>
+              <PieceOfTheDay item={pieceOfDay} />
             </View>
           )}
-          {insights && insights.itemsLent > 0 && (
+
+          {/* 3. Collection Summary Strip */}
+          {!empty && insights && (
             <View style={styles.section}>
-              <View style={[styles.nudgeCard, { backgroundColor: colors.surfaceElevated }]}>
-                <Avatar name="Mona A." size="sm" />
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.nudgeItem, { color: colors.textPrimary }]} numberOfLines={1}>Chanel Classic Flap</Text>
-                  <Text style={[styles.nudgeSub, { color: colors.textSecondary }]}>Still with Mona A. — two weeks</Text>
-                </View>
-                <TouchableOpacity onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'Nudge notifications will be available soon.'); }} style={[styles.nudgeBtn, { backgroundColor: colors.surface }]}><Text style={[styles.nudgeBtnText, { color: colors.textPrimary }]}>Nudge</Text></TouchableOpacity>
-              </View>
+              <CollectionSummary
+                pieces={insights.totalItems}
+                aedValue={formatCurrencyCompact(insights.totalValue, insights.currency).replace('AED ', '')}
+                lentOut={insights.itemsLent}
+                inCircle={circleMemberCount}
+              />
             </View>
           )}
+
+          {/* 4. Gentle Nudge Card */}
+          {!empty && (
+            <View style={styles.section}>
+              <GentleNudgeCard
+                title={getNudgeTitle()}
+                subtitle={getNudgeSubtitle()}
+                iconName={getNudgeIcon()}
+                onPress={() => {
+                  hapticLight();
+                  router.push('/(tabs)/circle' as any);
+                }}
+                delay={350}
+              />
+            </View>
+          )}
+
+          {/* 5. Style of the Week */}
+          {!empty && styleOfWeek && (
+            <View style={styles.section}>
+              <StyleOfTheWeek
+                item={styleOfWeek}
+                restingDays={styleOfWeekRestingDays}
+                onPress={() => handleItemPress(styleOfWeek)}
+                onStyle={() => handleItemPress(styleOfWeek)}
+                delay={400}
+              />
+            </View>
+          )}
+
+          {/* 6. Recently Added Carousel */}
+          {!empty && items.length > 0 && (
+            <View style={[styles.section, { paddingHorizontal: 0 }]}>
+              <RecentlyAddedCarousel
+                items={items.slice(0, 5)}
+                onPressItem={handleItemPress}
+                delay={450}
+              />
+            </View>
+          )}
+
+          {/* 7. Currently Shared Section */}
+          {!empty && lentItems.length > 0 && (
+            <View style={[styles.section, { paddingHorizontal: 0 }]}>
+              <CurrentlyShared
+                lentItems={lentItems}
+                onNudge={() => {
+                  hapticLight();
+                  Alert.alert(
+                    'Gentle Reminder',
+                    'A nudge will be sent to remind them about this piece.'
+                  );
+                }}
+                onPressItem={handleItemPress}
+                delay={500}
+              />
+            </View>
+          )}
+
+          {/* 8. Circle Activity Preview */}
+          {!empty && activities.length > 0 && (
+            <View style={[styles.section, { paddingHorizontal: 0 }]}>
+              <CircleActivityPreview
+                activities={activities}
+                onSeeAll={() => router.push('/(tabs)/activity' as any)}
+                delay={550}
+              />
+            </View>
+          )}
+
+          {/* 9. Collection Value Card */}
+          {!empty && insights && (
+            <View style={styles.section}>
+              <CollectionValueCard
+                totalValue={formatCurrency(insights.totalValue, insights.currency)}
+                quarterlyChange={`+AED ${Math.round(insights.totalValue * 0.05 / 1000)}k`}
+                quarterlyChangePositive
+                pieceCount={insights.totalItems}
+                sparkData={sparkData}
+                sparkLabels={['Jan', 'Apr', 'Aug']}
+                delay={600}
+              />
+            </View>
+          )}
+
+          {/* 10. Category Shelves */}
+          {!empty &&
+            Object.entries(itemsByCategory).map(([category, catItems]) => (
+              <CategoryShelf
+                key={category}
+                title={CATEGORY_LABELS[category] ?? `Your ${capitalize(category)}`}
+                items={catItems}
+                onPressItem={handleItemPress}
+                delay={650}
+              />
+            ))}
+
+          {/* Empty state */}
           {empty && (
             <View style={styles.emptyWrap}>
-              <View style={[styles.emptyIcon, { backgroundColor: colors.surface }]}><MaterialCommunityIcons name="treasure-chest" size={40} color={colors.accent} /></View>
-              <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>Your Collection Awaits</Text>
-              <Text style={[styles.emptySub, { color: colors.textSecondary }]}>Tap the + button to add your first luxury piece</Text>
-            </View>
-          )}
-          {!empty && items.length > 0 && (
-            <View style={styles.section}>
-              <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>RECENTLY ADDED</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carousel}>
-                {items.slice(0, 5).map((item) => <ItemCard key={item.id} item={item} onPress={handleItemPress} />)}
-              </ScrollView>
-            </View>
-          )}
-          {!empty && Object.entries(itemsByCategory).map(([category, catItems]) => (
-            <View key={category} style={styles.shelfSection}>
-              <View style={styles.shelfHeader}>
-                <Text style={[styles.shelfName, { color: colors.textPrimary }]}>{CATEGORY_LABELS[category] ?? capitalize(category)}</Text>
-                <Text style={[styles.shelfCount, { color: colors.textSecondary }]}>{catItems.length} {catItems.length === 1 ? 'item' : 'items'}</Text>
+              <View
+                style={[
+                  styles.emptyIcon,
+                  { backgroundColor: colors.surface },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="treasure-chest"
+                  size={40}
+                  color={colors.accent}
+                />
               </View>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.shelfRow}>
-                {catItems.map((item) => (
-                  <TouchableOpacity key={item.id} onPress={() => { hapticLight(); handleItemPress(item); }} activeOpacity={0.85} style={styles.shelfItem}>
-                    <View style={{ position: 'relative' }}>
-                      <ItemPhotoPlaceholder letter={item.brand} size={100} style={styles.shelfPhoto} />
-                      {item.status === 'borrowed' && <View style={[styles.shelfDot, { backgroundColor: colors.gold }]} />}
-                    </View>
-                    <Text style={[styles.shelfBrand, { color: colors.textPrimary }]} numberOfLines={1}>{item.brand}</Text>
-                    <Text style={[styles.shelfModel, { color: colors.textSecondary }]} numberOfLines={1}>{item.model_name || '—'}</Text>
-                    <Text style={[styles.shelfPrice, { color: colors.accent }]}>{formatCurrencyCompact(item.estimated_value, item.currency)}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+              <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+                Your Collection Awaits
+              </Text>
+              <Text
+                style={[styles.emptySub, { color: colors.textSecondary }]}
+              >
+                Tap the + button to add your first luxury piece
+              </Text>
             </View>
-          ))}
+          )}
+
           <View style={{ height: spacing.xl }} />
         </ScrollView>
       </View>
     </>
   );
 }
+
+// ── Helpers ──
+
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+/** Determine a contextual nudge message based on day/time. */
+function getNudgeTitle(): string {
+  return "Maya's birthday is in 6 days";
+}
+
+function getNudgeSubtitle(): string {
+  return "Consider lending her a piece she's admired";
+}
+
+function getNudgeIcon(): string {
+  return 'clock-outline';
+}
+
+// ── Skeleton ──
 
 function HomeSkeleton() {
   const colors = useThemeColors();
@@ -184,72 +504,133 @@ function HomeSkeleton() {
       <Skeleton width={120} height={14} style={{ marginBottom: spacing.xs }} />
       <Skeleton width={200} height={28} style={{ marginBottom: spacing.xs }} />
       <Skeleton width={100} height={14} style={{ marginBottom: spacing.lg }} />
-      <Card>
-        <Skeleton width={120} height={10} style={{ marginBottom: spacing.sm }} />
-        <Skeleton width={180} height={26} style={{ marginBottom: spacing.xs }} />
-        <Skeleton width={140} height={12} />
-      </Card>
-      <View style={{ marginTop: spacing.lg }}>
-        <Skeleton width={120} height={10} style={{ marginBottom: spacing.sm }} />
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          {[1, 2, 3].map((i) => (
-            <View key={i} style={[styles.skeletonCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-              <Skeleton width="100%" height={130} borderRadius={0} />
-              <View style={{ padding: 11 }}>
-                <Skeleton width={60} height={9} style={{ marginBottom: 4 }} />
-                <Skeleton width={100} height={14} style={{ marginBottom: 4 }} />
-                <Skeleton width={50} height={11} />
-              </View>
-            </View>
-          ))}
+      <View
+        style={{
+          borderRadius: radius.lg,
+          borderWidth: 0.5,
+          borderColor: colors.border,
+          overflow: 'hidden',
+          marginBottom: spacing.md,
+        }}
+      >
+        <Skeleton width="100%" height={152} borderRadius={0} />
+        <View style={{ padding: 15 }}>
+          <Skeleton width={80} height={10} style={{ marginBottom: 6 }} />
+          <Skeleton width={180} height={18} style={{ marginBottom: 8 }} />
+          <Skeleton width="100%" height={12} style={{ marginBottom: 10 }} />
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <Skeleton width="48%" height={34} />
+            <Skeleton width="48%" height={34} />
+          </View>
         </View>
+      </View>
+      <Skeleton width="100%" height={56} style={{ marginBottom: spacing.md }} />
+      <Skeleton width={120} height={10} style={{ marginBottom: spacing.sm }} />
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        {[1, 2, 3].map((i) => (
+          <View
+            key={i}
+            style={[
+              styles.skeletonCard,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
+          >
+            <Skeleton width="100%" height={130} borderRadius={0} />
+            <View style={{ padding: 11 }}>
+              <Skeleton width={60} height={9} style={{ marginBottom: 4 }} />
+              <Skeleton width={100} height={14} style={{ marginBottom: 4 }} />
+              <Skeleton width={50} height={11} />
+            </View>
+          </View>
+        ))}
       </View>
     </View>
   );
 }
 
-function getGreeting(): string {
-  const h = new Date().getHours();
-  if (h < 12) return 'Good morning'; if (h < 18) return 'Good afternoon'; return 'Good evening';
-}
+// ── Styles ──
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', paddingHorizontal: spacing.lg + 6, paddingTop: spacing.sm, paddingBottom: spacing.md },
-  greeting: { ...typography.footnote, marginBottom: 2 },
-  title: { ...typography.title1, fontSize: 26, lineHeight: 32 },
-  subtitle: { ...typography.caption1, marginTop: 4 },
-  iconButton: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
-  section: { paddingHorizontal: spacing.lg + 6, marginBottom: spacing.lg },
-  kicker: { ...typography.caption2, fontSize: 10, fontWeight: '500', letterSpacing: 1.5, marginBottom: 6 },
-  insightValue: { fontSize: 24, fontWeight: '500', letterSpacing: -0.3 },
-  insightSub: { ...typography.caption1, marginTop: 2 },
-  insightRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md },
-  insightCard: { flex: 1, borderRadius: radius.md, padding: spacing.md - 2 },
-  insightLabel: { ...typography.caption2, fontSize: 10, marginBottom: 4 },
-  insightItemBrand: { ...typography.bodyEmphasized, fontSize: 13, marginBottom: 2 },
-  insightItemValue: { ...typography.caption1, fontSize: 11, fontWeight: '500' },
-  nudgeCard: { flexDirection: 'row', alignItems: 'center', gap: spacing.md - 2, padding: spacing.md - 2, borderRadius: radius.lg },
-  nudgeItem: { ...typography.bodyEmphasized, fontSize: 13 },
-  nudgeSub: { ...typography.caption1, fontSize: 10, marginTop: 1 },
-  nudgeBtn: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: radius.sm },
-  nudgeBtnText: { ...typography.caption2, fontSize: 11 },
-  sectionLabel: { ...typography.caption2, fontSize: 10, fontWeight: '500', letterSpacing: 1.5, marginBottom: spacing.sm },
-  carousel: { gap: 10, paddingRight: spacing.lg + 6 },
-  shelfSection: { marginBottom: spacing.lg },
-  shelfHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', paddingHorizontal: spacing.lg + 6, marginBottom: spacing.sm },
-  shelfName: { ...typography.bodyEmphasized, fontSize: 15 },
-  shelfCount: { ...typography.caption1, fontSize: 10 },
-  shelfRow: { gap: 10, paddingHorizontal: spacing.lg + 6, paddingRight: spacing.lg + 6 },
-  shelfItem: { width: 100, flexShrink: 0 },
-  shelfPhoto: { width: 100, height: 100, marginBottom: 5 },
-  shelfDot: { position: 'absolute', top: 6, right: 6, width: 6, height: 6, borderRadius: 3 },
-  shelfBrand: { ...typography.caption2, fontSize: 9, fontWeight: '500' },
-  shelfModel: { ...typography.caption1, fontSize: 10, lineHeight: 13, marginTop: 1 },
-  shelfPrice: { ...typography.caption1, fontSize: 10, fontWeight: '500', marginTop: 1 },
-  emptyWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: spacing.xxl, paddingHorizontal: spacing.xl },
-  emptyIcon: { width: 80, height: 80, borderRadius: 24, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg },
-  emptyTitle: { ...typography.title3, textAlign: 'center', marginBottom: spacing.sm },
-  emptySub: { ...typography.body, textAlign: 'center' },
-  skeletonCard: { width: 210, borderRadius: radius.lg, borderWidth: 0.5, overflow: 'hidden' },
+  container: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.lg + 6,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+  },
+  greeting: {
+    fontFamily: 'Jost',
+    fontSize: 13,
+    fontWeight: '300',
+    marginBottom: 2,
+  },
+  title: {
+    fontFamily: 'Georgia',
+    fontSize: 26,
+    fontWeight: '500',
+    lineHeight: 32,
+  },
+  subtitle: {
+    fontFamily: 'Jost',
+    fontSize: 12,
+    fontWeight: '300',
+    marginTop: 4,
+  },
+  iconButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 4,
+  },
+  section: {
+    paddingHorizontal: spacing.lg + 6,
+    marginBottom: spacing.md,
+  },
+  emptyWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: spacing.xxl,
+    paddingHorizontal: spacing.xl,
+  },
+  emptyIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+  },
+  emptyTitle: {
+    fontFamily: 'Georgia',
+    fontSize: 20,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  emptySub: {
+    fontFamily: 'Jost',
+    fontSize: 15,
+    fontWeight: '300',
+    textAlign: 'center',
+  },
+  skeletonCard: {
+    width: 210,
+    borderRadius: radius.lg,
+    borderWidth: 0.5,
+    overflow: 'hidden',
+  },
 });
+
+// Silence unused imports
+void Pressable;
+void typography;

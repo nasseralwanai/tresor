@@ -87,7 +87,7 @@ insert into public.items (id, owner_id, circle_id, brand, model_name, category, 
   ('f0000005-0000-0000-0000-000000000002', '55555555-5555-5555-5555-555555555555', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Chanel', 'Boy Bag', 'bag', 'black', 'good', 'available', 26000.00, 'AED', 'Black calfskin with ruthenium HW.', false, true),
 
   -- Mona's collection (1 item)
-  ('g0000006-0000-0000-0000-000000000001', '66666666-6666-6666-6666-666666666666', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Chanel', 'Vintage 2.55 Reissue', 'bag', 'black', 'good', 'available', 19000.00, 'AED', 'Vintage 2018, dark gold HW.', false, true)
+  ('a0000006-0000-0000-0000-000000000001', '66666666-6666-6666-6666-666666666666', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'Chanel', 'Vintage 2.55 Reissue', 'bag', 'black', 'good', 'available', 19000.00, 'AED', 'Vintage 2018, dark gold HW.', false, true)
 on conflict (id) do nothing;
 
 -- ============================================================================
@@ -102,36 +102,43 @@ insert into public.borrow_transactions (id, item_id, borrower_id, lender_id, cir
   -- Active (Layla has Sarah's Van Cleef Alhambra — 4 days)
   ('e0000002-0000-0000-0000-000000000002', 'b0000001-0000-0000-0000-000000000004', '22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'active', now() - interval '4 days', 'Matching with a necklace for an event.'),
   -- Returned (Maya borrowed and returned Sarah's Dior Lady Dior)
-  ('e0000002-0000-0000-0000-000000000003', 'b0000001-0000-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'returned', now() - interval '30 days', 'For a brunch event.')
+  ('e0000002-0000-0000-0000-000000000003', 'b0000001-0000-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '11111111-1111-1111-1111-111111111111', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'completed', now() - interval '30 days', 'For a brunch event.')
 on conflict (id) do nothing;
 
 -- Update borrowed_at for active transactions
-update public.borrow_transactions set borrowed_at = requested_at where status in ('active', 'returned') and borrowed_at is null;
+update public.borrow_transactions set borrowed_at = requested_at where status in ('active', 'completed') and borrowed_at is null;
 
 -- ============================================================================
 -- Activity feed (8 entries)
 -- ============================================================================
 
-insert into public.activity_feed (id, circle_id, actor_id, activity_type, metadata, created_at) values
-  ('a0000001-0000-0000-0000-000000000001', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '66666666-6666-6666-6666-666666666666', 'return', '{"item_brand":"Cartier","item_model":"Tank Must","item_id":"b0000001-0000-0000-0000-000000000003","borrower_name":"Mona A."}'::jsonb, now() - interval '1 day'),
+insert into public.activity_feed (id, circle_id, user_id, type, metadata, created_at) values
+  ('a0000001-0000-0000-0000-000000000001', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '66666666-6666-6666-6666-666666666666', 'borrow_returned', '{"item_brand":"Cartier","item_model":"Tank Must","item_id":"b0000001-0000-0000-0000-000000000003","borrower_name":"Mona A."}'::jsonb, now() - interval '1 day'),
   ('a0000001-0000-0000-0000-000000000002', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '22222222-2222-2222-2222-222222222222', 'item_added', '{"item_brand":"Bvlgari","item_model":"Serpenti Tubogas","item_id":"c0000002-0000-0000-0000-000000000001"}'::jsonb, now() - interval '2 days'),
-  ('a0000001-0000-0000-0000-000000000003', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '44444444-4444-4444-4444-444444444444', 'view', '{"item_brand":"Hermes","item_model":"Birkin 30 Gold Togo","item_id":"b0000001-0000-0000-0000-000000000001","viewer_name":"Noor K."}'::jsonb, now() - interval '3 days'),
-  ('a0000001-0000-0000-0000-000000000004', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '33333333-3333-3333-3333-333333333333', 'borrow', '{"item_brand":"Dior","item_model":"Lady Dior Small","item_id":"b0000001-0000-0000-0000-000000000002","borrower_name":"Maya A."}'::jsonb, now() - interval '30 days'),
-  ('a0000001-0000-0000-0000-000000000005', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '33333333-3333-3333-3333-333333333333', 'return', '{"item_brand":"Dior","item_model":"Lady Dior Small","item_id":"b0000001-0000-0000-0000-000000000002","borrower_name":"Maya A."}'::jsonb, now() - interval '5 days'),
+  ('a0000001-0000-0000-0000-000000000003', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '44444444-4444-4444-4444-444444444444', 'item_updated', '{"item_brand":"Hermes","item_model":"Birkin 30 Gold Togo","item_id":"b0000001-0000-0000-0000-000000000001","viewer_name":"Noor K."}'::jsonb, now() - interval '3 days'),
+  ('a0000001-0000-0000-0000-000000000004', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '33333333-3333-3333-3333-333333333333', 'borrow_active', '{"item_brand":"Dior","item_model":"Lady Dior Small","item_id":"b0000001-0000-0000-0000-000000000002","borrower_name":"Maya A."}'::jsonb, now() - interval '30 days'),
+  ('a0000001-0000-0000-0000-000000000005', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '33333333-3333-3333-3333-333333333333', 'borrow_completed', '{"item_brand":"Dior","item_model":"Lady Dior Small","item_id":"b0000001-0000-0000-0000-000000000002","borrower_name":"Maya A."}'::jsonb, now() - interval '5 days'),
   ('a0000001-0000-0000-0000-000000000006', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '55555555-5555-5555-5555-555555555555', 'item_added', '{"item_brand":"Louis Vuitton","item_model":"Capucines BB","item_id":"f0000005-0000-0000-0000-000000000001"}'::jsonb, now() - interval '7 days'),
-  ('a0000001-0000-0000-0000-000000000007', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '22222222-2222-2222-2222-222222222222', 'borrow', '{"item_brand":"Van Cleef & Arpels","item_model":"Alhambra 5 Motif","item_id":"b0000001-0000-0000-0000-000000000004","borrower_name":"Layla M."}'::jsonb, now() - interval '4 days'),
-  ('a0000001-0000-0000-0000-000000000008', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '66666666-6666-6666-6666-666666666666', 'item_added', '{"item_brand":"Chanel","item_model":"Vintage 2.55 Reissue","item_id":"g0000006-0000-0000-0000-000000000001"}'::jsonb, now() - interval '10 days')
+  ('a0000001-0000-0000-0000-000000000007', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '22222222-2222-2222-2222-222222222222', 'borrow_active', '{"item_brand":"Van Cleef & Arpels","item_model":"Alhambra 5 Motif","item_id":"b0000001-0000-0000-0000-000000000004","borrower_name":"Layla M."}'::jsonb, now() - interval '4 days'),
+  ('a0000001-0000-0000-0000-000000000008', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '66666666-6666-6666-6666-666666666666', 'item_added', '{"item_brand":"Chanel","item_model":"Vintage 2.55 Reissue","item_id":"a0000006-0000-0000-0000-000000000001"}'::jsonb, now() - interval '10 days')
 on conflict (id) do nothing;
 
 -- ============================================================================
--- Wishlist items (4 items across 3 users)
+-- Wishlists + Wishlist items (4 items across 3 users)
 -- ============================================================================
 
-insert into public.wishlist_items (id, user_id, name, target_price, current_savings, currency, is_private, notes) values
-  ('w0000001-0000-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', 'Hermes Kelly 28 Sellier Black', 90000.00, 45000.00, 'AED', false, 'Black Box with gold HW. Saving for the 2026 collection.'),
-  ('w0000001-0000-0000-0000-000000000002', '22222222-2222-2222-2222-222222222222', 'Patek Philippe Nautilus 5711', 180000.00, 60000.00, 'AED', false, 'Blue dial, steel. The grail watch.'),
-  ('w0000001-0000-0000-0000-000000000003', '44444444-4444-4444-4444-444444444444', 'Hermes Constance 24', 45000.00, 30000.00, 'AED', false, 'Black with gold HW. Classic.'),
-  ('w0000001-0000-0000-0000-000000000004', '55555555-5555-5555-5555-555555555555', 'Chanel 19 Flap Large', 28000.00, 15000.00, 'AED', true, 'Cream with mixed HW. Private wish.')
+insert into public.wishlists (id, user_id, name, is_private) values
+  ('a1000000-0000-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', 'Grail Pieces', false),
+  ('a1000000-0000-0000-0000-000000000002', '22222222-2222-2222-2222-222222222222', 'Dream Collection', false),
+  ('a1000000-0000-0000-0000-000000000003', '44444444-4444-4444-4444-444444444444', 'Future Acquisitions', false),
+  ('a1000000-0000-0000-0000-000000000004', '55555555-5555-5555-5555-555555555555', 'Private Wishes', true)
+on conflict (id) do nothing;
+
+insert into public.wishlist_items (id, wishlist_id, user_id, brand, model_name, category, max_price, is_private, notes) values
+  ('a2000000-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', 'Hermes', 'Kelly 28 Sellier Black', 'bag', 90000.00, false, 'Black Box with gold HW. Saving for the 2026 collection.'),
+  ('a2000000-0000-0000-0000-000000000002', 'a1000000-0000-0000-0000-000000000002', '22222222-2222-2222-2222-222222222222', 'Patek Philippe', 'Nautilus 5711', 'watch', 180000.00, false, 'Blue dial, steel. The grail watch.'),
+  ('a2000000-0000-0000-0000-000000000003', 'a1000000-0000-0000-0000-000000000003', '44444444-4444-4444-4444-444444444444', 'Hermes', 'Constance 24', 'bag', 45000.00, false, 'Black with gold HW. Classic.'),
+  ('a2000000-0000-0000-0000-000000000004', 'a1000000-0000-0000-0000-000000000004', '55555555-5555-5555-5555-555555555555', 'Chanel', '19 Flap Large', 'bag', 28000.00, true, 'Cream with mixed HW. Private wish.')
 on conflict (id) do nothing;
 
 -- ============================================================================

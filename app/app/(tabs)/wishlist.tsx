@@ -15,8 +15,10 @@ import { ItemPhotoPlaceholder } from "@/components/ItemPhotoPlaceholder";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { Skeleton } from "@/components/Skeleton";
 import { EmptyState } from "@/components/EmptyState";
+import { ErrorView } from "@/components/ErrorView";
 import { hapticLight, hapticSuccess } from "@/lib/haptics";
 import { getMyWishlist, getFriendsWishlist, createWishlistItem } from "@/lib/wishlist";
+import { classifyError, type AppError } from "@/lib/errors";
 import { formatCurrency, formatRelativeTime } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
 import { useCircleId } from "@/hooks/useCircleId";
@@ -34,7 +36,7 @@ export default function WishlistScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
 
   const loadData = useCallback(async () => {
     if (!user?.id) { setLoading(false); return; }
@@ -45,9 +47,9 @@ export default function WishlistScreen() {
         circleId ? getFriendsWishlist(user.id, circleId) : Promise.resolve([]),
       ]);
       setMyItems(mine); setFriendItems(friends);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('[wishlist] loadData error:', e);
-      setError(e?.message ?? 'Something went wrong. Pull to retry.');
+      setError(classifyError(e));
     } finally {
       setLoading(false); setRefreshing(false);
     }
@@ -59,12 +61,7 @@ export default function WishlistScreen() {
     return (
       <>
         <Stack.Screen options={{ title: "Wishlist" }} />
-        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
-          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
-          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
-            <Text style={{ color: colors.accent }}>Retry</Text>
-          </TouchableOpacity>
-        </View>
+        <ErrorView error={error} onRetry={loadData} />
       </>
     );
   }

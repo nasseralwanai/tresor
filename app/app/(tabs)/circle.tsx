@@ -24,7 +24,9 @@ import { useAuth } from "@/hooks/useAuth";
 import type { CircleMemberWithItems } from "@/lib/circle";
 import type { Item } from "@/types/items";
 import { EmptyState } from "@/components/EmptyState";
+import { ErrorView } from "@/components/ErrorView";
 import { SearchBar } from "@/components/SearchBar";
+import { classifyError, type AppError } from "@/lib/errors";
 
 export default function CircleScreen() {
   const colors = useThemeColors();
@@ -37,7 +39,7 @@ export default function CircleScreen() {
   const [loading, setLoading] = useState(true);
   const [loadingItems, setLoadingItems] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
 
   const loadMembers = useCallback(async () => {
     if (!user?.id) { setLoading(false); return; }
@@ -45,9 +47,9 @@ export default function CircleScreen() {
       setError(null);
       const data = await getCircleMembers(user.id);
       setMembers(data);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('[circle] loadMembers error:', e);
-      setError(e?.message ?? 'Something went wrong. Pull to retry.');
+      setError(classifyError(e));
     } finally {
       setLoading(false); setRefreshing(false);
     }
@@ -128,12 +130,7 @@ export default function CircleScreen() {
     return (
       <>
         <Stack.Screen options={{ title: "Circle" }} />
-        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
-          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
-          <TouchableOpacity onPress={loadMembers} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
-            <Text style={{ color: colors.accent }}>Retry</Text>
-          </TouchableOpacity>
-        </View>
+        <ErrorView error={error} onRetry={loadMembers} />
       </>
     );
   }

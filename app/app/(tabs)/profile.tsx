@@ -26,6 +26,8 @@ import { formatRelativeTime } from '@/lib/format';
 import { useAuth } from '@/hooks/useAuth';
 import type { Item } from '@/types/items';
 import { EmptyState } from '@/components/EmptyState';
+import { ErrorView } from '@/components/ErrorView';
+import { classifyError, type AppError } from '@/lib/errors';
 
 export default function ProfileScreen() {
   const colors = useThemeColors();
@@ -40,7 +42,7 @@ export default function ProfileScreen() {
   } | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [circle, setCircle] = useState<{ id: string; name: string } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
 
   const loadData = useCallback(async () => {
     if (!user?.id) return;
@@ -54,9 +56,9 @@ export default function ProfileScreen() {
       setUserInfo(info);
       setItems(items);
       setCircle(circleData);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('[profile] loadData error:', e);
-      setError(e?.message ?? 'Something went wrong.');
+      setError(classifyError(e));
     } finally {
       // No loading state in this component currently
     }
@@ -92,12 +94,11 @@ export default function ProfileScreen() {
     return (
       <>
         <Stack.Screen options={{ title: 'Profile' }} />
-        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
-          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md, textAlign: 'center', paddingHorizontal: spacing.lg }}>{error}</Text>
-          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
-            <Text style={{ color: colors.accent }}>Retry</Text>
-          </TouchableOpacity>
-        </View>
+        <ErrorView
+          error={error}
+          onRetry={loadData}
+          onSignIn={() => router.replace('/(auth)/welcome')}
+        />
       </>
     );
   }

@@ -4,7 +4,7 @@
  * Friends' Dreams: circle members' wishlist items with react/comment capability.
  */
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, RefreshControl } from "react-native";
 import { Stack } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -33,17 +33,40 @@ export default function WishlistScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     if (!user?.id) { setLoading(false); return; }
-    const [mine, friends] = await Promise.all([
-      getMyWishlist(user.id),
-      circleId ? getFriendsWishlist(user.id, circleId) : Promise.resolve([]),
-    ]);
-    setMyItems(mine); setFriendItems(friends); setLoading(false); setRefreshing(false);
+    try {
+      setError(null);
+      const [mine, friends] = await Promise.all([
+        getMyWishlist(user.id),
+        circleId ? getFriendsWishlist(user.id, circleId) : Promise.resolve([]),
+      ]);
+      setMyItems(mine); setFriendItems(friends);
+    } catch (e: any) {
+      console.error('[wishlist] loadData error:', e);
+      setError(e?.message ?? 'Something went wrong. Pull to retry.');
+    } finally {
+      setLoading(false); setRefreshing(false);
+    }
   }, [user?.id, circleId]);
-  useMemo(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [loadData]);
   const onRefresh = useCallback(() => { setRefreshing(true); loadData(); }, [loadData]);
+
+  if (error && !loading) {
+    return (
+      <>
+        <Stack.Screen options={{ title: "Wishlist" }} />
+        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
+          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
+          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
+            <Text style={{ color: colors.accent }}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    );
+  }
 
   return (
     <>

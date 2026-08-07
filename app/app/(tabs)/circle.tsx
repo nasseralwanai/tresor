@@ -4,7 +4,7 @@
  * Filter toggle: "Only show lendable"
  */
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList,
   ActivityIndicator, RefreshControl,
@@ -34,13 +34,22 @@ export default function CircleScreen() {
   const [loading, setLoading] = useState(true);
   const [loadingItems, setLoadingItems] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const loadMembers = useCallback(async () => {
     if (!user?.id) { setLoading(false); return; }
-    const data = await getCircleMembers(user.id);
-    setMembers(data); setLoading(false); setRefreshing(false);
+    try {
+      setError(null);
+      const data = await getCircleMembers(user.id);
+      setMembers(data);
+    } catch (e: any) {
+      console.error('[circle] loadMembers error:', e);
+      setError(e?.message ?? 'Something went wrong. Pull to retry.');
+    } finally {
+      setLoading(false); setRefreshing(false);
+    }
   }, [user?.id]);
-  useMemo(() => { loadMembers(); }, []);
+  useEffect(() => { loadMembers(); }, [loadMembers]);
   const onRefresh = useCallback(() => { setRefreshing(true); loadMembers(); }, [loadMembers]);
 
   const handleMemberPress = useCallback(async (member: CircleMemberWithItems) => {
@@ -71,6 +80,19 @@ export default function CircleScreen() {
 
   if (loading) {
     return (<><Stack.Screen options={{ title: "Circle" }} /><View style={[styles.container, { backgroundColor: colors.background }]}><View style={styles.listWrap}>{[1,2,3,4].map((i) => (<Card key={i} style={styles.skeletonCard}><View style={{ flexDirection: "row", alignItems: "center", gap: spacing.md }}><Skeleton width={46} height={46} borderRadius={23} /><View style={{ flex: 1 }}><Skeleton width={120} height={16} style={{ marginBottom: 4 }} /><Skeleton width={80} height={12} /></View></View></Card>))}</View></View></>);
+  }
+  if (error && !loading) {
+    return (
+      <>
+        <Stack.Screen options={{ title: "Circle" }} />
+        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
+          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
+          <TouchableOpacity onPress={loadMembers} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
+            <Text style={{ color: colors.accent }}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    );
   }
 
   if (selectedMember) {

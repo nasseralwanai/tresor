@@ -245,38 +245,28 @@ body{font-family:'Jost',-apple-system,sans-serif;color:var(--ink);-webkit-font-s
   </div>
 </div>
 
-<!-- ═══ 1. ONBOARDING ═══ -->
+<!-- ═══ 1. ONBOARDING (Phone-First Auth — Nigel's Architecture) ═══ -->
 <div class="page" style="padding-top:0">
 <div class="sec">
   <div class="sec-head">
-    <div class="sec-num"><span class="badge">1</span><span class="label">Onboarding · First Run</span></div>
+    <div class="sec-num"><span class="badge">1</span><span class="label">Onboarding · Phone-First Auth</span></div>
     <h2>Welcome to the Circle</h2>
-    <p class="desc">Invite code, then straight into bulk import — first-time users arrive with many items. No empty-home cold start.</p>
+    <p class="desc">Phone-first authentication: UAE mobile SMS OTP primary, WhatsApp secondary, email fallback. Invite code moves after verification — users authenticate before joining a circle.</p>
   </div>
   <div class="prow">
 
-    <!-- 1a: Invite Code -->
+    <!-- 1a: Welcome -->
     <div>
-      <div class="pcap">1a · Invite Code</div>
+      <div class="pcap">1a · Welcome</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
         <div class="obg">
           <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
           <div class="obc">
             <div class="obl"><span>T</span></div>
             <div class="obt">Trésor</div>
-            <div class="obs">Your private circle for sharing luxury. Enter your invite to join.</div>
-            <div style="width:100%;margin-bottom:16px">
-              <div class="kicker" style="margin-bottom:10px;align-self:flex-start">Invite Code</div>
-              <div style="display:flex;gap:7px;justify-content:center">
-                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);box-shadow:0 0 0 3px var(--accs);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">T</div>
-                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">R</div>
-                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500;color:var(--ink3)">E</div>
-                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink3)">—</div>
-                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink3)">7</div>
-                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink3)">K</div>
-              </div>
-            </div>
-            <button class="btn fw acc">Continue</button>
+            <div class="obs">Your private circle for sharing luxury. Enter your mobile number to join.</div>
+            <button class="btn fw acc">Get Started</button>
+            <div style="font-size:11px;color:var(--ink3);margin-top:14px;text-align:center">By continuing you agree to our Terms &amp; Privacy Policy</div>
           </div>
           <div class="obf">
             <div class="cp">
@@ -289,9 +279,178 @@ body{font-family:'Jost',-apple-system,sans-serif;color:var(--ink);-webkit-font-s
       </div></div>
     </div>
 
-    <!-- 1b: Bulk Capture -->
+    <!-- 1b: Phone Input -->
     <div>
-      <div class="pcap">1b · Bulk Photo Capture</div>
+      <div class="pcap">1b · Phone Input · UAE +971</div>
+      <div class="pf"><div class="ps"><div class="pn"></div>
+        <div class="obg">
+          <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
+          <div class="obc" style="justify-content:flex-start;padding-top:60px">
+            <div class="kicker" style="align-self:flex-start;margin-bottom:8px">Verify Your Number</div>
+            <div class="obt" style="font-size:24px;margin-bottom:6px;text-align:left">Enter your mobile</div>
+            <div class="obs" style="text-align:left;margin-bottom:22px;max-width:none;font-size:12px">We'll send a verification code to confirm your number.</div>
+
+            <!-- Phone input with UAE flag + +971 prefix -->
+            <div style="width:100%;margin-bottom:20px">
+              <div style="display:flex;align-items:center;gap:0;background:var(--surf);border:1.5px solid var(--acc);border-radius:var(--rs);padding:0;box-shadow:0 0 0 3px var(--accs);overflow:hidden">
+                <!-- UAE flag SVG -->
+                <div style="padding:11px 10px 11px 13px;display:flex;align-items:center;gap:8px;border-right:1px solid var(--bds)">
+                  <svg width="22" height="15" viewBox="0 0 60 40" style="border-radius:2px;flex-shrink:0">
+                    <rect width="60" height="40" fill="#fff"/>
+                    <rect width="15" height="40" fill="#CE1126"/>
+                    <rect x="15" width="45" height="13.33" fill="#00732F"/>
+                    <rect x="15" y="26.67" width="45" height="13.33" fill="#000"/>
+                  </svg>
+                  <span style="font-size:14px;font-weight:500;color:var(--ink);white-space:nowrap">+971</span>
+                </div>
+                <input class="field" style="border:none;box-shadow:none;background:transparent;font-size:16px;letter-spacing:.04em" type="tel" value="50 123 4567" placeholder="5X XXX XXXX">
+              </div>
+            </div>
+
+            <!-- SMS / WhatsApp segmented toggle -->
+            <div style="width:100%;margin-bottom:22px">
+              <div class="flbl" style="margin-bottom:8px">Send code via</div>
+              <div style="display:flex;background:var(--sub);border-radius:var(--rs);padding:3px;gap:3px">
+                <!-- SMS (active) -->
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:9px;background:var(--surf);border-radius:6px;box-shadow:var(--sh);font-size:12px;font-weight:500;color:var(--ink)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="1.6"><path d="M3 5h18v12H7l-4 3V5z"/></svg>
+                  SMS
+                </div>
+                <!-- WhatsApp (inactive) -->
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:9px;font-size:12px;font-weight:400;color:var(--ink3)">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31c-.82-1.3-1.25-2.81-1.25-4.38 0-4.54 3.7-8.24 8.24-8.24s8.24 3.7 8.24 8.24-3.7 8.24-8.24 8.24zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg>
+                  WhatsApp
+                </div>
+              </div>
+            </div>
+
+            <button class="btn fw acc">Send Code</button>
+            <div style="text-align:center;margin-top:16px"><span style="font-size:11px;color:var(--ink3)">Having trouble? </span><span style="font-size:11px;color:var(--acc);font-weight:500;text-decoration:underline;cursor:pointer">Use email instead</span></div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- 1c: OTP Verify -->
+    <div>
+      <div class="pcap">1c · OTP Verify · 6-Digit</div>
+      <div class="pf"><div class="ps"><div class="pn"></div>
+        <div class="obg">
+          <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
+          <div class="obc" style="justify-content:flex-start;padding-top:60px">
+            <div class="kicker" style="align-self:flex-start;margin-bottom:8px">Verification</div>
+            <div class="obt" style="font-size:24px;margin-bottom:6px;text-align:left">Enter the code</div>
+            <div class="obs" style="text-align:left;margin-bottom:28px;max-width:none;font-size:12px">Sent via <b style="color:var(--ink2);font-weight:500">SMS</b> to <b style="color:var(--ink2);font-weight:500">+971 50 123 4567</b></div>
+
+            <!-- 6-digit OTP boxes -->
+            <div style="display:flex;gap:8px;justify-content:center;margin-bottom:28px">
+              <div style="width:36px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:var(--ink)">5</div>
+              <div style="width:36px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:var(--ink)">6</div>
+              <div style="width:36px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:var(--ink)">1</div>
+              <div style="width:36px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);box-shadow:0 0 0 3px var(--accs);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:var(--ink)">1</div>
+              <div style="width:36px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink3)">—</div>
+              <div style="width:36px;height:44px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink3)">—</div>
+            </div>
+
+            <div style="width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <span style="font-size:11px;color:var(--ink3)">Didn't receive it?</span>
+              <span style="font-size:11px;color:var(--acc);font-weight:500;text-decoration:underline;cursor:pointer">Resend code</span>
+            </div>
+            <div style="width:100%;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;color:var(--ink3)">Wrong number?</span>
+              <span style="font-size:11px;color:var(--ink2);font-weight:500;text-decoration:underline;cursor:pointer">Change number</span>
+            </div>
+
+            <div style="margin-top:28px;padding:11px 14px;background:var(--sub);border-radius:var(--rs);border:var(--hl);display:flex;align-items:center;gap:9px;width:100%">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              <span style="font-size:11px;color:var(--ink2)">Code expires in <b style="color:var(--ink);font-weight:500">4:32</b></span>
+            </div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- 1d: Invite Code (moved after auth) -->
+    <div>
+      <div class="pcap">1d · Invite Code · After Auth</div>
+      <div class="pf"><div class="ps"><div class="pn"></div>
+        <div class="obg">
+          <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
+          <div class="obc">
+            <div class="kicker" style="margin-bottom:10px;align-self:flex-start">You're In · Now Join</div>
+            <div class="obt" style="font-size:26px">Enter Invite Code</div>
+            <div class="obs">Sarah sent you a code to join The Atelier Circle.</div>
+            <div style="width:100%;margin-bottom:16px">
+              <div style="display:flex;gap:7px;justify-content:center">
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);box-shadow:0 0 0 3px var(--accs);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">T</div>
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500">R</div>
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500;color:var(--ink3)">E</div>
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink3)">—</div>
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink3)">7</div>
+                <div style="width:34px;height:42px;border-radius:var(--rs);background:var(--surf);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink3)">K</div>
+              </div>
+            </div>
+            <button class="btn fw acc">Join Circle</button>
+          </div>
+          <div class="obf">
+            <div class="cp">
+              <div class="ca">SM</div><div class="ca">MA</div><div class="ca">AK</div><div class="ca">FR</div>
+            </div>
+            <div class="tx">Joining <b>The Atelier Circle</b><br>4 members · Dubai</div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- 1e: Profile Setup -->
+    <div>
+      <div class="pcap">1e · Profile Setup · Name + Avatar</div>
+      <div class="pf"><div class="ps"><div class="pn"></div>
+        <div class="obg">
+          <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
+          <div class="obc" style="justify-content:flex-start;padding-top:50px">
+            <div class="kicker" style="align-self:flex-start;margin-bottom:8px">Almost There</div>
+            <div class="obt" style="font-size:24px;margin-bottom:20px;text-align:left">Set up your profile</div>
+
+            <!-- Avatar with camera overlay -->
+            <div style="position:relative;margin-bottom:24px">
+              <div class="av lg" style="width:72px;height:72px;font-size:24px;border-radius:50%">
+                <span>S</span>
+              </div>
+              <div style="position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--ink);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" stroke-width="1.6"><path d="M3 7h3l2-2h8l2 2h3v12H3z"/><circle cx="12" cy="13" r="3.5"/></svg>
+              </div>
+            </div>
+
+            <!-- Name field -->
+            <div style="width:100%;margin-bottom:8px">
+              <div class="flbl">Display Name</div>
+              <input class="field" type="text" value="Sarah M." placeholder="Your name">
+            </div>
+
+            <!-- Phone (pre-filled, read-only) -->
+            <div style="width:100%;margin-bottom:24px">
+              <div class="flbl">Phone (verified)</div>
+              <div style="display:flex;align-items:center;gap:8px;padding:11px 13px;background:var(--sub);border:1px solid var(--bds);border-radius:var(--rs)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="1.6"><path d="M5 12l5 5 9-11"/></svg>
+                <span style="font-size:13px;color:var(--ink2)">+971 50 123 4567</span>
+              </div>
+            </div>
+
+            <button class="btn fw acc">Continue</button>
+            <div style="font-size:11px;color:var(--ink3);margin-top:12px;text-align:center">Joining The Atelier Circle</div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- 1f: Bulk Capture -->
+    <div>
+      <div class="pcap">1f · Bulk Photo Capture</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
         <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
@@ -336,9 +495,9 @@ body{font-family:'Jost',-apple-system,sans-serif;color:var(--ink);-webkit-font-s
       </div></div>
     </div>
 
-    <!-- 1c: AI Batch Results -->
+    <!-- 1g: AI Batch Results -->
     <div>
-      <div class="pcap">1c · AI Batch Results</div>
+      <div class="pcap">1g · AI Batch Results</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
         <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="saf">
@@ -419,54 +578,126 @@ body{font-family:'Jost',-apple-system,sans-serif;color:var(--ink);-webkit-font-s
 <div class="page" style="padding-top:0">
 <div class="sec">
   <div class="sec-head">
-    <div class="sec-num"><span class="badge">2</span><span class="label">Home · Boutique Shelf</span></div>
-    <h2>Your Collection at a Glance</h2>
-    <p class="desc">Collection value, Style of the Week, lent-item nudge, one-tap return. Featured carousel plus category rows.</p>
+    <div class="sec-num"><span class="badge">2</span><span class="label">Home · Your Collection</span></div>
+    <h2>Your Collection, Curated</h2>
+    <p class="desc">A personal luxury dashboard — time-aware greeting, featured spotlight, collection summary, circle activity, gentle nudges. Not an inventory grid; a vault you're happy to open. Two frames: the feed (scrollable) and the spotlight detail.</p>
   </div>
   <div class="prow">
     <div>
-      <div class="pcap">2a · Home Feed</div>
+      <div class="pcap">2a · Home — Above the Fold</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
         <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="sa">
+          <!-- Personal greeting header -->
           <div class="hd">
             <div class="nr">
               <div>
-                <div class="gr">Good afternoon, Sarah</div>
-                <div class="tt">Your Trésor</div>
-                <div class="ct">12 items · 2 currently lent</div>
+                <div class="gr">Good morning, Sarah</div>
+                <div class="tt">Your Collection</div>
+                <div class="ct">12 pieces · 2 shared with your circle</div>
               </div>
               <div class="nb"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M6 9a6 6 0 0112 0c0 7 3 7 3 9H3c0-2 3-2 3-9z"/><path d="M10 21a2 2 0 004 0"/></svg></div>
             </div>
           </div>
-          <!-- Collection Insights -->
-          <div style="margin:0 22px 14px;padding:15px;background:var(--surf);border:var(--hl);border-radius:var(--r)">
-            <div class="kicker" style="margin-bottom:4px">Collection Insights</div>
-            <div class="sf" style="font-size:24px;font-weight:500;letter-spacing:-.01em">AED 245,000</div>
-            <div style="font-size:11px;color:var(--ink3);font-weight:300">across 12 items · +AED 12k this quarter</div>
-          </div>
-          <!-- Lent nudge -->
-          <div style="margin:0 22px 14px;padding:11px 13px;background:var(--sub);border-radius:var(--r);display:flex;align-items:center;gap:11px">
-            <div class="av sm">MA</div>
-            <div style="flex:1">
-              <div style="font-size:12px;font-weight:500">Chanel Classic Flap</div>
-              <div style="font-size:10px;color:var(--ink3)">Still with Mona A. — two weeks</div>
+
+          <!-- Featured Spotlight — Piece of the Day -->
+          <div style="margin:0 22px 18px;border-radius:var(--r);overflow:hidden;background:var(--surf);border:var(--hl)">
+            <div class="iph" style="height:152px;border-radius:0;position:relative">
+              <span class="L" style="font-size:80px">H</span>
+              <div style="position:absolute;top:12px;left:12px"><span class="kicker" style="color:#fff;background:rgba(43,37,32,.45);padding:4px 10px;border-radius:100px;backdrop-filter:blur(4px)">Piece of the Day</span></div>
+              <div style="position:absolute;bottom:12px;right:12px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.5"><path d="M12 21l-1.5-1.4C5 14.5 2 11.8 2 8.5 2 6 4 4 6.5 4c1.5 0 3 .7 3.5 2 .5-1.3 2-2 3.5-2C19 4 21 6 21 8.5c0 3.3-3 6-8.5 11.1L12 21z"/></svg></div>
             </div>
-            <button class="btn sm ghost">Nudge</button>
-          </div>
-          <!-- Style of the Week -->
-          <div style="margin:0 22px 16px;padding:14px;background:var(--surf);border:var(--hl);border-radius:var(--r)">
-            <div class="kicker" style="margin-bottom:8px">Style of the Week</div>
-            <div style="display:flex;gap:12px;align-items:center">
-              <div class="iph" style="width:58px;height:58px;border-radius:var(--rs)"><span class="L" style="font-size:24px">D</span></div>
-              <div style="flex:1">
-                <div style="font-size:11px;color:var(--ink2);font-weight:300">This week's sleeping beauty</div>
-                <div class="sf" style="font-size:14px;font-weight:500;margin-top:1px">Mona's Dior Lady Dior</div>
-                <div style="font-size:10px;color:var(--ink3);margin-top:2px">Untouched for 47 days · Style it?</div>
+            <div style="padding:13px 15px 15px">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div>
+                  <div class="kicker" style="margin-bottom:3px">Hermès</div>
+                  <div class="sf" style="font-size:17px;font-weight:500;letter-spacing:-.01em">Birkin 30 · Gold Togo</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:9px;color:var(--ink3);font-weight:300;letter-spacing:.04em">EST. VALUE</div>
+                  <div style="font-size:13px;color:var(--acc);font-weight:500;margin-top:1px">AED 95,000</div>
+                </div>
+              </div>
+              <div style="font-size:11px;color:var(--ink2);font-weight:300;line-height:1.55;margin-top:9px">Acquired in Paris, spring 2024. Last carried to a circle gathering three weeks ago.</div>
+              <div style="display:flex;gap:8px;margin-top:11px">
+                <button class="btn sm acc" style="flex:1">Style It</button>
+                <button class="btn sm out" style="flex:1">View Details</button>
               </div>
             </div>
           </div>
-          <div style="padding:0 22px 6px;font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3)">Recently Added</div>
+
+          <!-- Collection Summary Strip -->
+          <div style="margin:0 22px 18px;display:flex;gap:0;background:var(--surf);border:var(--hl);border-radius:var(--r);overflow:hidden">
+            <div style="flex:1;padding:13px 10px;text-align:center;border-right:1px solid var(--bds)">
+              <div class="sf" style="font-size:18px;font-weight:500;color:var(--ink)">12</div>
+              <div style="font-size:8.5px;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px">Pieces</div>
+            </div>
+            <div style="flex:1.3;padding:13px 10px;text-align:center;border-right:1px solid var(--bds)">
+              <div class="sf" style="font-size:18px;font-weight:500;color:var(--acc)">245k</div>
+              <div style="font-size:8.5px;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px">AED Value</div>
+            </div>
+            <div style="flex:1;padding:13px 10px;text-align:center;border-right:1px solid var(--bds)">
+              <div class="sf" style="font-size:18px;font-weight:500;color:var(--ink)">2</div>
+              <div style="font-size:8.5px;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px">Lent Out</div>
+            </div>
+            <div style="flex:1;padding:13px 10px;text-align:center">
+              <div class="sf" style="font-size:18px;font-weight:500;color:var(--ink)">7</div>
+              <div style="font-size:8.5px;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px">In Circle</div>
+            </div>
+          </div>
+
+          <!-- Gentle Nudge — Suggested Action -->
+          <div style="margin:0 22px 14px;padding:12px 14px;background:var(--accs);border-radius:var(--r);display:flex;align-items:center;gap:11px">
+            <div style="width:30px;height:30px;border-radius:50%;background:var(--surf);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div style="flex:1">
+              <div style="font-size:11.5px;font-weight:500;color:var(--ink)">Maya's birthday is in 6 days</div>
+              <div style="font-size:10px;color:var(--ink2);font-weight:300;margin-top:1px">Consider lending her a piece she's admired</div>
+            </div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--acc)" stroke-width="1.6"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+
+          <!-- Style of the Week -->
+          <div style="margin:0 22px 16px;padding:14px;background:var(--surf);border:var(--hl);border-radius:var(--r)">
+            <div class="kicker" style="margin-bottom:9px">Style of the Week</div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div class="iph" style="width:56px;height:56px;border-radius:var(--rs)"><span class="L" style="font-size:24px">D</span></div>
+              <div style="flex:1">
+                <div style="font-size:11px;color:var(--ink2);font-weight:300;font-style:italic">This week, we're drawn to…</div>
+                <div class="sf" style="font-size:14px;font-weight:500;margin-top:2px">Dior Lady Dior</div>
+                <div style="font-size:10px;color:var(--ink3);margin-top:2px">Resting for 47 days · Ready for an outing</div>
+              </div>
+              <button class="btn sm ghost">Style</button>
+            </div>
+          </div>
+        </div>
+        <div class="tb">
+          <div class="ti act"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg><span>Home</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg><span>Wishlist</span></div>
+          <div class="ta"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg><span>Circle</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg><span>Profile</span></div>
+        </div>
+        <div class="hi"></div>
+      </div></div>
+    </div>
+
+    <div>
+      <div class="pcap">2b · Home — Scroll Continuation</div>
+      <div class="pf"><div class="ps"><div class="pn"></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
+        <div class="sa">
+          <!-- Continuation header (scroll position indicator) -->
+          <div class="hd">
+            <div class="nr">
+              <div>
+                <div class="gr">Your Collection</div>
+                <div class="tt" style="font-size:18px">Continued</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recently Added to Your Collection -->
+          <div style="padding:0 22px 6px;font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3)">Recently Added to Your Collection</div>
           <div class="fc">
             <div class="fcc">
               <div class="iph ph"><span class="L">C</span></div>
@@ -474,29 +705,102 @@ body{font-family:'Jost',-apple-system,sans-serif;color:var(--ink);-webkit-font-s
               <div class="stag"><span class="badge lent"><span class="dt"></span>Lent</span></div>
             </div>
             <div class="fcc">
-              <div class="iph ph"><span class="L">H</span></div>
-              <div class="inf"><div class="br">Hermès</div><div class="nm">Birkin 30</div><div class="pr">AED 95,000</div></div>
-              <div class="stag"><span class="badge ok"><span class="dt"></span>Available</span></div>
-            </div>
-            <div class="fcc">
               <div class="iph ph"><span class="L">R</span></div>
               <div class="inf"><div class="br">Rolex</div><div class="nm">Datejust 36</div><div class="pr">AED 38,000</div></div>
               <div class="stag"><span class="badge ok"><span class="dt"></span>Available</span></div>
             </div>
+            <div class="fcc">
+              <div class="iph ph"><span class="L">V</span></div>
+              <div class="inf"><div class="br">Van Cleef</div><div class="nm">Alhambra</div><div class="pr">AED 28,000</div></div>
+              <div class="stag"><span class="badge ok"><span class="dt"></span>Available</span></div>
+            </div>
           </div>
-          <!-- Bags shelf -->
+
+          <!-- Currently Shared — Lent to Circle -->
+          <div style="padding:0 22px 4px;font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);margin-top:6px">Currently Shared</div>
+          <div style="margin:6px 22px 16px">
+            <div style="background:var(--surf);border:var(--hl);border-radius:var(--r);padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:11px">
+              <div class="iph" style="width:44px;height:44px;border-radius:var(--rs);flex-shrink:0"><span class="L" style="font-size:18px">C</span></div>
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:500">Chanel Classic Flap</div>
+                <div style="font-size:10px;color:var(--ink3);margin-top:2px;display:flex;align-items:center;gap:5px"><span>With</span><span style="color:var(--acc);font-weight:500">Mona A.</span><span>·</span><span>two weeks</span></div>
+              </div>
+              <button class="btn sm ghost" style="font-size:10px;padding:6px 11px">Nudge</button>
+            </div>
+            <div style="background:var(--surf);border:var(--hl);border-radius:var(--r);padding:12px;display:flex;align-items:center;gap:11px">
+              <div class="iph" style="width:44px;height:44px;border-radius:var(--rs);flex-shrink:0"><span class="L" style="font-size:18px">V</span></div>
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:500">Van Cleef Alhambra</div>
+                <div style="font-size:10px;color:var(--ink3);margin-top:2px;display:flex;align-items:center;gap:5px"><span>With</span><span style="color:var(--acc);font-weight:500">Layla M.</span><span>·</span><span>four days</span></div>
+              </div>
+              <button class="btn sm ghost" style="font-size:10px;padding:6px 11px">Nudge</button>
+            </div>
+          </div>
+
+          <!-- Circle Activity Preview -->
+          <div style="padding:0 22px 4px;font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3)">Circle Activity</div>
+          <div style="margin:6px 22px 16px">
+            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:13px">
+              <div class="av sm">MA</div>
+              <div style="flex:1">
+                <div style="font-size:11.5px;color:var(--ink);line-height:1.45"><span style="font-weight:500">Mona A.</span> returned <em style="font-family:'Playfair Display',serif;font-style:italic;color:var(--acc)">your Cartier Tank</em></div>
+                <div style="font-size:9.5px;color:var(--ink3);margin-top:2px">Yesterday</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:13px">
+              <div class="av sm">LM</div>
+              <div style="flex:1">
+                <div style="font-size:11.5px;color:var(--ink);line-height:1.45"><span style="font-weight:500">Layla M.</span> added a <em style="font-family:'Playfair Display',serif;font-style:italic;color:var(--acc)">Bvlgari Serpenti</em> to her collection</div>
+                <div style="font-size:9.5px;color:var(--ink3);margin-top:2px">Two days ago</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px">
+              <div class="av sm">NK</div>
+              <div style="flex:1">
+                <div style="font-size:11.5px;color:var(--ink);line-height:1.45"><span style="font-weight:500">Noor K.</span> is admiring your <em style="font-family:'Playfair Display',serif;font-style:italic;color:var(--acc)">Hermès Birkin</em></div>
+                <div style="font-size:9.5px;color:var(--ink3);margin-top:2px">Three days ago</div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:12px"><span style="font-size:10px;color:var(--acc);font-weight:500;letter-spacing:.04em">See all activity  ›</span></div>
+          </div>
+
+          <!-- Collection Value Growth -->
+          <div style="margin:0 22px 16px;padding:14px;background:var(--surf);border:var(--hl);border-radius:var(--r)">
+            <div class="kicker" style="margin-bottom:4px">Collection Value</div>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <div class="sf" style="font-size:22px;font-weight:500;letter-spacing:-.01em">AED 245,000</div>
+              <div style="font-size:10px;color:var(--ok);font-weight:500">+AED 12k</div>
+            </div>
+            <div style="font-size:10px;color:var(--ink3);font-weight:300;margin-top:2px">This quarter · across 12 pieces</div>
+            <!-- Mini sparkline chart (CSS) -->
+            <div style="display:flex;align-items:flex-end;gap:3px;height:28px;margin-top:10px">
+              <div style="flex:1;height:40%;background:var(--bds);border-radius:2px"></div>
+              <div style="flex:1;height:55%;background:var(--bds);border-radius:2px"></div>
+              <div style="flex:1;height:48%;background:var(--bds);border-radius:2px"></div>
+              <div style="flex:1;height:65%;background:var(--bds);border-radius:2px"></div>
+              <div style="flex:1;height:60%;background:var(--bds);border-radius:2px"></div>
+              <div style="flex:1;height:75%;background:var(--bd);border-radius:2px"></div>
+              <div style="flex:1;height:70%;background:var(--bd);border-radius:2px"></div>
+              <div style="flex:1;height:85%;background:var(--accw);border-radius:2px"></div>
+              <div style="flex:1;height:92%;background:var(--accw);border-radius:2px"></div>
+              <div style="flex:1;height:100%;background:var(--acc);border-radius:2px"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:5px;font-size:8px;color:var(--ink3);letter-spacing:.04em"><span>Jan</span><span>Apr</span><span>Aug</span></div>
+          </div>
+
+          <!-- Your Bags shelf -->
           <div class="shf">
-            <div class="shfh"><span class="nm">Bags</span><span class="ct">5 items</span></div>
+            <div class="shfh"><span class="nm">Your Bags</span><span class="ct">5 pieces</span></div>
             <div class="shfr">
               <div class="smc"><div class="iph ph"><span class="L">C</span><div class="sdot" style="background:var(--accw)"></div></div><div class="br">Chanel</div><div class="in">Classic Flap</div><div class="pr">AED 42k</div></div>
               <div class="smc"><div class="iph ph"><span class="L">H</span><div class="sdot" style="background:var(--ok)"></div></div><div class="br">Hermès</div><div class="in">Birkin 30</div><div class="pr">AED 95k</div></div>
               <div class="smc"><div class="iph ph"><span class="L">D</span><div class="sdot" style="background:var(--ok)"></div></div><div class="br">Dior</div><div class="in">Lady Dior</div><div class="pr">AED 18k</div></div>
-              <div class="smc"><div class="iph ph" style="background:var(--sub)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.4" style="opacity:.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div><div class="br" style="color:var(--ink3)">Private</div><div class="in" style="color:var(--ink3)">Hidden item</div><div class="pr" style="color:var(--ink3)">—</div></div>
+              <div class="smc"><div class="iph ph" style="background:var(--sub)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.4" style="opacity:.5"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div><div class="br" style="color:var(--ink3)">Private</div><div class="in" style="color:var(--ink3)">Hidden piece</div><div class="pr" style="color:var(--ink3)">—</div></div>
             </div>
           </div>
-          <!-- Watches shelf -->
+          <!-- Your Watches shelf -->
           <div class="shf">
-            <div class="shfh"><span class="nm">Watches</span><span class="ct">2 items</span></div>
+            <div class="shfh"><span class="nm">Your Watches</span><span class="ct">2 pieces</span></div>
             <div class="shfr">
               <div class="smc"><div class="iph ph"><span class="L">R</span><div class="sdot" style="background:var(--ok)"></div></div><div class="br">Rolex</div><div class="in">Datejust 36</div><div class="pr">AED 38k</div></div>
               <div class="smc"><div class="iph ph"><span class="L">C</span><div class="sdot" style="background:var(--ok)"></div></div><div class="br">Cartier</div><div class="in">Tank</div><div class="pr">AED 22k</div></div>
@@ -824,88 +1128,423 @@ body{font-family:'Jost',-apple-system,sans-serif;color:var(--ink);-webkit-font-s
 </div>
 </div>
 
-<!-- ═══ 6. ACTIVITY FEED ═══ -->
+<!-- ═══ 6. ACTIVITY FEED — SEGREGATED FEED (Muaath, Phase 2) ═══ -->
 <div class="page" style="padding-top:0">
 <div class="sec">
   <div class="sec-head">
     <div class="sec-num"><span class="badge">6</span><span class="label">Activity Feed · Social &amp; Engagement</span></div>
-    <h2>Returns, Wishlist Hints, Who Wore It Best</h2>
-    <p class="desc">One-tap "Mark returned?" in feed. Wishlist "Drop hint" posts. "Seen at" tags from friends. "Who wore it best" vote cards.</p>
+    <h2>Segregated Circle Feed</h2>
+    <p class="desc">Five clearly separated zones — Featured, Latest Items, Circle Activity, Shared Wishlists, and Recent Shares — replace the flat chronological list. Filter pills, notification bell, and full social interactions (react, comment, share) bring editorial structure to the circle.</p>
   </div>
   <div class="prow">
+
+    <!-- 6a · Full Segregated Feed -->
     <div>
-      <div class="pcap">6a · Circle Activity Feed</div>
+      <div class="pcap">6a · Segregated Feed</div>
       <div class="pf"><div class="ps"><div class="pn"></div>
         <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
         <div class="sa">
-          <div class="hd"><div class="tt">Activity</div><div class="ct">The Atelier Circle · Live</div></div>
-          <div class="feed">
-            <!-- borrow request -->
-            <div class="fpost">
-              <div class="top"><div class="av sm">MA</div><div><div class="nm">Mona A.</div><div class="tm">requested to borrow · 5m</div></div></div>
-              <div class="body">Mona wants to borrow your <em>Chanel Classic Flap</em></div>
-              <div class="mini"><div class="iph ph"><span class="L" style="font-size:18px">C</span></div><div><div class="mn">Chanel Classic Flap</div><div class="mb">AED 42,000</div></div></div>
-              <div style="display:flex;gap:8px"><button class="btn sm acc" style="flex:1">Accept</button><button class="btn sm out" style="flex:1">Decline</button></div>
+
+          <!-- Header with notification bell -->
+          <div class="hd">
+            <div class="nr">
+              <div>
+                <div class="tt">Activity</div>
+                <div class="ct">The Atelier Circle · Live</div>
+              </div>
+              <div class="nb" style="position:relative">
+                <svg viewBox="0 0 24 24" stroke="var(--ink)" stroke-width="1.6" fill="none"><path d="M18 16v-5a6 6 0 10-12 0v5l-2 3h16l-2-3z"/><path d="M10 20a2 2 0 004 0"/></svg>
+                <span style="position:absolute;top:-4px;right:-4px;min-width:15px;height:15px;border-radius:100px;background:var(--acc);color:#fff;font-size:8px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0 3px;font-family:'Jost',sans-serif">3</span>
+              </div>
             </div>
-            <!-- returned -->
-            <div class="fpost">
-              <div class="top"><div class="av sm">AK</div><div><div class="nm">Aisha K.</div><div class="tm">marked an item returned · 1h</div></div></div>
-              <div class="body">Aisha returned the <em>Van Cleef Alhambra</em> to Fatima</div>
-              <div style="padding:9px;background:var(--sub);border-radius:var(--rs);margin:8px 0">
+          </div>
+
+          <!-- Filter pills row -->
+          <div style="display:flex;gap:7px;padding:0 22px 14px;overflow-x:auto">
+            <span style="padding:6px 14px;border-radius:100px;background:var(--grad);color:#fff;font-size:11px;font-weight:500;white-space:nowrap">All</span>
+            <span style="padding:6px 14px;border-radius:100px;border:1px solid var(--bd);color:var(--ink2);font-size:11px;font-weight:500;white-space:nowrap">Borrows</span>
+            <span style="padding:6px 14px;border-radius:100px;border:1px solid var(--bd);color:var(--ink2);font-size:11px;font-weight:500;white-space:nowrap">Items</span>
+            <span style="padding:6px 14px;border-radius:100px;border:1px solid var(--bd);color:var(--ink2);font-size:11px;font-weight:500;white-space:nowrap">Wishlists</span>
+            <span style="padding:6px 14px;border-radius:100px;border:1px solid var(--bd);color:var(--ink2);font-size:11px;font-weight:500;white-space:nowrap">Shares</span>
+          </div>
+
+          <!-- ══ SECTION 1: FEATURED ══ -->
+          <div style="margin-bottom:14px">
+            <!-- Featured section header -->
+            <div style="display:flex;align-items:center;gap:10px;padding:0 22px 10px">
+              <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:500">Featured</span>
+              <div style="flex:1;height:1px;background:var(--bds)"></div>
+            </div>
+            <div style="padding:0 22px">
+              <!-- Who Wore It Best voting card -->
+              <div class="fpost" style="border-left:2px solid var(--accw)">
+                <div class="top">
+                  <div class="av sm" style="background:var(--ink)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" stroke="#fff" stroke-width="1.6" fill="none"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0V4z"/><path d="M7 4H5a2 2 0 00-2 2v1a4 4 0 003 3.87M17 4h2a2 2 0 012 2v1a4 4 0 01-3 3.87"/></svg>
+                  </div>
+                  <div style="flex:1"><div class="nm">Who Wore It Best?</div><div class="tm">Hermès Birkin 30 · This week</div></div>
+                </div>
+                <div class="vote">
+                  <div class="vc">
+                    <div class="iph ph"><span class="L" style="font-size:20px">H</span></div>
+                    <div class="vn">Mona A.</div>
+                    <div class="vv">62% · 8 votes</div>
+                  </div>
+                  <div class="vc">
+                    <div class="iph ph"><span class="L" style="font-size:20px">H</span></div>
+                    <div class="vn">Aisha K.</div>
+                    <div class="vv">38% · 5 votes</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px"><button class="btn sm acc" style="flex:1">Vote Mona</button><button class="btn sm out" style="flex:1">Vote Aisha</button></div>
+              </div>
+
+              <!-- Active borrows summary card -->
+              <div class="card" style="margin-bottom:11px;display:flex;align-items:center;gap:11px;border-left:2px solid var(--accw)">
+                <div style="width:32px;height:32px;border-radius:var(--rs);background:var(--accs);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" stroke="var(--acc)" stroke-width="1.5" fill="none"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>
+                </div>
+                <div style="flex:1">
+                  <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:500">3 items currently borrowed</div>
+                  <div style="font-size:10px;color:var(--ink3);font-weight:300;margin-top:1px">Tap to view all active borrows</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--ink3)" stroke-width="1.5" fill="none"><path d="M9 6l6 6-6 6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ SECTION 2: LATEST ITEMS ══ -->
+          <div style="margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:10px;padding:0 22px 10px">
+              <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:500">Latest Items</span>
+              <div style="flex:1;height:1px;background:var(--bds)"></div>
+              <span style="font-size:10px;color:var(--acc);font-weight:500">See All</span>
+            </div>
+            <div style="display:flex;gap:10px;padding:0 22px;overflow-x:auto">
+              <!-- item card 1 -->
+              <div style="flex:0 0 130px;background:var(--surf);border:var(--hl);border-radius:var(--r);overflow:hidden">
+                <div class="iph" style="height:110px;border-radius:0"><span class="L" style="font-size:40px">C</span></div>
+                <div style="padding:9px 10px">
+                  <div style="font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:2px">Chanel</div>
+                  <div style="font-family:'Playfair Display',serif;font-size:12px;font-weight:500;line-height:1.2;margin-bottom:6px">Classic Flap</div>
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="display:flex;align-items:center;gap:4px"><div class="av" style="width:16px;height:16px;font-size:7px">SM</div><span style="font-size:9px;color:var(--ink2)">Sarah</span></div>
+                    <span style="display:flex;align-items:center;gap:2px;font-size:9px;color:var(--ink3)"><svg width="10" height="10" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>5</span>
+                  </div>
+                </div>
+              </div>
+              <!-- item card 2 -->
+              <div style="flex:0 0 130px;background:var(--surf);border:var(--hl);border-radius:var(--r);overflow:hidden">
+                <div class="iph" style="height:110px;border-radius:0"><span class="L" style="font-size:40px">D</span></div>
+                <div style="padding:9px 10px">
+                  <div style="font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:2px">Dior</div>
+                  <div style="font-family:'Playfair Display',serif;font-size:12px;font-weight:500;line-height:1.2;margin-bottom:6px">Saddle Bag</div>
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="display:flex;align-items:center;gap:4px"><div class="av" style="width:16px;height:16px;font-size:7px">MA</div><span style="font-size:9px;color:var(--ink2)">Mona</span></div>
+                    <span style="display:flex;align-items:center;gap:2px;font-size:9px;color:var(--ink3)"><svg width="10" height="10" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>3</span>
+                  </div>
+                </div>
+              </div>
+              <!-- item card 3 -->
+              <div style="flex:0 0 130px;background:var(--surf);border:var(--hl);border-radius:var(--r);overflow:hidden">
+                <div class="iph" style="height:110px;border-radius:0"><span class="L" style="font-size:40px">G</span></div>
+                <div style="padding:9px 10px">
+                  <div style="font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:2px">Gucci</div>
+                  <div style="font-family:'Playfair Display',serif;font-size:12px;font-weight:500;line-height:1.2;margin-bottom:6px">Marmont</div>
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="display:flex;align-items:center;gap:4px"><div class="av" style="width:16px;height:16px;font-size:7px">LS</div><span style="font-size:9px;color:var(--ink2)">Layla</span></div>
+                    <span style="display:flex;align-items:center;gap:2px;font-size:9px;color:var(--ink3)"><svg width="10" height="10" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>2</span>
+                  </div>
+                </div>
+              </div>
+              <!-- item card 4 -->
+              <div style="flex:0 0 130px;background:var(--surf);border:var(--hl);border-radius:var(--r);overflow:hidden">
+                <div class="iph" style="height:110px;border-radius:0"><span class="L" style="font-size:40px">H</span></div>
+                <div style="padding:9px 10px">
+                  <div style="font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:2px">Hermès</div>
+                  <div style="font-family:'Playfair Display',serif;font-size:12px;font-weight:500;line-height:1.2;margin-bottom:6px">Birkin 30</div>
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="display:flex;align-items:center;gap:4px"><div class="av" style="width:16px;height:16px;font-size:7px">AK</div><span style="font-size:9px;color:var(--ink2)">Aisha</span></div>
+                    <span style="display:flex;align-items:center;gap:2px;font-size:9px;color:var(--ink3)"><svg width="10" height="10" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>8</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ SECTION 3: CIRCLE ACTIVITY ══ -->
+          <div style="margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:10px;padding:0 22px 10px">
+              <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:500">Circle Activity</span>
+              <div style="flex:1;height:1px;background:var(--bds)"></div>
+              <span style="font-size:10px;color:var(--acc);font-weight:500">See All</span>
+            </div>
+            <div style="padding:0 22px">
+              <!-- compact activity row 1 -->
+              <div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:var(--hl)">
+                <div class="av sm">MA</div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><b style="font-weight:500">Mona A.</b> requested to borrow <span class="sf" style="font-style:italic;color:var(--acc)">Chanel Classic Flap</span></div>
+                </div>
+                <span style="font-size:9px;color:var(--ink3);font-weight:300;flex-shrink:0">5m</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--acc)" stroke-width="1.4" fill="none" style="flex-shrink:0"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>
+              </div>
+              <!-- compact activity row 2 -->
+              <div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:var(--hl)">
+                <div class="av sm">AK</div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><b style="font-weight:500">Aisha K.</b> returned <span class="sf" style="font-style:italic;color:var(--acc)">Van Cleef Alhambra</span></div>
+                </div>
+                <span style="font-size:9px;color:var(--ink3);font-weight:300;flex-shrink:0">1h</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--ok)" stroke-width="1.4" fill="none" style="flex-shrink:0"><path d="M5 12l5 5 9-11"/></svg>
+              </div>
+              <!-- compact activity row 3 — with Mark Returned action -->
+              <div style="padding:9px 0;border-bottom:var(--hl)">
                 <div style="display:flex;align-items:center;gap:9px">
-                  <div class="iph" style="width:38px;height:38px;border-radius:var(--rx)"><span class="L" style="font-size:14px">V</span></div>
-                  <div style="flex:1"><div style="font-size:11px;font-weight:500">Van Cleef Alhambra</div><div style="font-size:9px;color:var(--ok);display:flex;align-items:center;gap:3px;margin-top:1px"><svg width="9" height="9" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M5 12l5 5 9-11"/></svg>Returned to Fatima R.</div></div>
+                  <div class="av sm">FR</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:12px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><b style="font-weight:500">Fatima R.</b> lent <span class="sf" style="font-style:italic;color:var(--acc)">Cartier Love</span> to Layla</div>
+                  </div>
+                  <span style="font-size:9px;color:var(--ink3);font-weight:300;flex-shrink:0">2h</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--acc)" stroke-width="1.4" fill="none" style="flex-shrink:0"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg>
+                </div>
+                <button class="btn sm ghost" style="margin-top:6px;font-size:10px;padding:5px 12px">Mark Returned?</button>
+              </div>
+              <!-- compact activity row 4 -->
+              <div style="display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:var(--hl)">
+                <div class="av sm">MY</div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><b style="font-weight:500">Maya Y.</b> joined the circle</div>
+                </div>
+                <span style="font-size:9px;color:var(--ink3);font-weight:300;flex-shrink:0">3d</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--ink3)" stroke-width="1.4" fill="none" style="flex-shrink:0"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg>
+              </div>
+              <!-- compact activity row 5 -->
+              <div style="display:flex;align-items:center;gap:9px;padding:9px 0">
+                <div class="av sm">LS</div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><b style="font-weight:500">Layla S.</b> added <span class="sf" style="font-style:italic;color:var(--acc)">Dior Saddle</span> to her collection</div>
+                </div>
+                <span style="font-size:9px;color:var(--ink3);font-weight:300;flex-shrink:0">5h</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--ink3)" stroke-width="1.4" fill="none" style="flex-shrink:0"><path d="M12 5v14M5 12h14"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- ══ SECTION 4: SHARED WISHLISTS ══ -->
+          <div style="margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:10px;padding:0 22px 10px">
+              <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:500">Shared Wishlists</span>
+              <div style="flex:1;height:1px;background:var(--bds)"></div>
+              <span style="font-size:10px;color:var(--acc);font-weight:500">See All</span>
+            </div>
+            <div style="padding:0 22px">
+              <!-- wishlist card 1 -->
+              <div class="card" style="margin-bottom:10px">
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">
+                  <div class="av sm">SM</div>
+                  <div style="flex:1">
+                    <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:500">Sarah's Birthday Dreams</div>
+                    <div style="font-size:9px;color:var(--ink3);font-weight:300;margin-top:1px">Sarah M. · 6 items</div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px">
+                  <span style="padding:4px 10px;border-radius:100px;background:var(--accs);color:var(--acc);font-size:9px;font-weight:500">Chanel</span>
+                  <span style="padding:4px 10px;border-radius:100px;background:var(--accs);color:var(--acc);font-size:9px;font-weight:500">Cartier</span>
+                  <span style="padding:4px 10px;border-radius:100px;background:var(--accs);color:var(--acc);font-size:9px;font-weight:500">Hermès</span>
+                  <span style="padding:4px 10px;border-radius:100px;background:var(--accs);color:var(--acc);font-size:9px;font-weight:500">+3</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-size:10px;color:var(--ink3)">2 friends reacted</span>
+                  <span style="font-size:10px;color:var(--acc);font-weight:500">View all</span>
                 </div>
               </div>
-              <div class="acts"><span><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>3</span><span><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 11-3-6.2L21 5l-1.2 3A8 8 0 0121 12z"/></svg>1</span></div>
-            </div>
-            <!-- mark returned action -->
-            <div class="fpost">
-              <div class="top"><div class="av sm">FR</div><div><div class="nm">Fatima R.</div><div class="tm">lent an item · 2h</div></div></div>
-              <div class="body">Fatima lent her <em>Cartier Love Bracelet</em> to Layla</div>
-              <div class="mini"><div class="iph ph"><span class="L" style="font-size:18px">C</span></div><div><div class="mn">Cartier Love Bracelet</div><div class="mb">Currently with Layla S.</div></div></div>
-              <button class="btn sm ghost fw" style="margin-top:5px">Mark Returned?</button>
-            </div>
-            <!-- wishlist hint -->
-            <div class="fpost" style="border-left:2px solid var(--accw)">
-              <div class="top"><div class="av sm">SM</div><div><div class="nm">Sarah M.</div><div class="tm">dropped a wishlist hint · 3h</div></div></div>
-              <div class="body">Sarah is dreaming about a <em>Cartier Love Bracelet</em></div>
-              <div class="mini"><div class="iph ph"><span class="L" style="font-size:18px">C</span></div><div><div class="mn">Cartier Love Bracelet</div><div class="mb">Yellow Gold · AED 14,000</div></div></div>
-              <div style="display:flex;gap:7px;margin:7px 0">
-                <button class="btn sm out" style="flex:1">React</button>
-                <button class="btn sm out" style="flex:1">Comment</button>
-                <button class="btn sm ghost" style="flex:1">I have that</button>
-              </div>
-              <div style="padding:8px 10px;background:var(--accs);border-radius:var(--rx);font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:8px">
-                <div class="av" style="width:20px;height:20px;font-size:8px">MA</div>
-                <span><b style="color:var(--acc)">Mona A.</b> Seen at Vestiaire for AED 22k</span>
-              </div>
-              <div class="acts" style="margin-top:7px"><span><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>5</span><span><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 11-3-6.2L21 5l-1.2 3A8 8 0 0121 12z"/></svg>3</span></div>
-            </div>
-            <!-- who wore it best -->
-            <div class="fpost">
-              <div class="top"><div class="av sm">LS</div><div><div class="nm">Layla S.</div><div class="tm">shared a style · 5h</div></div></div>
-              <div class="body" style="margin-bottom:4px">Who wore it best?</div>
-              <div style="font-size:11px;color:var(--ink3);margin-bottom:7px;font-weight:300">Hermès Birkin 30 — styled by two circle members</div>
-              <div class="vote">
-                <div class="vc">
-                  <div class="iph ph"><span class="L" style="font-size:18px">H</span></div>
-                  <div class="vn">Mona A.</div>
-                  <div class="vv">62% · 8 votes</div>
+              <!-- wishlist card 2 -->
+              <div class="card" style="margin-bottom:10px">
+                <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">
+                  <div class="av sm">AK</div>
+                  <div style="flex:1">
+                    <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:500">Aisha's Anniversary List</div>
+                    <div style="font-size:9px;color:var(--ink3);font-weight:300;margin-top:1px">Aisha K. · 4 items</div>
+                  </div>
                 </div>
-                <div class="vc">
-                  <div class="iph ph"><span class="L" style="font-size:18px">H</span></div>
-                  <div class="vn">Aisha K.</div>
-                  <div class="vv">38% · 5 votes</div>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px">
+                  <span style="padding:4px 10px;border-radius:100px;background:var(--accs);color:var(--acc);font-size:9px;font-weight:500">Van Cleef</span>
+                  <span style="padding:4px 10px;border-radius:100px;background:var(--accs);color:var(--acc);font-size:9px;font-weight:500">Rolex</span>
+                  <span style="padding:4px 10px;border-radius:100px;background:var(--accs);color:var(--acc);font-size:9px;font-weight:500">Bottega</span>
+                  <span style="padding:4px 10px;border-radius:100px;background:var(--accs);color:var(--acc);font-size:9px;font-weight:500">+1</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-size:10px;color:var(--ink3)">1 friend pledged</span>
+                  <span style="font-size:10px;color:var(--acc);font-weight:500">View all</span>
                 </div>
               </div>
-              <div style="display:flex;gap:8px"><button class="btn sm acc" style="flex:1">Vote Mona</button><button class="btn sm out" style="flex:1">Vote Aisha</button></div>
+            </div>
+          </div>
+
+          <!-- ══ SECTION 5: RECENT SHARES ══ -->
+          <div style="margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:10px;padding:0 22px 10px">
+              <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:500">Recent Shares</span>
+              <div style="flex:1;height:1px;background:var(--bds)"></div>
+              <span style="font-size:10px;color:var(--acc);font-weight:500">See All</span>
+            </div>
+            <div class="feed">
+              <!-- share card 1 -->
+              <div class="fpost" style="padding:0;overflow:hidden">
+                <div style="padding:13px 13px 9px;display:flex;align-items:center;gap:9px">
+                  <div class="av sm">SM</div>
+                  <div style="flex:1"><div class="nm">Sarah M.</div><div class="tm">2h</div></div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--ink3)" stroke-width="1.5" fill="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                </div>
+                <div class="iph" style="height:200px;border-radius:0"><span class="L" style="font-size:80px">C</span></div>
+                <div style="padding:13px">
+                  <div style="font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:2px">Chanel</div>
+                  <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:500;margin-bottom:6px">Classic Flap</div>
+                  <div style="font-size:12px;color:var(--ink2);font-weight:300;line-height:1.5;margin-bottom:10px">Wore this to the gala last night — the quilting catches candlelight beautifully.</div>
+                  <!-- reaction bar: 4 SVG icons -->
+                  <div class="acts" style="gap:14px;margin-top:0;padding-bottom:9px;border-bottom:var(--hl)">
+                    <span style="color:var(--acc);font-weight:500"><svg viewBox="0 0 24 24" fill="currentColor" stroke="var(--acc)"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>3</span>
+                    <span><svg viewBox="0 0 24 24"><path d="M3 7v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1h-7l-2-2H4a1 1 0 00-1 1z"/></svg>1</span>
+                    <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>2</span>
+                    <span><svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>0</span>
+                  </div>
+                  <!-- comments -->
+                  <div style="padding-top:9px;font-size:11px;line-height:1.5">
+                    <div style="margin-bottom:4px"><b style="font-weight:500">Mona A.</b> <span style="color:var(--ink2);font-weight:300">Stunning! The gold hardware is perfect.</span></div>
+                    <div><b style="font-weight:500">Lina K.</b> <span style="color:var(--ink2);font-weight:300">Where did you get it authenticated?</span></div>
+                    <div style="font-size:10px;color:var(--ink3);font-weight:300;margin-top:6px;display:flex;align-items:center;gap:4px">
+                      <svg width="11" height="11" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M21 12a8 8 0 11-3-6.2L21 5l-1.2 3A8 8 0 0121 12z"/></svg>
+                      View all 5 comments
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- share card 2 -->
+              <div class="fpost" style="padding:0;overflow:hidden">
+                <div style="padding:13px 13px 9px;display:flex;align-items:center;gap:9px">
+                  <div class="av sm">FR</div>
+                  <div style="flex:1"><div class="nm">Fatima R.</div><div class="tm">5h</div></div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" stroke="var(--ink3)" stroke-width="1.5" fill="none"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                </div>
+                <div class="iph" style="height:200px;border-radius:0"><span class="L" style="font-size:80px">V</span></div>
+                <div style="padding:13px">
+                  <div style="font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin-bottom:2px">Van Cleef</div>
+                  <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:500;margin-bottom:6px">Alhambra Necklace</div>
+                  <div style="font-size:12px;color:var(--ink2);font-weight:300;line-height:1.5;margin-bottom:10px">A piece I inherited from my grandmother. The clover motif has never felt more special.</div>
+                  <div class="acts" style="gap:14px;margin-top:0;padding-bottom:9px;border-bottom:var(--hl)">
+                    <span><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg>8</span>
+                    <span style="color:var(--acc);font-weight:500"><svg viewBox="0 0 24 24" fill="currentColor" stroke="var(--acc)"><path d="M3 7v10a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1h-7l-2-2H4a1 1 0 00-1 1z"/></svg>2</span>
+                    <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>1</span>
+                    <span><svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>4</span>
+                  </div>
+                  <div style="padding-top:9px;font-size:11px;line-height:1.5">
+                    <div style="margin-bottom:4px"><b style="font-weight:500">Aisha K.</b> <span style="color:var(--ink2);font-weight:300">Heirloom pieces carry so much meaning.</span></div>
+                    <div style="font-size:10px;color:var(--ink3);font-weight:300;margin-top:6px;display:flex;align-items:center;gap:4px">
+                      <svg width="11" height="11" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M21 12a8 8 0 11-3-6.2L21 5l-1.2 3A8 8 0 0121 12z"/></svg>
+                      View all 3 comments
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="tb">
+          <div class="ti"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg><span>Home</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><path d="M12 21C7 17 3 13 3 9a5 5 0 019-3 5 5 0 019 3c0 4-4 8-9 12z"/></svg><span>Wishlist</span></div>
+          <div class="ta"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div class="ti act"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg><span>Circle</span></div>
+          <div class="ti"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg><span>Profile</span></div>
+        </div>
+        <div class="hi"></div>
+      </div></div>
+    </div>
+
+    <!-- 6b · Comment Sheet (Bottom Modal) -->
+    <div>
+      <div class="pcap">6b · Comment Sheet</div>
+      <div class="pf"><div class="ps"><div class="pn"></div>
+        <div class="sb"><span>9:41</span><span class="ic"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="wifi"></span><span class="bat"><i></i></span></span></div>
+        <div class="sa" style="position:relative">
+          <!-- Dimmed background showing the share card -->
+          <div style="padding:0 22px;opacity:.35">
+            <div class="fpost" style="padding:0;overflow:hidden">
+              <div style="padding:13px 13px 9px;display:flex;align-items:center;gap:9px">
+                <div class="av sm">SM</div>
+                <div style="flex:1"><div class="nm">Sarah M.</div><div class="tm">2h</div></div>
+              </div>
+              <div class="iph" style="height:160px;border-radius:0"><span class="L" style="font-size:60px">C</span></div>
+            </div>
+          </div>
+
+          <!-- Bottom sheet overlay -->
+          <div style="position:absolute;bottom:0;left:0;right:0;background:var(--surf);border-radius:var(--r) var(--r) 0 0;box-shadow:0 -8px 30px rgba(43,37,32,.12);padding:16px 22px 20px;max-height:75%;overflow-y:auto">
+            <!-- grab handle -->
+            <div style="width:36px;height:4px;background:var(--bd);border-radius:100px;margin:0 auto 14px"></div>
+            <!-- sheet header -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:500">Comments</span>
+              <span style="font-size:10px;color:var(--ink3);font-weight:300">5 comments</span>
+            </div>
+
+            <!-- comment 1 -->
+            <div style="display:flex;gap:9px;margin-bottom:14px">
+              <div class="av sm">MA</div>
+              <div style="flex:1">
+                <div style="font-size:12px"><b style="font-weight:500">Mona A.</b> <span style="color:var(--ink2);font-weight:300;margin-left:4px">2h</span></div>
+                <div style="font-size:12px;color:var(--ink);font-weight:300;line-height:1.5;margin-top:2px">Stunning! The gold hardware is perfect with your ensemble.</div>
+              </div>
+            </div>
+            <!-- comment 2 -->
+            <div style="display:flex;gap:9px;margin-bottom:14px">
+              <div class="av sm">LK</div>
+              <div style="flex:1">
+                <div style="font-size:12px"><b style="font-weight:500">Lina K.</b> <span style="color:var(--ink2);font-weight:300;margin-left:4px">1h</span></div>
+                <div style="font-size:12px;color:var(--ink);font-weight:300;line-height:1.5;margin-top:2px">Where did you get it authenticated? I've been looking for a reliable auth service.</div>
+              </div>
+            </div>
+            <!-- comment 3 -->
+            <div style="display:flex;gap:9px;margin-bottom:14px">
+              <div class="av sm">SM</div>
+              <div style="flex:1">
+                <div style="font-size:12px"><b style="font-weight:500">Sarah M.</b> <span style="color:var(--ink2);font-weight:300;margin-left:4px">1h</span></div>
+                <div style="font-size:12px;color:var(--ink);font-weight:300;line-height:1.5;margin-top:2px"><span style="color:var(--acc)">@Lina</span> I used The RealReal's concierge — highly recommend.</div>
+              </div>
+            </div>
+            <!-- comment 4 -->
+            <div style="display:flex;gap:9px;margin-bottom:14px">
+              <div class="av sm">AK</div>
+              <div style="flex:1">
+                <div style="font-size:12px"><b style="font-weight:500">Aisha K.</b> <span style="color:var(--ink2);font-weight:300;margin-left:4px">30m</span></div>
+                <div style="font-size:12px;color:var(--ink);font-weight:300;line-height:1.5;margin-top:2px">The caviar leather ages so beautifully. Timeless choice.</div>
+              </div>
+            </div>
+            <!-- comment 5 -->
+            <div style="display:flex;gap:9px;margin-bottom:14px">
+              <div class="av sm">FR</div>
+              <div style="flex:1">
+                <div style="font-size:12px"><b style="font-weight:500">Fatima R.</b> <span style="color:var(--ink2);font-weight:300;margin-left:4px">15m</span></div>
+                <div style="font-size:12px;color:var(--ink);font-weight:300;line-height:1.5;margin-top:2px">You styled this perfectly. The proportions are chef's kiss.</div>
+              </div>
+            </div>
+
+            <!-- comment input -->
+            <div style="display:flex;gap:8px;align-items:center;padding-top:10px;border-top:var(--hl);margin-top:4px">
+              <div class="av sm">You</div>
+              <div style="flex:1;padding:9px 13px;background:var(--sub);border-radius:100px;font-size:12px;color:var(--ink3);font-weight:300">Add a comment…</div>
+              <div style="width:30px;height:30px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="14" height="14" viewBox="0 0 24 24" stroke="#fff" stroke-width="2" fill="none"><path d="M5 12l14-7-3 14-4-5-7-2z"/></svg>
+              </div>
             </div>
           </div>
         </div>
         <div class="hi"></div>
       </div></div>
     </div>
+
   </div>
 </div>
 </div>

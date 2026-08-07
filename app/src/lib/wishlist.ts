@@ -258,6 +258,7 @@ export async function createWishlistItem(input: {
       category: (input.category as any) ?? null,
       target_price: input.target_price ?? null,
       notes: input.notes ?? null,
+      is_private: input.is_private ?? false,
       priority: 1,
       current_savings: 0,
       fulfilled: false,

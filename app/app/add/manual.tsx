@@ -79,6 +79,7 @@ export default function ManualAddScreen() {
         estimated_value: estimatedValue ? parseFloat(estimatedValue) : null,
         currency: 'AED', notes: notes.trim() || null,
         primary_image_url: photoUri,
+        is_private: isPrivate, is_lendable: isLendable,
       });
       hapticSuccess();
       router.back();

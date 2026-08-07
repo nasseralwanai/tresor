@@ -17,6 +17,8 @@ type SparklineChartProps = {
 export function SparklineChart({ data, labels }: SparklineChartProps) {
   const colors = useThemeColors();
 
+  if (data.length === 0) return null;
+
   const maxVal = Math.max(...data, 1);
   const lastIdx = data.length - 1;
 

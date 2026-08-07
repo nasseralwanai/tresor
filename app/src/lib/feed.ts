@@ -188,7 +188,7 @@ function groupWishlists(
       name: `${group.ownerName.split(' ')[0]}'s Dreams`,
       itemCount: group.items.length,
       brandChips: brands,
-      reactionCount: Math.floor(Math.random() * 3) + 1,
+      reactionCount: 0,
     };
   });
 }
@@ -209,7 +209,7 @@ function buildShareCards(
     .filter((item) => !item.is_private)
     .slice(0, 6);
 
-  return shareable.map((item, idx) => {
+  return shareable.map((item) => {
     const member = memberMap.get(item.owner_id);
     const ownerName = member?.display_name ?? item.owner_name;
 
@@ -228,11 +228,11 @@ function buildShareCards(
       imageUrl: item.primary_image_url,
       caption: item.notes ?? `A beautiful ${item.brand} piece from the collection.`,
       createdAt: matchingActivity?.created_at ?? item.created_at,
-      likeCount: 3 + (idx % 6),
-      saveCount: 1 + (idx % 3),
-      verifiedCount: 2 + (idx % 3),
-      starCount: idx % 5,
-      comments: buildMockComments(idx),
+      likeCount: 0,
+      saveCount: 0,
+      verifiedCount: 0,
+      starCount: 0,
+      comments: [],
     };
   });
 }
@@ -242,36 +242,12 @@ function buildVoteCandidates(items: Item[]): VoteCandidate[] {
   return items
     .filter((item) => !item.is_private && item.is_lendable)
     .slice(0, 3)
-    .map((item, idx) => ({
+    .map((item) => ({
       itemId: item.id,
       brand: item.brand,
       model: item.model_name,
       ownerName: item.owner_name,
       ownerId: item.owner_id,
-      voteCount: 8 - idx * 3,
+      voteCount: 0,
     }));
-}
-
-/** Build mock comments for a share card (placeholder until comments table exists). */
-function buildMockComments(seed: number): ShareComment[] {
-  const names = ['Mona A.', 'Lina K.', 'Aisha K.', 'Fatima R.'];
-  const texts = [
-    'Stunning! The gold hardware is perfect.',
-    'Where did you get it authenticated?',
-    'Heirloom pieces carry so much meaning.',
-    'The proportions are absolutely perfect.',
-    'Timeless choice — caviar leather ages beautifully.',
-  ];
-
-  const count = 2 + (seed % 2);
-  const comments: ShareComment[] = [];
-  for (let i = 0; i < count; i++) {
-    comments.push({
-      id: `comment-${seed}-${i}`,
-      authorName: names[(seed + i) % names.length],
-      text: texts[(seed + i) % texts.length],
-      createdAt: new Date(Date.now() - (i + 1) * 3600000).toISOString(),
-    });
-  }
-  return comments;
 }

@@ -54,24 +54,32 @@ export async function getCircleMembers(userId: string): Promise<CircleMemberWith
 
   if (membersError) throw membersError;
 
-  // 3. For each member, count their items in this circle
+  // 3. Fetch all non-private items in this circle in a single query,
+  //    then count per-member client-side (avoids N+1 queries).
+  const { data: itemRows, error: itemError } = await supabase
+    .from('items')
+    .select('owner_id, id')
+    .eq('circle_id', membership.circle_id)
+    .eq('is_private', false);
+
+  if (itemError) throw itemError;
+
+  // Count items per owner
+  const countByOwner = new Map<string, number>();
+  for (const row of itemRows ?? []) {
+    countByOwner.set(row.owner_id, (countByOwner.get(row.owner_id) ?? 0) + 1);
+  }
+
   const enriched: CircleMemberWithItems[] = [];
   for (const m of members ?? []) {
     const profile = (m as any).profiles;
     if (!profile) continue;
 
-    const { count } = await supabase
-      .from('items')
-      .select('*', { count: 'exact', head: true })
-      .eq('owner_id', profile.id)
-      .eq('circle_id', membership.circle_id)
-      .eq('is_private', false);
-
     enriched.push({
       id: profile.id,
       display_name: profile.display_name ?? 'Unknown',
       avatar_url: profile.avatar_url,
-      item_count: count ?? 0,
+      item_count: countByOwner.get(profile.id) ?? 0,
     });
   }
 

@@ -3,6 +3,7 @@
  * brand, model, price, and status badge (Available/Lent).
  */
 
+import { memo, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { View as MotiView } from 'moti';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
@@ -17,12 +18,17 @@ type RecentlyAddedCarouselProps = {
   delay?: number;
 };
 
-export function RecentlyAddedCarousel({
+function RecentlyAddedCarouselInner({
   items,
   onPressItem,
   delay = 450,
 }: RecentlyAddedCarouselProps) {
   const colors = useThemeColors();
+
+  const handlePressItem = useCallback((item: Item) => {
+    hapticLight();
+    onPressItem?.(item);
+  }, [onPressItem]);
 
   return (
     <View>
@@ -44,10 +50,11 @@ export function RecentlyAddedCarousel({
             return (
               <Pressable
                 key={item.id}
-                onPress={() => {
-                  hapticLight();
-                  onPressItem?.(item);
-                }}
+                onPress={() => handlePressItem(item)}
+                accessibilityRole="button"
+                accessibilityLabel={`${item.brand} ${item.model_name || 'item'}, ${isLent ? 'lent' : 'available'}`}
+                accessibilityHint="View item details"
+                hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
                 style={({ pressed }) => [
                   styles.card,
                   {
@@ -115,6 +122,8 @@ export function RecentlyAddedCarousel({
     </View>
   );
 }
+
+export const RecentlyAddedCarousel = memo(RecentlyAddedCarouselInner);
 
 const styles = StyleSheet.create({
   sectionLabel: {

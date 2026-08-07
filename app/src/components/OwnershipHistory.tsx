@@ -9,7 +9,7 @@
  * Warm Atelier styling: gold timeline dots, Georgia headings, Jost body.
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { memo, useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -60,7 +60,7 @@ function entryTypeIcon(
   }
 }
 
-export function OwnershipHistory({
+function OwnershipHistoryInner({
   itemId,
   isPresented,
   onDismiss,
@@ -85,8 +85,12 @@ export function OwnershipHistory({
   // Load when the sheet opens
   useEffect(() => {
     if (isPresented && !loading && entries.length === 0 && !error) {
+      let cancelled = false;
       setLoading(true);
-      loadHistory().finally(() => setLoading(false));
+      loadHistory().finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+      return () => { cancelled = true; };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPresented]);
@@ -100,6 +104,11 @@ export function OwnershipHistory({
   const handleDismiss = useCallback(() => {
     onDismiss();
   }, [onDismiss]);
+
+  const handleClose = useCallback(() => {
+    hapticSuccess();
+    handleDismiss();
+  }, [handleDismiss]);
 
   return (
     <BottomSheet
@@ -277,10 +286,7 @@ export function OwnershipHistory({
 
         {/* Close button */}
         <TouchableOpacity
-          onPress={() => {
-            hapticSuccess();
-            handleDismiss();
-          }}
+          onPress={handleClose}
           activeOpacity={0.85}
           style={[styles.closeBtn, { backgroundColor: colors.surfaceElevated }]}
         >
@@ -292,6 +298,8 @@ export function OwnershipHistory({
     </BottomSheet>
   );
 }
+
+export const OwnershipHistory = memo(OwnershipHistoryInner);
 
 const styles = StyleSheet.create({
   sheetContent: {

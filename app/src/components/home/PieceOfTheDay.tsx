@@ -4,6 +4,7 @@
  * Entrance animation: fade + slide up via moti.
  */
 
+import { memo, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { View as MotiView } from 'moti';
 import { Image } from 'expo-image';
@@ -21,7 +22,7 @@ type PieceOfTheDayProps = {
   style?: ViewStyle;
 };
 
-export function PieceOfTheDay({
+function PieceOfTheDayInner({
   item,
   description,
   style,
@@ -33,20 +34,23 @@ export function PieceOfTheDay({
     item.notes ??
     `Acquired ${item.purchase_date ? new Date(item.purchase_date).getFullYear() : 'recently'}. A treasured piece in your collection.`;
 
-  const handleStyleIt = () => {
+  const handleStyleIt = useCallback(() => {
     hapticLight();
     router.push(`/item/${item.id}` as any);
-  };
-  const handleViewDetails = () => {
+  }, [item.id]);
+  const handleViewDetails = useCallback(() => {
     hapticLight();
     router.push(`/item/${item.id}` as any);
-  };
+  }, [item.id]);
 
   return (
     <MotiView
       from={{ opacity: 0, translateY: 20 }}
       animate={{ opacity: 1, translateY: 0 }}
       transition={{ type: 'timing', duration: 600, delay: 150 }}
+      accessible
+      accessibilityRole="summary"
+      accessibilityLabel={`Piece of the Day. ${item.brand} ${item.model_name || 'item'}. Estimated value ${formatCurrency(item.estimated_value, item.currency)}`}
       style={[
         styles.card,
         {
@@ -119,6 +123,9 @@ export function PieceOfTheDay({
           <TouchableOpacity
             onPress={handleStyleIt}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Style It"
+            accessibilityHint="View this piece and styling suggestions"
             style={[styles.btnAccent, { backgroundColor: colors.gold }]}
           >
             <Text style={[styles.btnAccentText, { color: colors.charcoal }]}>
@@ -128,6 +135,9 @@ export function PieceOfTheDay({
           <TouchableOpacity
             onPress={handleViewDetails}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="View Details"
+            accessibilityHint="View full item details"
             style={[styles.btnOutline, { borderColor: colors.border }]}
           >
             <Text style={[styles.btnOutlineText, { color: colors.textPrimary }]}>
@@ -139,6 +149,8 @@ export function PieceOfTheDay({
     </MotiView>
   );
 }
+
+export const PieceOfTheDay = memo(PieceOfTheDayInner);
 
 const styles = StyleSheet.create({
   card: {

@@ -3,6 +3,7 @@
  * Tappable with press animation.
  */
 
+import { memo, useCallback } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { View as MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -17,7 +18,7 @@ type GentleNudgeCardProps = {
   delay?: number;
 };
 
-export function GentleNudgeCard({
+function GentleNudgeCardInner({
   title,
   subtitle,
   iconName = 'clock-outline',
@@ -26,6 +27,11 @@ export function GentleNudgeCard({
 }: GentleNudgeCardProps) {
   const colors = useThemeColors();
 
+  const handlePress = useCallback(() => {
+    hapticLight();
+    onPress?.();
+  }, [onPress]);
+
   return (
     <MotiView
       from={{ opacity: 0, translateY: 12 }}
@@ -33,10 +39,10 @@ export function GentleNudgeCard({
       transition={{ type: 'timing', duration: 500, delay }}
     >
       <Pressable
-        onPress={() => {
-          hapticLight();
-          onPress?.();
-        }}
+        onPress={handlePress}
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityHint={subtitle}
         style={({ pressed }) => [
           styles.container,
           {
@@ -71,6 +77,8 @@ export function GentleNudgeCard({
     </MotiView>
   );
 }
+
+export const GentleNudgeCard = memo(GentleNudgeCardInner);
 
 const styles = StyleSheet.create({
   container: {

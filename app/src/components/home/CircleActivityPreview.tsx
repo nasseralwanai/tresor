@@ -3,6 +3,7 @@
  * activity text (italic serif for item names), timestamp, "See all activity" link.
  */
 
+import { memo, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { View as MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -18,15 +19,20 @@ type CircleActivityPreviewProps = {
   delay?: number;
 };
 
-export function CircleActivityPreview({
+function CircleActivityPreviewInner({
   activities,
   onSeeAll,
   delay = 550,
 }: CircleActivityPreviewProps) {
   const colors = useThemeColors();
-  const preview = activities.slice(0, 3);
+  const preview = useMemo(() => activities.slice(0, 3), [activities]);
 
   if (preview.length === 0) return null;
+
+  const handleSeeAll = useCallback(() => {
+    hapticLight();
+    onSeeAll?.();
+  }, [onSeeAll]);
 
   return (
     <View>
@@ -62,10 +68,7 @@ export function CircleActivityPreview({
             </View>
           ))}
           <TouchableOpacity
-            onPress={() => {
-              hapticLight();
-              onSeeAll?.();
-            }}
+            onPress={handleSeeAll}
             activeOpacity={0.85}
             style={styles.seeAllBtn}
           >
@@ -92,6 +95,8 @@ function formatActivityTail(activity: ActivityEntry): string {
   }
   return tail;
 }
+
+export const CircleActivityPreview = memo(CircleActivityPreviewInner);
 
 const styles = StyleSheet.create({
   sectionLabel: {

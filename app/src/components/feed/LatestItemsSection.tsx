@@ -4,6 +4,7 @@
  * and heart icon with like count.
  */
 
+import { memo, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { View as MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -19,7 +20,7 @@ type LatestItemsSectionProps = {
   onSeeAll?: () => void;
 };
 
-export function LatestItemsSection({
+function LatestItemsSectionInner({
   items,
   onItemPress,
   onSeeAll,
@@ -27,6 +28,11 @@ export function LatestItemsSection({
   const colors = useThemeColors();
 
   if (items.length === 0) return null;
+
+  const displayItems = useMemo(() => items.slice(0, 10), [items]);
+  const handleItemPress = useCallback((item: Item) => {
+    onItemPress?.(item);
+  }, [onItemPress]);
 
   return (
     <MotiView
@@ -41,11 +47,15 @@ export function LatestItemsSection({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {items.slice(0, 10).map((item) => (
+        {displayItems.map((item) => (
           <TouchableOpacity
             key={item.id}
-            onPress={() => onItemPress?.(item)}
+            onPress={() => handleItemPress(item)}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel={`${item.brand} ${item.model_name ?? 'item'}, owned by ${item.owner_name}`}
+            accessibilityHint="View item details"
+            hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
             style={[
               styles.itemCard,
               {
@@ -97,6 +107,8 @@ export function LatestItemsSection({
     </MotiView>
   );
 }
+
+export const LatestItemsSection = memo(LatestItemsSectionInner);
 
 const styles = StyleSheet.create({
   container: {

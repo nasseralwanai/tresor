@@ -39,6 +39,15 @@ export type ActivityEntry = Database['public']['Tables']['activity_feed']['Row']
 /** A price_history row. */
 export type PriceHistory = Database['public']['Tables']['price_history']['Row'];
 
+/** An item_owners row. */
+export type ItemOwner = Database['public']['Tables']['item_owners']['Row'];
+
+/** An ownership_ledger row. */
+export type OwnershipLedgerEntryRow = Database['public']['Tables']['ownership_ledger']['Row'];
+
+/** A custody_transfers row. */
+export type CustodyTransferRow = Database['public']['Tables']['custody_transfers']['Row'];
+
 /** Lightweight member representation for circle previews. */
 export interface CircleMemberPreview {
   id: string;
@@ -76,3 +85,7 @@ export type ItemCondition = Database['public']['Enums']['item_condition'];
 export type ItemStatus = Database['public']['Enums']['item_status'];
 export type BorrowStatus = Database['public']['Enums']['borrow_status'];
 export type ActivityType = Database['public']['Enums']['activity_type'];
+export type OwnershipType = Database['public']['Enums']['ownership_type'];
+export type CoBorrowApproval = Database['public']['Enums']['co_borrow_approval'];
+export type LedgerEntryType = Database['public']['Enums']['ledger_entry_type'];
+export type CustodyStatus = Database['public']['Enums']['custody_status'];

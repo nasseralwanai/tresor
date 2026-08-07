@@ -153,3 +153,23 @@ insert into public.price_history (item_id, price, currency, source, recorded_at)
   ('cccccccc-cccc-cccc-cccc-cccccccccccc', 35000.00, 'AED', 'Chrono24', '2026-02-01T00:00:00Z'),
   ('cccccccc-cccc-cccc-cccc-cccccccccccc', 38000.00, 'AED', 'WatchBox', '2026-06-15T00:00:00Z')
 on conflict do nothing;
+
+-- ============================================================================
+-- Co-Ownership: Convert Maya's Dior Saddle Bag to co-owned (Maya 50% / Sarah 50%)
+-- ============================================================================
+
+update public.items
+set ownership_type = 'co_owned',
+    current_custodian_id = '33333333-3333-3333-3333-333333333333'
+where id = 'd0000003-0000-0000-0000-000000000001';
+
+insert into public.item_owners (item_id, user_id, share_percentage, amount_paid, currency) values
+  ('d0000003-0000-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', 50.00, 4500.00, 'AED'),
+  ('d0000003-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 50.00, 4500.00, 'AED')
+on conflict (item_id, user_id) do nothing;
+
+-- Ledger entries for the purchase
+insert into public.ownership_ledger (item_id, payer_id, entry_type, amount, currency, description, created_by) values
+  ('d0000003-0000-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', 'purchase', 4500.00, 'AED', 'Initial purchase contribution', '33333333-3333-3333-3333-333333333333'),
+  ('d0000003-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'purchase', 4500.00, 'AED', 'Initial purchase contribution', '33333333-3333-3333-3333-333333333333')
+on conflict do nothing;

@@ -10,6 +10,10 @@ export type ItemCondition = Database['public']['Enums']['item_condition'];
 export type ItemStatus = Database['public']['Enums']['item_status'];
 export type BorrowStatus = Database['public']['Enums']['borrow_status'];
 export type ActivityType = Database['public']['Enums']['activity_type'];
+export type OwnershipType = Database['public']['Enums']['ownership_type'];
+export type CoBorrowApproval = Database['public']['Enums']['co_borrow_approval'];
+export type LedgerEntryType = Database['public']['Enums']['ledger_entry_type'];
+export type CustodyStatus = Database['public']['Enums']['custody_status'];
 
 /**
  * UI-facing item type — enriched version of the DB row.
@@ -41,6 +45,12 @@ export interface Item {
   primary_image_url: string | null;
   is_private: boolean;
   is_lendable: boolean;
+  ownership_type: OwnershipType;
+  current_custodian_id: string | null;
+  co_borrow_approval: CoBorrowApproval;
+  // UI-enriched:
+  custodian_name: string | null;
+  co_owners: CoOwner[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -156,4 +166,104 @@ export interface CollectionInsights {
   mostValuableItem: Item | null;
   leastUsedItem: Item | null;
   itemsLent: number;
+}
+
+// ── Co-Ownership Types ──
+
+/** A co-owner of an item with their share and contribution. */
+export interface CoOwner {
+  id: string;
+  user_id: string;
+  display_name: string;
+  avatar_url: string | null;
+  share_percentage: number;
+  amount_paid: number;
+  currency: string;
+  joined_at: string;
+  is_active: boolean;
+}
+
+/** An ownership ledger entry — financial audit trail for co-owned items. */
+export interface OwnershipLedgerEntry {
+  id: string;
+  item_id: string;
+  payer_id: string;
+  payer_name: string;
+  entry_type: LedgerEntryType;
+  amount: number;
+  currency: string;
+  description: string | null;
+  splits: Record<string, any> | null;
+  affected_owner_id: string | null;
+  new_share_percentage: number | null;
+  created_at: string;
+  created_by: string | null;
+}
+
+/** A custody transfer request between co-owners. */
+export interface CustodyTransfer {
+  id: string;
+  item_id: string;
+  item_brand: string;
+  item_model: string | null;
+  from_user_id: string;
+  from_user_name: string;
+  to_user_id: string;
+  to_user_name: string;
+  circle_id: string | null;
+  status: CustodyStatus;
+  requested_at: string;
+  approved_at: string | null;
+  handed_off_at: string | null;
+  completed_at: string | null;
+  requester_note: string | null;
+  approver_note: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// ── Co-Ownership Input Types ──
+
+/** Input for creating a co-owned item via the create_co_owned_item RPC. */
+export interface CreateCoOwnedItemInput {
+  brand: string;
+  model_name?: string | null;
+  category?: ItemCategory | null;
+  color?: string | null;
+  condition?: ItemCondition;
+  estimated_value?: number | null;
+  currency?: string;
+  notes?: string | null;
+  is_private?: boolean;
+  is_lendable?: boolean;
+  primary_image_url?: string | null;
+  purchase_price?: number | null;
+  purchase_date?: string | null;
+  circle_id?: string | null;
+  co_borrow_approval?: CoBorrowApproval;
+  owners: Array<{
+    user_id: string;
+    share_percentage: number;
+    amount_paid: number;
+  }>;
+}
+
+/** Input for adding a co-owner to an existing item. */
+export interface AddCoOwnerInput {
+  item_id: string;
+  user_id: string;
+  share_percentage: number;
+  amount_paid?: number;
+  currency?: string;
+}
+
+/** Input for processing a share buyout. */
+export interface BuyoutInput {
+  item_id: string;
+  buyer_id: string;
+  seller_id: string;
+  shares_bought: number;
+  buyout_amount: number;
+  currency?: string;
+  notes?: string;
 }

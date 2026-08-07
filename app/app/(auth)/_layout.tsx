@@ -27,6 +27,7 @@ export default function AuthLayout() {
       <Stack.Screen name="welcome" options={{ headerShown: false }} />
       <Stack.Screen name="invite-code" options={{ title: 'Join Circle' }} />
       <Stack.Screen name="phone-otp" options={{ title: 'Verify Phone' }} />
+      <Stack.Screen name="email-signin" options={{ title: 'Sign In' }} />
       <Stack.Screen name="profile-setup" options={{ title: 'Your Profile' }} />
       <Stack.Screen name="circle-preview" options={{ headerShown: false }} />
     </Stack>

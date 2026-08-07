@@ -7,8 +7,8 @@
  * - has session → (tabs) group
  */
 
-import { Stack } from 'expo-router';
-import { View, ActivityIndicator, StyleSheet, useColorScheme } from 'react-native';
+import { Stack, Redirect } from 'expo-router';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { useThemeColors } from '@/theme';
@@ -16,15 +16,18 @@ import { useThemeColors } from '@/theme';
 function RootNavigator() {
   const colors = useThemeColors();
   const { loading, session } = useAuth();
-
   const isAuthenticated = !!session;
 
-  return (
-    loading ? (
+  if (loading) {
+    return (
       <SafeAreaView style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.accent} />
       </SafeAreaView>
-    ) : (
+    );
+  }
+
+  return (
+    <>
       <Stack screenOptions={{ headerShown: false }}>
         {/* Auth flow — shown when unauthenticated */}
         <Stack.Screen name="(auth)" />
@@ -38,7 +41,8 @@ function RootNavigator() {
         <Stack.Screen name="borrow" />
         <Stack.Screen name="profile" />
       </Stack>
-    )
+      <Redirect href={isAuthenticated ? '/(tabs)' : '/(auth)/welcome'} />
+    </>
   );
 }
 

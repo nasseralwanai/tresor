@@ -16,7 +16,7 @@ import type { Profile, ProfileResult } from '@/types';
  * Create a profile for a newly authenticated user.
  * Uses upsert to handle the case where the profile already exists.
  * Maps `fullName` → `display_name` column.
- * `phone` is required by the table schema (NOT NULL) — empty string fallback.
+ * `phone` is optional — null for email/password users, unique when present.
  */
 export async function createProfile(params: {
   userId: string;

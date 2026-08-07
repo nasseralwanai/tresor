@@ -45,6 +45,7 @@ import {
 import { CircleActivityPreview } from '@/components/home/CircleActivityPreview';
 import { CollectionValueCard } from '@/components/home/CollectionValueCard';
 import { CategoryShelf } from '@/components/home/CategoryShelf';
+import { EmptyState } from '@/components/EmptyState';
 
 const CATEGORY_LABELS: Record<string, string> = {
   bag: 'Your Bags',
@@ -168,6 +169,12 @@ export default function YourCollectionScreen() {
     const updated = new Date(styleOfWeek.updated_at).getTime();
     return Math.max(0, Math.floor((Date.now() - updated) / 86400000));
   }, [styleOfWeek]);
+
+  const handleStyleOfWeekPress = useCallback(() => {
+    if (styleOfWeek) {
+      handleItemPress(styleOfWeek);
+    }
+  }, [styleOfWeek, handleItemPress]);
 
   // Currently shared: items I've lent out (borrower_id != me, lender_id == me, status active)
   const lentItems: LentItem[] = useMemo(() => {
@@ -427,28 +434,11 @@ export default function YourCollectionScreen() {
 
           {/* Empty state */}
           {empty && (
-            <View style={styles.emptyWrap}>
-              <View
-                style={[
-                  styles.emptyIcon,
-                  { backgroundColor: colors.surface },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="treasure-chest"
-                  size={40}
-                  color={colors.accent}
-                />
-              </View>
-              <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
-                Your Collection Awaits
-              </Text>
-              <Text
-                style={[styles.emptySub, { color: colors.textSecondary }]}
-              >
-                Tap the + button to add your first luxury piece
-              </Text>
-            </View>
+            <EmptyState
+              icon="treasure-chest"
+              title="Your Collection Awaits"
+              subtitle="Tap the + button to add your first luxury piece"
+            />
           )}
 
           <View style={{ height: spacing.xl }} />

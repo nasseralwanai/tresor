@@ -27,6 +27,7 @@ import { getItem, updateItem, getActiveBorrowForItem, getItemBorrowHistory } fro
 import { markReturned } from '@/lib/borrow';
 import { NudgeButton } from '@/components/NudgeButton';
 import { CoOwnersPanel } from '@/components/CoOwnersPanel';
+import { EmptyState } from '@/components/EmptyState';
 import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency, formatEnum, formatDate, formatRelativeTime } from '@/lib/format';
 import type { Item, BorrowTransaction } from '@/types/items';
@@ -146,9 +147,12 @@ export default function ItemDetailScreen() {
     return (
       <>
         <Stack.Screen options={{ title: 'Item Not Found' }} />
-        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
-          <MaterialCommunityIcons name="alert-circle-outline" size={48} color={colors.textSecondary} />
-          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Item not found</Text>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <EmptyState
+            icon="package-variant"
+            title="Item Not Found"
+            subtitle="This piece may have been removed or is no longer available"
+          />
         </View>
       </>
     );

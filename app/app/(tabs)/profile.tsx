@@ -25,6 +25,7 @@ import { getMyCircle } from '@/lib/circle';
 import { formatRelativeTime } from '@/lib/format';
 import { useAuth } from '@/hooks/useAuth';
 import type { Item } from '@/types/items';
+import { EmptyState } from '@/components/EmptyState';
 
 export default function ProfileScreen() {
   const colors = useThemeColors();
@@ -131,6 +132,17 @@ export default function ProfileScreen() {
               </View>
             ))}
           </View>
+
+          {/* Empty collection prompt */}
+          {items.length === 0 && (
+            <View style={{ height: 280, marginBottom: spacing.md }}>
+              <EmptyState
+                icon="treasure-chest"
+                title="Start Your Collection"
+                subtitle="Add your first piece to begin building your archive"
+              />
+            </View>
+          )}
 
           {/* Circle info */}
           {circle && (

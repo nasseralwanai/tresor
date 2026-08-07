@@ -13,6 +13,55 @@ import type { ItemPhoto } from '@/types';
 /** The storage bucket for item photos (matches the migration). */
 export const ITEM_PHOTOS_BUCKET = 'items';
 
+/** Maximum allowed file size for uploads (5 MB). */
+export const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+/** Allowed MIME types for image uploads. */
+const ALLOWED_MIME_TYPES: ReadonlySet<string> = new Set([
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+]);
+
+/** Allowed file extensions (lowercase, no dot). */
+const ALLOWED_EXTENSIONS: ReadonlySet<string> = new Set(['jpg', 'jpeg', 'png', 'webp']);
+
+/**
+ * Validate a file's type and size before uploading.
+ * @throws Error if the file type is not allowed or the size exceeds the limit.
+ */
+function validateUploadFile(blob: Blob, fileUri: string): void {
+  // --- File type validation ---
+  // If a MIME type is present, it must be an allowed image type.
+  // If MIME type is absent (some platforms return empty blob.type),
+  // fall back to checking the file extension.
+  const mimeType = blob.type?.toLowerCase() ?? '';
+  const fileExt = (fileUri.split('.').pop()?.split('?')[0] ?? '').toLowerCase();
+
+  const mimeValid = mimeType !== '' && ALLOWED_MIME_TYPES.has(mimeType);
+  const mimeInvalid = mimeType !== '' && !ALLOWED_MIME_TYPES.has(mimeType);
+  const extValid = fileExt !== '' && ALLOWED_EXTENSIONS.has(fileExt);
+
+  if (mimeInvalid || (!mimeValid && !extValid)) {
+    throw new Error(
+      'Invalid file type. Only JPG, PNG, and WebP images are allowed.'
+    );
+  }
+
+  // --- File size validation ---
+  if (blob.size > MAX_FILE_SIZE) {
+    const sizeMB = (blob.size / (1024 * 1024)).toFixed(1);
+    throw new Error(
+      `File is too large (${sizeMB} MB). Maximum allowed size is 5 MB.`
+    );
+  }
+
+  if (blob.size === 0) {
+    throw new Error('The selected file appears to be empty.');
+  }
+}
+
 /**
  * Upload a photo for an item.
  * @param itemId  The item ID
@@ -30,6 +79,9 @@ export async function uploadItemPhoto(
   // Fetch the file as a blob
   const response = await fetch(fileUri);
   const blob = await response.blob();
+
+  // Validate file type and size before uploading
+  validateUploadFile(blob, fileUri);
 
   const fileExt = fileUri.split('.').pop()?.split('?')[0] ?? 'jpg';
   const fileName = `${itemId}/${Date.now()}.${fileExt}`;

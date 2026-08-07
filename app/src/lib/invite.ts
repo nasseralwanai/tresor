@@ -22,7 +22,7 @@ export async function validateInviteCode(code: string): Promise<InviteCodeValida
     // Query the circle by invite_code
     const { data: circle, error } = await supabase
       .from('circles')
-      .select('id, name, description, invite_code')
+      .select('id, name, description, invite_code, expires_at')
       .eq('invite_code', normalized)
       .maybeSingle();
 
@@ -30,6 +30,11 @@ export async function validateInviteCode(code: string): Promise<InviteCodeValida
 
     if (!circle) {
       return { valid: false, error: 'This invite code is not valid or has expired.' };
+    }
+
+    // Check invite code expiry (expires_at is null = never expires)
+    if (circle.expires_at && new Date(circle.expires_at) < new Date()) {
+      return { valid: false, error: 'This invite code has expired.' };
     }
 
     // Fetch members for the preview — circle_members + profiles join

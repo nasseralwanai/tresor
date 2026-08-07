@@ -63,6 +63,7 @@ export interface Database {
           created_by: string | null;
           created_at: string;
           updated_at: string;
+          expires_at: string | null;
         };
         Insert: {
           id?: string;
@@ -72,6 +73,7 @@ export interface Database {
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;
+          expires_at?: string | null;
         };
         Update: {
           id?: string;
@@ -81,6 +83,7 @@ export interface Database {
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;
+          expires_at?: string | null;
         };
         Relationships: [
           {

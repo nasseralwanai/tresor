@@ -183,13 +183,21 @@ export async function getCollectionInsights(userId: string): Promise<{
       null as (typeof myItems)[number] | null
     ) ?? null;
 
+  // Query borrow counts per item for items owned by this user
+  const { data: borrowCounts } = await supabase
+    .from('borrow_transactions')
+    .select('item_id')
+    .eq('lender_id', userId);
+
+  const borrowCountMap = new Map<string, number>();
+  for (const bt of borrowCounts ?? []) {
+    borrowCountMap.set(bt.item_id, (borrowCountMap.get(bt.item_id) ?? 0) + 1);
+  }
+
   const leastUsed =
     myItems
       .filter((item) => item.status === 'available')
-      .sort(
-        (a, b) =>
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      )[0] ?? null;
+      .sort((a, b) => (borrowCountMap.get(a.id) ?? 0) - (borrowCountMap.get(b.id) ?? 0))[0] ?? null;
 
   return {
     totalValue,

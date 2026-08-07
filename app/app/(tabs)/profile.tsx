@@ -24,6 +24,7 @@ import { getMyItems } from '@/lib/items';
 import { getMyCircle } from '@/lib/circle';
 import { formatRelativeTime } from '@/lib/format';
 import { useAuth } from '@/hooks/useAuth';
+import type { Item } from '@/types/items';
 
 export default function ProfileScreen() {
   const colors = useThemeColors();
@@ -36,7 +37,7 @@ export default function ProfileScreen() {
     phone: string | null;
     created_at: string;
   } | null>(null);
-  const [itemCount, setItemCount] = useState(0);
+  const [items, setItems] = useState<Item[]>([]);
   const [circle, setCircle] = useState<{ id: string; name: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,7 +51,7 @@ export default function ProfileScreen() {
         getMyCircle(user.id),
       ]);
       setUserInfo(info);
-      setItemCount(items.length);
+      setItems(items);
       setCircle(circleData);
     } catch (e: any) {
       console.error('[profile] loadData error:', e);
@@ -61,10 +62,10 @@ export default function ProfileScreen() {
   }, [user?.id]);
   useEffect(() => { loadData(); }, [loadData]);
 
+  const itemsLent = items.filter((i) => i.status === 'borrowed').length;
   const stats = [
-    { label: 'Items Owned', value: itemCount, icon: 'treasure-chest' },
-    { label: 'Items Lent', value: 1, icon: 'hand-coin-outline' },
-    { label: 'Borrow Streak', value: 3, icon: 'fire' },
+    { label: 'Items Owned', value: items.length, icon: 'treasure-chest' },
+    { label: 'Items Lent', value: itemsLent, icon: 'hand-coin-outline' },
   ];
 
   const handleSignOut = () => {
@@ -164,7 +165,7 @@ export default function ProfileScreen() {
             </View>
 
             <TouchableOpacity
-              onPress={() => hapticLight()}
+              onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'This setting will be available in a future update.'); }}
               style={[styles.settingRow, styles.settingTap]}
             >
               <View style={styles.settingLeft}>
@@ -177,7 +178,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => hapticLight()}
+              onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'This setting will be available in a future update.'); }}
               style={[styles.settingRow, styles.settingTap]}
             >
               <View style={styles.settingLeft}>
@@ -190,7 +191,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => hapticLight()}
+              onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'This setting will be available in a future update.'); }}
               style={[styles.settingRow, styles.settingTap]}
             >
               <View style={styles.settingLeft}>

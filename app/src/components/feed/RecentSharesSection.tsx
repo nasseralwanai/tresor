@@ -5,7 +5,7 @@
  * Tapping "View all comments" opens the CommentSheet.
  */
 
-import { useState, useCallback } from 'react';
+import { memo, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { View as MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -39,7 +39,7 @@ const REACTION_ICONS_ACTIVE: Record<ReactionType, string> = {
   star: 'star',
 };
 
-export function RecentSharesSection({
+function RecentSharesSectionInner({
   shares,
   onSeeAll,
   onOpenComments,
@@ -99,6 +99,11 @@ function ShareCardItem({
     { type: 'verify', count: getReactionCount('verify', share.verifiedCount) },
     { type: 'star', count: getReactionCount('star', share.starCount) },
   ];
+
+  const handleOpenComments = useCallback(() => {
+    hapticSuccess();
+    onOpenComments?.(share);
+  }, [onOpenComments, share]);
 
   const visibleComments = share.comments.slice(0, 2);
   const totalCommentCount = share.comments.length;
@@ -166,6 +171,10 @@ function ShareCardItem({
               <Pressable
                 key={type}
                 onPress={() => toggleReaction(type)}
+                accessibilityRole="button"
+                accessibilityLabel={`${type} reaction, ${count} ${count === 1 ? 'reaction' : 'reactions'}${isActive ? ', active' : ''}`}
+                accessibilityHint={isActive ? 'Remove your reaction' : 'Add a reaction'}
+                hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
                 style={styles.reactionItem}
               >
                 <MaterialCommunityIcons
@@ -208,11 +217,12 @@ function ShareCardItem({
 
           {/* View all comments */}
           <TouchableOpacity
-            onPress={() => {
-              hapticSuccess();
-              onOpenComments?.(share);
-            }}
+            onPress={handleOpenComments}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`View all ${totalCommentCount} comments`}
+            accessibilityHint="Opens comments sheet"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={styles.viewCommentsRow}
           >
             <MaterialCommunityIcons
@@ -229,6 +239,8 @@ function ShareCardItem({
     </View>
   );
 }
+
+export const RecentSharesSection = memo(RecentSharesSectionInner);
 
 const styles = StyleSheet.create({
   container: {

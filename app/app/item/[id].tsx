@@ -72,10 +72,15 @@ export default function ItemDetailScreen() {
   }, [id]);
 
   useEffect(() => {
-    loadData();
+    let cancelled = false;
+    const load = async () => {
+      if (!cancelled) await loadData();
+    };
+    load();
+    return () => { cancelled = true; };
   }, [loadData]);
 
-  const handlePrivacyToggle = async (value: boolean) => {
+  const handlePrivacyToggle = useCallback(async (value: boolean) => {
     setIsPrivate(value);
     if (item) {
       try {
@@ -85,9 +90,9 @@ export default function ItemDetailScreen() {
         setIsPrivate(!value); // revert
       }
     }
-  };
+  }, [item]);
 
-  const handleLendableToggle = async (value: boolean) => {
+  const handleLendableToggle = useCallback(async (value: boolean) => {
     setIsLendable(value);
     if (item) {
       try {
@@ -97,16 +102,16 @@ export default function ItemDetailScreen() {
         setIsLendable(!value); // revert
       }
     }
-  };
+  }, [item]);
 
-  const handleRequestBorrow = () => {
+  const handleRequestBorrow = useCallback(() => {
     hapticSuccess();
     if (item && user?.id) {
       router.push({ pathname: '/borrow/request', params: { itemId: item.id } });
     }
-  };
+  }, [item, user?.id]);
 
-  const handleMarkReturned = async () => {
+  const handleMarkReturned = useCallback(async () => {
     hapticSuccess();
     if (activeBorrow) {
       try {
@@ -116,7 +121,17 @@ export default function ItemDetailScreen() {
         Alert.alert('Error', e?.message ?? 'Could not mark as returned.');
       }
     }
-  };
+  }, [activeBorrow]);
+
+  const handleTabPress = useCallback((tab: Tab) => {
+    hapticLight();
+    setActiveTab(tab);
+  }, []);
+
+  const handleBack = useCallback(() => {
+    hapticLight();
+    router.back();
+  }, []);
 
   if (loading) {
     return (
@@ -176,10 +191,7 @@ export default function ItemDetailScreen() {
             />
             {/* Back button overlay */}
             <TouchableOpacity
-              onPress={() => {
-                hapticLight();
-                router.back();
-              }}
+              onPress={handleBack}
               style={[styles.backBtn, { backgroundColor: colors.surface }]}
             >
               <MaterialCommunityIcons name="chevron-left" size={24} color={colors.textPrimary} />
@@ -232,10 +244,7 @@ export default function ItemDetailScreen() {
             {(['details', 'history', 'lending'] as Tab[]).map((tab) => (
               <TouchableOpacity
                 key={tab}
-                onPress={() => {
-                  hapticLight();
-                  setActiveTab(tab);
-                }}
+                onPress={() => handleTabPress(tab)}
                 style={styles.tab}
               >
                 <Text

@@ -73,13 +73,26 @@ export default function ActivityScreen() {
   }, [circleId, user?.id]);
 
   useEffect(() => {
-    loadData();
+    let cancelled = false;
+    const load = async () => {
+      if (!cancelled) await loadData();
+    };
+    load();
+    return () => { cancelled = true; };
   }, [loadData]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     loadData();
   }, [loadData]);
+
+  const handleFilterChange = useCallback((filter: FeedFilter) => {
+    setActiveFilter(filter);
+  }, []);
+
+  const handleDismissComment = useCallback(() => {
+    setCommentShare(null);
+  }, []);
 
   // Filter activities based on active filter pill
   const filteredActivities = useMemo(() => {
@@ -225,7 +238,7 @@ export default function ActivityScreen() {
         </View>
 
         {/* Filter pills */}
-        <FilterPills active={activeFilter} onChange={setActiveFilter} />
+        <FilterPills active={activeFilter} onChange={handleFilterChange} />
 
         {/* Feed sections */}
         <ScrollView
@@ -272,7 +285,7 @@ export default function ActivityScreen() {
         </ScrollView>
 
         {/* Comment bottom sheet */}
-        <CommentSheet share={commentShare} onDismiss={() => setCommentShare(null)} />
+        <CommentSheet share={commentShare} onDismiss={handleDismissComment} />
       </View>
     </>
   );

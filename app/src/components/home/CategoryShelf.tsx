@@ -3,6 +3,7 @@
  * Used for "Your Bags", "Your Watches", etc.
  */
 
+import { memo, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { View as MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -19,7 +20,7 @@ type CategoryShelfProps = {
   delay?: number;
 };
 
-export function CategoryShelf({
+function CategoryShelfInner({
   title,
   items,
   onPressItem,
@@ -28,6 +29,11 @@ export function CategoryShelf({
   const colors = useThemeColors();
 
   if (items.length === 0) return null;
+
+  const handlePressItem = useCallback((item: Item) => {
+    hapticLight();
+    onPressItem?.(item);
+  }, [onPressItem]);
 
   return (
     <MotiView
@@ -55,10 +61,7 @@ export function CategoryShelf({
             return (
               <Pressable
                 key={item.id}
-                onPress={() => {
-                  hapticLight();
-                  onPressItem?.(item);
-                }}
+                onPress={() => handlePressItem(item)}
                 style={({ pressed }) => [pressed && styles.pressed]}
               >
                 <View style={styles.miniCard}>
@@ -137,6 +140,8 @@ export function CategoryShelf({
     </MotiView>
   );
 }
+
+export const CategoryShelf = memo(CategoryShelfInner);
 
 const styles = StyleSheet.create({
   shelfSection: {

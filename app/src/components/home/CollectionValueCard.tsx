@@ -2,6 +2,7 @@
  * CollectionValueCard — total value, quarterly change, animated sparkline bar chart.
  */
 
+import { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { View as MotiView } from 'moti';
 import { useThemeColors, spacing, radius } from '@/theme';
@@ -18,7 +19,7 @@ type CollectionValueCardProps = {
   delay?: number;
 };
 
-export function CollectionValueCard({
+function CollectionValueCardInner({
   totalValue,
   quarterlyChange,
   quarterlyChangePositive = true,
@@ -69,6 +70,8 @@ export function CollectionValueCard({
     </MotiView>
   );
 }
+
+export const CollectionValueCard = memo(CollectionValueCardInner);
 
 const styles = StyleSheet.create({
   container: {

@@ -135,7 +135,12 @@ export default function YourCollectionScreen() {
   }, [user?.id, circleId]);
 
   useEffect(() => {
-    loadData();
+    let cancelled = false;
+    const load = async () => {
+      if (!cancelled) await loadData();
+    };
+    load();
+    return () => { cancelled = true; };
   }, [loadData]);
 
   const onRefresh = useCallback(() => {
@@ -144,9 +149,23 @@ export default function YourCollectionScreen() {
     loadData();
   }, [loadData]);
 
-  const handleItemPress = (item: Item) => {
+  const handleItemPress = useCallback((item: Item) => {
     router.push(`/item/${item.id}` as any);
-  };
+  }, []);
+
+  const handleAddItem = useCallback(() => {
+    hapticLight();
+    router.push('/(tabs)/activity' as any);
+  }, []);
+
+  const handleSeeAllActivity = useCallback(() => {
+    router.push('/(tabs)/activity' as any);
+  }, []);
+
+  const handleGentleNudgePress = useCallback(() => {
+    hapticLight();
+    router.push('/(tabs)/circle' as any);
+  }, []);
 
   // ── Search & category filter ──
   const isSearchActive = searchQuery.trim().length > 0;
@@ -365,10 +384,7 @@ export default function YourCollectionScreen() {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => {
-                hapticLight();
-                router.push('/(tabs)/activity' as any);
-              }}
+              onPress={handleAddItem}
               accessibilityRole="button"
               accessibilityLabel="View activity feed"
               accessibilityHint="See circle activity and notifications"
@@ -475,10 +491,7 @@ export default function YourCollectionScreen() {
                 title={getNudgeTitle()!}
                 subtitle={getNudgeSubtitle()}
                 iconName={getNudgeIcon()}
-                onPress={() => {
-                  hapticLight();
-                  router.push('/(tabs)/circle' as any);
-                }}
+                onPress={handleGentleNudgePress}
                 delay={350}
               />
             </View>
@@ -490,8 +503,8 @@ export default function YourCollectionScreen() {
               <StyleOfTheWeek
                 item={styleOfWeek}
                 restingDays={styleOfWeekRestingDays}
-                onPress={() => handleItemPress(styleOfWeek)}
-                onStyle={() => handleItemPress(styleOfWeek)}
+                onPress={handleStyleOfWeekPress}
+                onStyle={handleStyleOfWeekPress}
                 delay={400}
               />
             </View>
@@ -524,7 +537,7 @@ export default function YourCollectionScreen() {
             <View style={[styles.section, { paddingHorizontal: 0 }]}>
               <CircleActivityPreview
                 activities={activities}
-                onSeeAll={() => router.push('/(tabs)/activity' as any)}
+                onSeeAll={handleSeeAllActivity}
                 delay={550}
               />
             </View>

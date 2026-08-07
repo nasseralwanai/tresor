@@ -3,6 +3,7 @@
  * resting duration, and Style button.
  */
 
+import { memo, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { View as MotiView } from 'moti';
 import { useThemeColors, spacing, radius } from '@/theme';
@@ -18,7 +19,7 @@ type StyleOfTheWeekProps = {
   delay?: number;
 };
 
-export function StyleOfTheWeek({
+function StyleOfTheWeekInner({
   item,
   restingDays,
   onPress,
@@ -27,6 +28,16 @@ export function StyleOfTheWeek({
 }: StyleOfTheWeekProps) {
   const colors = useThemeColors();
 
+  const handlePress = useCallback(() => {
+    hapticLight();
+    onPress?.();
+  }, [onPress]);
+
+  const handleStyle = useCallback(() => {
+    hapticLight();
+    onStyle?.();
+  }, [onStyle]);
+
   return (
     <MotiView
       from={{ opacity: 0, translateY: 12 }}
@@ -34,10 +45,10 @@ export function StyleOfTheWeek({
       transition={{ type: 'timing', duration: 500, delay }}
     >
       <Pressable
-        onPress={() => {
-          hapticLight();
-          onPress?.();
-        }}
+        onPress={handlePress}
+        accessibilityRole="button"
+        accessibilityLabel={`Style of the Week. ${item.brand} ${item.model_name}. Resting for ${restingDays} days`}
+        accessibilityHint="View item details"
         style={({ pressed }) => [
           styles.container,
           {
@@ -68,11 +79,12 @@ export function StyleOfTheWeek({
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() => {
-              hapticLight();
-              onStyle?.();
-            }}
+            onPress={handleStyle}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Style"
+            accessibilityHint="View styling suggestions for this item"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={[styles.styleBtn, { borderColor: colors.border }]}
           >
             <Text style={[styles.styleBtnText, { color: colors.textPrimary }]}>
@@ -84,6 +96,8 @@ export function StyleOfTheWeek({
     </MotiView>
   );
 }
+
+export const StyleOfTheWeek = memo(StyleOfTheWeekInner);
 
 const styles = StyleSheet.create({
   container: {

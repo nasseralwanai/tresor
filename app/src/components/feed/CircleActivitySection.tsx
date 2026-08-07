@@ -4,6 +4,7 @@
  * and type icons. Includes "Mark Returned" action for active borrows.
  */
 
+import { memo, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { View as MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -51,7 +52,7 @@ const ICON_COLORS: Record<string, string> = {
   member_left: '#E5484D',
 };
 
-export function CircleActivitySection({
+function CircleActivitySectionInner({
   activities,
   currentUserId,
   onSeeAll,
@@ -61,7 +62,9 @@ export function CircleActivitySection({
 
   if (activities.length === 0) return null;
 
-  const handleMarkReturned = async (borrowId: string) => {
+  const displayActivities = useMemo(() => activities.slice(0, 6), [activities]);
+
+  const handleMarkReturned = useCallback(async (borrowId: string) => {
     hapticSuccess();
     try {
       await markReturned(borrowId);
@@ -69,7 +72,7 @@ export function CircleActivitySection({
     } catch (e: any) {
       Alert.alert('Error', e?.message ?? 'Could not mark as returned.');
     }
-  };
+  }, [onActivityChanged]);
 
   return (
     <MotiView
@@ -80,10 +83,10 @@ export function CircleActivitySection({
     >
       <SectionHeader title="Circle Activity" showSeeAll onSeeAll={onSeeAll} />
       <View style={styles.list}>
-        {activities.slice(0, 6).map((activity, idx) => {
+        {displayActivities.map((activity, idx) => {
           const iconName = ICONS[activity.type] ?? 'bell-outline';
           const iconColor = ICON_COLORS[activity.type] ?? colors.textSecondary;
-          const isLast = idx === Math.min(activities.length, 6) - 1;
+          const isLast = idx === displayActivities.length - 1;
           const showMarkReturned =
             activity.type === 'borrow_active' &&
             activity.borrow_id &&
@@ -98,6 +101,9 @@ export function CircleActivitySection({
           return (
             <View
               key={activity.id}
+              accessible
+              accessibilityRole="text"
+              accessibilityLabel={`${activity.actor_name} ${tail}, ${formatRelativeTime(activity.created_at).replace(' ago', '')}`}
               style={[
                 styles.activityRow,
                 !isLast && {
@@ -138,6 +144,10 @@ export function CircleActivitySection({
               {showMarkReturned && (
                 <TouchableOpacity
                   onPress={() => handleMarkReturned(activity.borrow_id!)}
+                  accessibilityRole="button"
+                  accessibilityLabel="Mark returned"
+                  accessibilityHint="Mark this borrowed item as returned"
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   style={[
                     styles.markReturnedBtn,
                     {
@@ -162,6 +172,8 @@ export function CircleActivitySection({
     </MotiView>
   );
 }
+
+export const CircleActivitySection = memo(CircleActivitySectionInner);
 
 const styles = StyleSheet.create({
   container: {

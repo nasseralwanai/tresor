@@ -9,7 +9,7 @@
  * Warm Atelier styling: gold accent, Georgia headings, Jost body.
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { memo, useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -39,7 +39,7 @@ type NotificationBellProps = {
   style?: typeof styles.bellBtn;
 };
 
-export function NotificationBell({ size = 30, style }: NotificationBellProps) {
+function NotificationBellInner({ size = 30, style }: NotificationBellProps) {
   const colors = useThemeColors();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -282,6 +282,8 @@ function getNotifIcon(type: string): React.ComponentProps<typeof MaterialCommuni
 }
 
 // Lazy import for ActivityIndicator to avoid circular style reference
+
+export const NotificationBell = memo(NotificationBellInner);
 
 const styles = StyleSheet.create({
   bellBtn: {

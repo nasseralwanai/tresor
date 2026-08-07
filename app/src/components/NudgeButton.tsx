@@ -8,7 +8,7 @@
  * Warm Atelier styling: gold accent, hairline border, Jost body.
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { memo, useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -38,7 +38,7 @@ type NudgeButtonProps = {
   style?: typeof styles.button;
 };
 
-export function NudgeButton({
+function NudgeButtonInner({
   borrowId,
   borrowerName,
   compact = false,
@@ -50,6 +50,7 @@ export function NudgeButton({
   const [nudgeCount, setNudgeCount] = useState(0);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<'success' | 'error'>('error');
+  const messageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Fetch nudge status on mount
   const loadStatus = useCallback(async () => {
@@ -67,6 +68,15 @@ export function NudgeButton({
   useEffect(() => {
     loadStatus();
   }, [loadStatus]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (messageTimerRef.current) {
+        clearTimeout(messageTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleNudge = useCallback(async () => {
     if (loading) return;
@@ -87,7 +97,7 @@ export function NudgeButton({
             : 'Nudge sent'
         );
         // Clear success message after a few seconds
-        setTimeout(() => setMessage(null), 3500);
+        messageTimerRef.current = setTimeout(() => setMessage(null), 3500);
       } else {
         hapticError();
         setMessageType('error');
@@ -188,6 +198,8 @@ export function NudgeButton({
     </View>
   );
 }
+
+export const NudgeButton = memo(NudgeButtonInner);
 
 const styles = StyleSheet.create({
   container: {

@@ -3,6 +3,7 @@
  * Bars animate height on mount using moti (UI thread worklet).
  */
 
+import { memo, useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { View as MotiView } from 'moti';
 import { useThemeColors, typography } from '@/theme';
@@ -14,12 +15,12 @@ type SparklineChartProps = {
   labels?: string[];
 };
 
-export function SparklineChart({ data, labels }: SparklineChartProps) {
+function SparklineChartInner({ data, labels }: SparklineChartProps) {
   const colors = useThemeColors();
 
   if (data.length === 0) return null;
 
-  const maxVal = Math.max(...data, 1);
+  const maxVal = useMemo(() => Math.max(...data, 1), [data]);
   const lastIdx = data.length - 1;
 
   return (
@@ -65,6 +66,8 @@ export function SparklineChart({ data, labels }: SparklineChartProps) {
     </View>
   );
 }
+
+export const SparklineChart = memo(SparklineChartInner);
 
 const styles = StyleSheet.create({
   container: {

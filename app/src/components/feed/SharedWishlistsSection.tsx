@@ -3,6 +3,7 @@
  * Wishlist cards with name, owner avatar, brand chips, and reaction count.
  */
 
+import { memo, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { View as MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -18,7 +19,7 @@ type SharedWishlistsSectionProps = {
   onWishlistPress?: (wishlist: SharedWishlist) => void;
 };
 
-export function SharedWishlistsSection({
+function SharedWishlistsSectionInner({
   wishlists,
   onSeeAll,
   onWishlistPress,
@@ -26,6 +27,11 @@ export function SharedWishlistsSection({
   const colors = useThemeColors();
 
   if (wishlists.length === 0) return null;
+
+  const handlePress = useCallback((wishlist: SharedWishlist) => {
+    hapticLight();
+    onWishlistPress?.(wishlist);
+  }, [onWishlistPress]);
 
   return (
     <MotiView
@@ -39,11 +45,11 @@ export function SharedWishlistsSection({
         {wishlists.slice(0, 3).map((wishlist) => (
           <TouchableOpacity
             key={wishlist.id}
-            onPress={() => {
-              hapticLight();
-              onWishlistPress?.(wishlist);
-            }}
+            onPress={() => handlePress(wishlist)}
             activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel={`${wishlist.name} by ${wishlist.ownerName}, ${wishlist.itemCount} ${wishlist.itemCount === 1 ? 'item' : 'items'}, ${wishlist.reactionCount} ${wishlist.reactionCount === 1 ? 'friend reacted' : 'friends reacted'}`}
+            accessibilityHint="View wishlist details"
             style={[
               styles.card,
               {
@@ -110,6 +116,8 @@ export function SharedWishlistsSection({
     </MotiView>
   );
 }
+
+export const SharedWishlistsSection = memo(SharedWishlistsSectionInner);
 
 const styles = StyleSheet.create({
   container: {

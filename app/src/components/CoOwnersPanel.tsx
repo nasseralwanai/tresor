@@ -13,7 +13,7 @@
  * serif headings, Jost body text.
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { memo, useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -40,7 +40,7 @@ type CoOwnersPanelProps = {
   userId: string | null | undefined;
 };
 
-export function CoOwnersPanel({ item, userId }: CoOwnersPanelProps) {
+function CoOwnersPanelInner({ item, userId }: CoOwnersPanelProps) {
   const colors = useThemeColors();
   const [coOwners, setCoOwners] = useState<CoOwner[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,7 +67,7 @@ export function CoOwnersPanel({ item, userId }: CoOwnersPanelProps) {
   }, [loadCoOwners]);
 
   // Determine if the current user is a co-owner (but not the custodian)
-  const userIsCoOwner = coOwners.some((o) => o.user_id === userId);
+  const userIsCoOwner = useMemo(() => coOwners.some((o) => o.user_id === userId), [coOwners, userId]);
   const userIsCustodian = item.current_custodian_id === userId;
 
   const handleRequestCustody = useCallback((owner: CoOwner) => {
@@ -82,10 +82,18 @@ export function CoOwnersPanel({ item, userId }: CoOwnersPanelProps) {
 
   const handleCustodySuccess = useCallback(() => {
     setCustodyTarget(null);
-    // Reload co-owners to reflect any state changes
     setLoading(true);
     loadCoOwners();
   }, [loadCoOwners]);
+
+  const handleOpenHistory = useCallback(() => {
+    hapticLight();
+    setHistoryOpen(true);
+  }, []);
+
+  const handleDismissHistory = useCallback(() => {
+    setHistoryOpen(false);
+  }, []);
 
   if (loading) {
     return (
@@ -235,10 +243,7 @@ export function CoOwnersPanel({ item, userId }: CoOwnersPanelProps) {
 
           {/* View ownership history */}
           <TouchableOpacity
-            onPress={() => {
-              hapticLight();
-              setHistoryOpen(true);
-            }}
+            onPress={handleOpenHistory}
             activeOpacity={0.7}
             style={styles.historyLink}
           >
@@ -265,7 +270,7 @@ export function CoOwnersPanel({ item, userId }: CoOwnersPanelProps) {
       <OwnershipHistory
         itemId={item.id}
         isPresented={historyOpen}
-        onDismiss={() => setHistoryOpen(false)}
+        onDismiss={handleDismissHistory}
       />
 
       {/* Custody transfer confirmation sheet */}
@@ -286,6 +291,8 @@ export function CoOwnersPanel({ item, userId }: CoOwnersPanelProps) {
     </>
   );
 }
+
+export const CoOwnersPanel = memo(CoOwnersPanelInner);
 
 const styles = StyleSheet.create({
   panel: {

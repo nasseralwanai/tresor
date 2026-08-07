@@ -25,6 +25,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { hapticLight, hapticSuccess } from '@/lib/haptics';
 import { getItem, updateItem, getActiveBorrowForItem, getItemBorrowHistory } from '@/lib/items';
 import { markReturned } from '@/lib/borrow';
+import { NudgeButton } from '@/components/NudgeButton';
 import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency, formatEnum, formatDate, formatRelativeTime } from '@/lib/format';
 import type { Item, BorrowTransaction } from '@/types/items';
@@ -476,15 +477,10 @@ function LendingTab({
             </TouchableOpacity>
           )}
           {isOwner && (
-            <TouchableOpacity
-              onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'Nudge notifications will be available soon.'); }}
-              style={[styles.nudgeBtn, { borderColor: colors.border }]}
-            >
-              <MaterialCommunityIcons name="bell-outline" size={16} color={colors.textPrimary} />
-              <Text style={[styles.nudgeBtnText, { color: colors.textPrimary }]}>
-                Nudge {activeBorrow.borrower_name}
-              </Text>
-            </TouchableOpacity>
+            <NudgeButton
+              borrowId={activeBorrow.id}
+              borrowerName={activeBorrow.borrower_name}
+            />
           )}
         </Card>
       </View>

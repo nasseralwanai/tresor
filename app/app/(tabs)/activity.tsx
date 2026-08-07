@@ -25,6 +25,7 @@ import { Stack } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, spacing, radius } from '@/theme';
 import { Skeleton } from '@/components/Skeleton';
+import { NotificationBell } from '@/components/NotificationBell';
 import { getFeedData, type FeedData, type ShareCard } from '@/lib/feed';
 import { useCircleId } from '@/hooks/useCircleId';
 import { useAuth } from '@/hooks/useAuth';
@@ -234,24 +235,7 @@ export default function ActivityScreen() {
               The Atelier Circle · Live
             </Text>
           </View>
-          <TouchableOpacity
-            style={[
-              styles.bellBtn,
-              { backgroundColor: colors.surfaceElevated },
-            ]}
-            activeOpacity={0.7}
-          >
-            <MaterialCommunityIcons
-              name="bell-outline"
-              size={16}
-              color={colors.textPrimary}
-            />
-            <View style={[styles.bellBadge, { backgroundColor: colors.gold }]}>
-              <Text style={styles.bellBadgeText}>
-                {Math.min(feedData.activities.length, 9)}
-              </Text>
-            </View>
-          </TouchableOpacity>
+          <NotificationBell size={30} />
         </View>
 
         {/* Filter pills */}

@@ -73,10 +73,31 @@ export default function CircleScreen() {
     setOnlyLendable(newValue);
     if (selectedMember) {
       setLoadingItems(true);
-      const items = await getUserItems(selectedMember.id, newValue);
-      setMemberItems(items); setLoadingItems(false);
+      try {
+        const items = await getUserItems(selectedMember.id, newValue);
+        setMemberItems(items);
+      } catch (e: any) {
+        console.error('[circle] toggleLendable error:', e);
+        Alert.alert('Error', e?.message ?? 'Could not load items.');
+      } finally {
+        setLoadingItems(false);
+      }
     }
   };
+
+  const refreshMemberItems = useCallback(async () => {
+    if (!selectedMember) return;
+    setRefreshing(true);
+    try {
+      const items = await getUserItems(selectedMember.id, onlyLendable);
+      setMemberItems(items);
+    } catch (e: any) {
+      console.error('[circle] refreshMemberItems error:', e);
+      Alert.alert('Error', e?.message ?? 'Could not load items.');
+    } finally {
+      setRefreshing(false);
+    }
+  }, [selectedMember, onlyLendable]);
 
   const displayItems = useMemo(() => {
     if (onlyLendable) return memberItems.filter((i) => i.is_lendable && !i.is_private);
@@ -107,7 +128,7 @@ export default function CircleScreen() {
       <>
         <Stack.Screen options={{ title: selectedMember.display_name ?? 'Unknown' }} />
         <View style={[styles.container, { backgroundColor: colors.background }]}>
-          <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => { setRefreshing(true); const items = await getUserItems(selectedMember.id, onlyLendable); setMemberItems(items); setRefreshing(false); }} tintColor={colors.accent} />}>
+          <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshMemberItems} tintColor={colors.accent} />}>
             <View style={styles.memberHeader}>
               <TouchableOpacity onPress={handleBack} style={styles.backBtn}><MaterialCommunityIcons name="chevron-left" size={24} color={colors.textPrimary} /></TouchableOpacity>
               <Avatar name={selectedMember.display_name ?? 'Unknown'} size="lg" />

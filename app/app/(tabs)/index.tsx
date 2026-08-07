@@ -17,7 +17,6 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
-  Alert,
 } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -203,6 +202,7 @@ export default function YourCollectionScreen() {
           },
           borrowerName: b.borrower_name,
           durationLabel,
+          borrowId: b.id,
         };
       });
   }, [borrows, items, user?.id]);
@@ -388,13 +388,6 @@ export default function YourCollectionScreen() {
             <View style={[styles.section, { paddingHorizontal: 0 }]}>
               <CurrentlyShared
                 lentItems={lentItems}
-                onNudge={() => {
-                  hapticLight();
-                  Alert.alert(
-                    'Gentle Reminder',
-                    'A nudge will be sent to remind them about this piece.'
-                  );
-                }}
                 onPressItem={handleItemPress}
                 delay={500}
               />

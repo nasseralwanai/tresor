@@ -3,10 +3,11 @@
  * "With [person] · [duration]", and Nudge button.
  */
 
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { View as MotiView } from 'moti';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
+import { NudgeButton } from '@/components/NudgeButton';
 import { hapticLight } from '@/lib/haptics';
 import type { Item } from '@/types/items';
 
@@ -14,18 +15,18 @@ export type LentItem = {
   item: Item;
   borrowerName: string;
   durationLabel: string;
+  /** The borrow_transactions.id — needed for the NudgeButton. */
+  borrowId?: string;
 };
 
 type CurrentlySharedProps = {
   lentItems: LentItem[];
-  onNudge?: (lentItem: LentItem) => void;
   onPressItem?: (item: Item) => void;
   delay?: number;
 };
 
 export function CurrentlyShared({
   lentItems,
-  onNudge,
   onPressItem,
   delay = 500,
 }: CurrentlySharedProps) {
@@ -85,18 +86,17 @@ export function CurrentlyShared({
                   </Text>
                 </View>
               </View>
-              <TouchableOpacity
-                onPress={() => {
-                  hapticLight();
-                  onNudge?.(lent);
-                }}
-                activeOpacity={0.85}
-                style={[styles.nudgeBtn, { borderColor: colors.border }]}
-              >
-                <Text style={[styles.nudgeBtnText, { color: colors.textPrimary }]}>
-                  Nudge
+              {lent.borrowId ? (
+                <NudgeButton
+                  borrowId={lent.borrowId}
+                  borrowerName={lent.borrowerName}
+                  compact
+                />
+              ) : (
+                <Text style={[styles.muted, { color: colors.textSecondary }]}>
+                  —
                 </Text>
-              </TouchableOpacity>
+              )}
             </Pressable>
           ))}
         </View>
@@ -158,19 +158,12 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '500',
   },
-  nudgeBtn: {
-    paddingHorizontal: 11,
-    paddingVertical: 6,
-    borderRadius: radius.sm,
-    borderWidth: 0.5,
-  },
-  nudgeBtnText: {
+  muted: {
     fontFamily: 'Jost',
     fontSize: 10,
-    fontWeight: '500',
+    fontWeight: '300',
   },
 });
 
 // Silence unused
-void Alert;
 void typography;

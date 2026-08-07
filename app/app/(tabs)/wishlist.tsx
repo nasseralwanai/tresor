@@ -5,7 +5,7 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, RefreshControl } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, RefreshControl, Alert } from "react-native";
 import { Stack } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useThemeColors, typography, spacing, radius } from "@/theme";
@@ -143,9 +143,16 @@ function AddModal({ visible, onClose, onAdded }: { visible: boolean; onClose: ()
   const handleSubmit = async () => {
     if (!brand.trim() || !user?.id) return;
     setSubmitting(true);
-    await createWishlistItem({ userId: user.id, brand: brand.trim(), model_name: model.trim() || null, target_price: targetPrice ? parseFloat(targetPrice) : null, notes: notes.trim() || null, is_private: isPrivate });
-    setSubmitting(false); setBrand(""); setModel(""); setTargetPrice(""); setNotes(""); setIsPrivate(false);
-    hapticSuccess(); onAdded(); onClose();
+    try {
+      await createWishlistItem({ userId: user.id, brand: brand.trim(), model_name: model.trim() || null, target_price: targetPrice ? parseFloat(targetPrice) : null, notes: notes.trim() || null, is_private: isPrivate });
+      hapticSuccess();
+      setBrand(""); setModel(""); setTargetPrice(""); setNotes(""); setIsPrivate(false);
+      onAdded(); onClose();
+    } catch (e: any) {
+      Alert.alert('Error', e?.message ?? 'Could not add wishlist item.');
+    } finally {
+      setSubmitting(false);
+    }
   };
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>

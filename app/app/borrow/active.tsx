@@ -52,14 +52,22 @@ export default function ActiveBorrowScreen() {
 
   const handleMarkReturned = async (borrowId: string) => {
     hapticSuccess();
-    await markReturned(borrowId);
-    loadData();
+    try {
+      await markReturned(borrowId);
+      loadData();
+    } catch (e: any) {
+      Alert.alert('Error', e?.message ?? 'Could not mark as returned.');
+    }
   };
 
-  const handleNudge = (borrowId: string) => {
+  const handleNudge = async (borrowId: string) => {
     hapticLight();
-    Alert.alert('Nudge Sent', 'A gentle reminder has been sent.', [{ text: 'OK' }]);
-    nudgeBorrower(borrowId);
+    try {
+      await nudgeBorrower(borrowId);
+      Alert.alert('Nudge Sent', 'A gentle reminder has been sent.', [{ text: 'OK' }]);
+    } catch (e: any) {
+      Alert.alert('Error', e?.message ?? 'Could not send nudge.');
+    }
   };
 
   if (loading) {

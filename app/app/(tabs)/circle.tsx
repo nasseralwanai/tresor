@@ -7,7 +7,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList,
-  ActivityIndicator, RefreshControl,
+  ActivityIndicator, RefreshControl, Alert,
 } from "react-native";
 import { Stack, router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -54,8 +54,15 @@ export default function CircleScreen() {
 
   const handleMemberPress = useCallback(async (member: CircleMemberWithItems) => {
     hapticLight(); setSelectedMember(member); setLoadingItems(true);
-    const items = await getUserItems(member.id);
-    setMemberItems(items); setLoadingItems(false);
+    try {
+      const items = await getUserItems(member.id);
+      setMemberItems(items);
+    } catch (e: any) {
+      console.error('[circle] handleMemberPress error:', e);
+      Alert.alert('Error', e?.message ?? 'Could not load items.');
+    } finally {
+      setLoadingItems(false);
+    }
   }, []);
 
   const handleBack = () => { hapticLight(); setSelectedMember(null); setMemberItems([]); };

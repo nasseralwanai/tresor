@@ -11,6 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -74,14 +75,24 @@ export default function ItemDetailScreen() {
   const handlePrivacyToggle = async (value: boolean) => {
     setIsPrivate(value);
     if (item) {
-      await updateItem(item.id, { is_private: value });
+      try {
+        await updateItem(item.id, { is_private: value });
+      } catch (e: any) {
+        Alert.alert('Error', e?.message ?? 'Could not update item.');
+        setIsPrivate(!value); // revert
+      }
     }
   };
 
   const handleLendableToggle = async (value: boolean) => {
     setIsLendable(value);
     if (item) {
-      await updateItem(item.id, { is_lendable: value });
+      try {
+        await updateItem(item.id, { is_lendable: value });
+      } catch (e: any) {
+        Alert.alert('Error', e?.message ?? 'Could not update item.');
+        setIsLendable(!value); // revert
+      }
     }
   };
 
@@ -95,8 +106,12 @@ export default function ItemDetailScreen() {
   const handleMarkReturned = async () => {
     hapticSuccess();
     if (activeBorrow) {
-      await markReturned(activeBorrow.id);
-      setActiveBorrow(null);
+      try {
+        await markReturned(activeBorrow.id);
+        setActiveBorrow(null);
+      } catch (e: any) {
+        Alert.alert('Error', e?.message ?? 'Could not mark as returned.');
+      }
     }
   };
 

@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { TouchableOpacity, View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
+import { TouchableOpacity, View, Text, StyleSheet, ScrollView, RefreshControl, Alert } from "react-native";
 import { Stack } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useThemeColors, typography, spacing, radius } from "@/theme";
@@ -61,7 +61,15 @@ export default function ActivityScreen() {
   }, [circleId]);
   useEffect(() => { loadData(); }, [loadData]);
   const onRefresh = useCallback(() => { setRefreshing(true); loadData(); }, [loadData]);
-  const handleMarkReturned = async (id: string) => { hapticSuccess(); await markReturned(id); loadData(); };
+  const handleMarkReturned = async (id: string) => {
+    hapticSuccess();
+    try {
+      await markReturned(id);
+      loadData();
+    } catch (e: any) {
+      Alert.alert('Error', e?.message ?? 'Could not mark as returned.');
+    }
+  };
 
   if (error && !loading) {
     return (

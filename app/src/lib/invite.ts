@@ -36,7 +36,7 @@ export async function validateInviteCode(code: string): Promise<InviteCodeValida
     const { data: members, error: membersError } = await supabase
       .from('circle_members')
       .select(
-        'user_id, profiles!circle_members_user_id_fkey(id, display_name, avatar_url)'
+        'user_id, profiles(id, display_name, avatar_url)'
       )
       .eq('circle_id', circle.id)
       .limit(10);

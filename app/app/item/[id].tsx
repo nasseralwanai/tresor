@@ -23,7 +23,7 @@ import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { hapticLight, hapticSuccess } from '@/lib/haptics';
 import { getItem, updateItem, getActiveBorrowForItem, getItemBorrowHistory } from '@/lib/items';
-import { markReturned, requestBorrow } from '@/lib/borrow';
+import { markReturned } from '@/lib/borrow';
 import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency, formatEnum, formatDate, formatRelativeTime } from '@/lib/format';
 import type { Item, BorrowTransaction } from '@/types/items';
@@ -77,16 +77,10 @@ export default function ItemDetailScreen() {
     }
   };
 
-  const handleRequestBorrow = async () => {
+  const handleRequestBorrow = () => {
     hapticSuccess();
     if (item && user?.id) {
-      await requestBorrow({
-        itemId: item.id,
-        borrowerId: user.id,
-        lenderId: item.owner_id,
-        circleId: item.circle_id,
-      });
-      router.push('/borrow/request' as any);
+      router.push({ pathname: '/borrow/request', params: { itemId: item.id } });
     }
   };
 

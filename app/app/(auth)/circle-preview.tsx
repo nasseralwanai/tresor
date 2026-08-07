@@ -34,7 +34,7 @@ export default function CirclePreviewScreen() {
         // Get the user's circle membership
         const { data: membership } = await supabase
           .from('circle_members')
-          .select('circle_id, circles!circle_members_circle_id_fkey(name)')
+          .select('circle_id, circles(name)')
           .eq('user_id', user.id)
           .limit(1)
           .maybeSingle();
@@ -47,7 +47,7 @@ export default function CirclePreviewScreen() {
           const { data: memberRows } = await supabase
             .from('circle_members')
             .select(
-              'user_id, profiles!circle_members_user_id_fkey(id, display_name, avatar_url)'
+              'user_id, profiles(id, display_name, avatar_url)'
             )
             .eq('circle_id', membership.circle_id);
 

@@ -26,6 +26,7 @@ import { hapticLight, hapticSuccess } from '@/lib/haptics';
 import { getItem, updateItem, getActiveBorrowForItem, getItemBorrowHistory } from '@/lib/items';
 import { markReturned } from '@/lib/borrow';
 import { NudgeButton } from '@/components/NudgeButton';
+import { CoOwnersPanel } from '@/components/CoOwnersPanel';
 import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency, formatEnum, formatDate, formatRelativeTime } from '@/lib/format';
 import type { Item, BorrowTransaction } from '@/types/items';
@@ -255,6 +256,11 @@ export default function ItemDetailScreen() {
           {activeTab === 'details' && (
             <DetailsTab item={item} isOwner={isOwner} isPrivate={isPrivate} isLendable={isLendable}
               onPrivacyToggle={handlePrivacyToggle} onLendableToggle={handleLendableToggle} />
+          )}
+          {activeTab === 'details' && item.ownership_type === 'co_owned' && (
+            <View style={styles.coOwnersSection}>
+              <CoOwnersPanel item={item} userId={user?.id} />
+            </View>
           )}
           {activeTab === 'history' && <HistoryTab history={borrowHistory} />}
           {activeTab === 'lending' && (
@@ -581,6 +587,10 @@ const styles = StyleSheet.create({
   tabContent: {
     paddingHorizontal: spacing.lg + 6,
     paddingTop: spacing.md,
+  },
+  coOwnersSection: {
+    paddingHorizontal: spacing.lg + 6,
+    paddingTop: spacing.sm,
   },
   detailsCard: {
     padding: 0,

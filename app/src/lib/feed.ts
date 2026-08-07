@@ -123,7 +123,8 @@ async function getCircleActiveBorrows(
     .select('*')
     .eq('circle_id', circleId)
     .in('status', ['active', 'approved', 'requested', 'returned_pending'])
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
 
   if (error) throw error;
   return data ?? [];
@@ -138,7 +139,8 @@ async function getCircleMembers(
     .select(
       'user_id, profiles!circle_members_user_id_fkey(display_name, avatar_url)'
     )
-    .eq('circle_id', circleId);
+    .eq('circle_id', circleId)
+    .limit(50);
 
   if (error) throw error;
   return (data ?? []).map((row: any) => ({

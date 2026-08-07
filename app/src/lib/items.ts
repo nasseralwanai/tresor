@@ -29,7 +29,8 @@ export async function getItems(circleId: string): Promise<ItemUI[]> {
     .from('items')
     .select('*, profiles!items_owner_id_fkey(display_name)')
     .eq('circle_id', circleId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
   if (error) throw error;
   return (data ?? []).map((row: any) => ({
     ...row,
@@ -102,7 +103,8 @@ export async function getMyItems(userId: string): Promise<ItemUI[]> {
     .from('items')
     .select('*, profiles!items_owner_id_fkey(display_name)')
     .eq('owner_id', userId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
   if (error) throw error;
   return (data ?? []).map((row: any) => ({
     ...row,
@@ -122,7 +124,8 @@ export async function getUserItems(
     .from('items')
     .select('*, profiles!items_owner_id_fkey(display_name)')
     .eq('owner_id', userId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
 
   if (onlyLendable) {
     query = query.eq('is_lendable', true).eq('is_private', false);
@@ -187,7 +190,8 @@ export async function getItemBorrowHistory(
       `
     )
     .eq('item_id', itemId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
 
   if (error) throw error;
   return (data ?? []).map((row: any) => ({

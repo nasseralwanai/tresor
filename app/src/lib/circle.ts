@@ -50,7 +50,8 @@ export async function getCircleMembers(userId: string): Promise<CircleMemberWith
     .select(
       'user_id, profiles!circle_members_user_id_fkey(id, display_name, avatar_url)'
     )
-    .eq('circle_id', membership.circle_id);
+    .eq('circle_id', membership.circle_id)
+    .limit(50);
 
   if (membersError) throw membersError;
 
@@ -60,7 +61,8 @@ export async function getCircleMembers(userId: string): Promise<CircleMemberWith
     .from('items')
     .select('owner_id, id')
     .eq('circle_id', membership.circle_id)
-    .eq('is_private', false);
+    .eq('is_private', false)
+    .limit(50);
 
   if (itemError) throw itemError;
 

@@ -47,7 +47,8 @@ export async function getWishlist(userId: string): Promise<WishlistItemUI[]> {
     .select('*')
     .eq('user_id', userId)
     .order('priority', { ascending: false })
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
 
   if (error) throw error;
   return data ?? [];
@@ -168,7 +169,8 @@ export async function getCircleWishlists(circleId: string): Promise<
   const { data: members, error: membersError } = await supabase
     .from('circle_members')
     .select('user_id')
-    .eq('circle_id', circleId);
+    .eq('circle_id', circleId)
+    .limit(50);
 
   if (membersError) throw membersError;
 
@@ -179,7 +181,8 @@ export async function getCircleWishlists(circleId: string): Promise<
     .from('wishlist_items')
     .select('*, profiles!wishlist_items_user_id_fkey(display_name, avatar_url)')
     .in('user_id', userIds)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
 
   if (error) throw error;
   return data ?? [];
@@ -211,7 +214,8 @@ export async function getFriendsWishlist(
     .from('circle_members')
     .select('user_id')
     .eq('circle_id', circleId)
-    .neq('user_id', userId);
+    .neq('user_id', userId)
+    .limit(50);
 
   if (membersError) throw membersError;
 
@@ -222,7 +226,8 @@ export async function getFriendsWishlist(
     .from('wishlist_items')
     .select('*, profiles!wishlist_items_user_id_fkey(display_name)')
     .in('user_id', userIds)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50);
 
   if (error) throw error;
   return (data ?? []).map((item: any) => ({

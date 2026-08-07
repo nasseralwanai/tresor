@@ -168,7 +168,8 @@ export async function getCollectionInsights(userId: string): Promise<{
   const { data: items, error } = await supabase
     .from('items')
     .select('*')
-    .eq('owner_id', userId);
+    .eq('owner_id', userId)
+    .limit(50);
 
   if (error) throw error;
 
@@ -187,7 +188,8 @@ export async function getCollectionInsights(userId: string): Promise<{
   const { data: borrowCounts, error: borrowCountsError } = await supabase
     .from('borrow_transactions')
     .select('item_id')
-    .eq('lender_id', userId);
+    .eq('lender_id', userId)
+    .limit(50);
 
   if (borrowCountsError) throw borrowCountsError;
 

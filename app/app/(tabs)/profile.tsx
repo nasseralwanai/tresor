@@ -3,7 +3,7 @@
  * Accessible from the tab bar via a profile tab or header action.
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -38,14 +38,28 @@ export default function ProfileScreen() {
   } | null>(null);
   const [itemCount, setItemCount] = useState(0);
   const [circle, setCircle] = useState<{ id: string; name: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  useMemo(() => {
-    if (user?.id) {
-      getCurrentUserInfo(user.id).then(setUserInfo);
-      getMyItems(user.id).then((items) => setItemCount(items.length));
-      getMyCircle(user.id).then(setCircle);
+  const loadData = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      setError(null);
+      const [info, items, circleData] = await Promise.all([
+        getCurrentUserInfo(user.id),
+        getMyItems(user.id),
+        getMyCircle(user.id),
+      ]);
+      setUserInfo(info);
+      setItemCount(items.length);
+      setCircle(circleData);
+    } catch (e: any) {
+      console.error('[profile] loadData error:', e);
+      setError(e?.message ?? 'Something went wrong.');
+    } finally {
+      // No loading state in this component currently
     }
   }, [user?.id]);
+  useEffect(() => { loadData(); }, [loadData]);
 
   const stats = [
     { label: 'Items Owned', value: itemCount, icon: 'treasure-chest' },
@@ -71,6 +85,20 @@ export default function ProfileScreen() {
       },
     ]);
   };
+
+  if (error) {
+    return (
+      <>
+        <Stack.Screen options={{ title: 'Profile' }} />
+        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
+          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md, textAlign: 'center', paddingHorizontal: spacing.lg }}>{error}</Text>
+          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
+            <Text style={{ color: colors.accent }}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    );
+  }
 
   return (
     <>

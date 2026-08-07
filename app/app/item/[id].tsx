@@ -41,27 +41,35 @@ export default function ItemDetailScreen() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [isLendable, setIsLendable] = useState(true);
   const { user } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     if (!id) return;
-    const [itemData, history, borrow] = await Promise.all([
-      getItem(id),
-      getItemBorrowHistory(id),
-      getActiveBorrowForItem(id),
-    ]);
-    setItem(itemData);
-    setBorrowHistory(history);
-    setActiveBorrow(borrow);
-    if (itemData) {
-      setIsPrivate(itemData.is_private);
-      setIsLendable(itemData.is_lendable);
+    try {
+      setError(null);
+      const [itemData, history, borrow] = await Promise.all([
+        getItem(id),
+        getItemBorrowHistory(id),
+        getActiveBorrowForItem(id),
+      ]);
+      setItem(itemData);
+      setBorrowHistory(history);
+      setActiveBorrow(borrow);
+      if (itemData) {
+        setIsPrivate(itemData.is_private);
+        setIsLendable(itemData.is_lendable);
+      }
+    } catch (e: any) {
+      console.error('[item] loadData error:', e);
+      setError(e?.message ?? 'Something went wrong.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [id]);
 
-  useMemo(() => {
+  useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const handlePrivacyToggle = async (value: boolean) => {
     setIsPrivate(value);
@@ -98,6 +106,20 @@ export default function ItemDetailScreen() {
         <Stack.Screen options={{ headerShown: false }} />
         <View style={[styles.container, { backgroundColor: colors.background }]}>
           <ActivityIndicator color={colors.accent} style={{ marginTop: 100 }} />
+        </View>
+      </>
+    );
+  }
+
+  if (error && !loading) {
+    return (
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
+          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
+          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
+            <Text style={{ color: colors.accent }}>Retry</Text>
+          </TouchableOpacity>
         </View>
       </>
     );

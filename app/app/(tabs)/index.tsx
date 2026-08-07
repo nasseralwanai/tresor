@@ -36,16 +36,25 @@ export default function MyTresorScreen() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     if (!user?.id) { setLoading(false); return; }
-    const [itemsData, insightsData] = await Promise.all([
-      getMyItems(user.id),
-      getCollectionInsights(user.id),
-    ]);
-    setItems(itemsData); setInsights(insightsData); setLoading(false); setRefreshing(false);
+    try {
+      setError(null);
+      const [itemsData, insightsData] = await Promise.all([
+        getMyItems(user.id),
+        getCollectionInsights(user.id),
+      ]);
+      setItems(itemsData); setInsights(insightsData);
+    } catch (e: any) {
+      console.error('[home] loadData error:', e);
+      setError(e?.message ?? 'Something went wrong. Pull to retry.');
+    } finally {
+      setLoading(false); setRefreshing(false);
+    }
   }, [user?.id]);
-  useMemo(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [loadData]);
   const onRefresh = useCallback(() => { setRefreshing(true); loadData(); }, [loadData]);
 
   const itemsByCategory = useMemo(() => {
@@ -58,6 +67,19 @@ export default function MyTresorScreen() {
 
   if (loading) {
     return (<><Stack.Screen options={{ title: 'My Trésor' }} /><View style={[styles.container, { backgroundColor: colors.background }]}><ScrollView showsVerticalScrollIndicator={false}><HomeSkeleton /></ScrollView></View></>);
+  }
+  if (error && !loading) {
+    return (
+      <>
+        <Stack.Screen options={{ title: 'My Trésor' }} />
+        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
+          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
+          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
+            <Text style={{ color: colors.accent }}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    );
   }
   const empty = items.length === 0;
   return (

@@ -30,17 +30,25 @@ export default function ActiveBorrowScreen() {
   const { user } = useAuth();
   const [borrows, setBorrows] = useState<BorrowTransactionEnriched[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     if (!user?.id) { setLoading(false); return; }
-    const data = await getActiveBorrows(user.id);
-    setBorrows(data);
-    setLoading(false);
+    try {
+      setError(null);
+      const data = await getActiveBorrows(user.id);
+      setBorrows(data);
+    } catch (e: any) {
+      console.error('[active-borrows] loadData error:', e);
+      setError(e?.message ?? 'Something went wrong. Pull to retry.');
+    } finally {
+      setLoading(false);
+    }
   }, [user?.id]);
 
-  useMemo(() => {
+  useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const handleMarkReturned = async (borrowId: string) => {
     hapticSuccess();
@@ -60,6 +68,20 @@ export default function ActiveBorrowScreen() {
         <Stack.Screen options={{ title: 'Active Borrows' }} />
         <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
           <ActivityIndicator color={colors.accent} />
+        </View>
+      </>
+    );
+  }
+
+  if (error && !loading) {
+    return (
+      <>
+        <Stack.Screen options={{ title: 'Active Borrows' }} />
+        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
+          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
+          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
+            <Text style={{ color: colors.accent }}>Retry</Text>
+          </TouchableOpacity>
         </View>
       </>
     );

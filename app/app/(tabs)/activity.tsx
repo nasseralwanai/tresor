@@ -44,16 +44,38 @@ export default function ActivityScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [voteSelected, setVoteSelected] = useState<number | null>(null);
   const currentUserId = user?.id ?? '';
+  const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     if (!circleId) { setLoading(false); return; }
-    const data = await getActivityFeed(circleId);
-    setActivities(data); setLoading(false); setRefreshing(false);
+    try {
+      setError(null);
+      const data = await getActivityFeed(circleId);
+      setActivities(data);
+    } catch (e: any) {
+      console.error('[activity] loadData error:', e);
+      setError(e?.message ?? 'Something went wrong. Pull to retry.');
+    } finally {
+      setLoading(false); setRefreshing(false);
+    }
   }, [circleId]);
-  useMemo(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [loadData]);
   const onRefresh = useCallback(() => { setRefreshing(true); loadData(); }, [loadData]);
   const handleMarkReturned = async (id: string) => { hapticSuccess(); await markReturned(id); loadData(); };
 
+  if (error && !loading) {
+    return (
+      <>
+        <Stack.Screen options={{ title: "Activity" }} />
+        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
+          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
+          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
+            <Text style={{ color: colors.accent }}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    );
+  }
   if (loading) return (<><Stack.Screen options={{ title: "Activity" }} /><View style={[styles.container, { backgroundColor: colors.background }]}><View style={styles.list}>{[1,2,3,4].map((i) => (<Card key={i} style={styles.skeletonCard}><View style={{ flexDirection: "row", alignItems: "center", gap: spacing.md }}><Skeleton width={34} height={34} borderRadius={17} /><View style={{ flex: 1 }}><Skeleton width={200} height={14} style={{ marginBottom: 4 }} /><Skeleton width={60} height={11} /></View></View></Card>))}</View></View></>);
   if (activities.length === 0) return (<><Stack.Screen options={{ title: "Activity" }} /><View style={[styles.container, { backgroundColor: colors.background, alignItems: "center", justifyContent: "center" }]}><MaterialCommunityIcons name="bell-outline" size={48} color={colors.textSecondary} /><Text style={[styles.emptyText, { color: colors.textSecondary }]}>No Activity Yet</Text><Text style={[styles.emptySub, { color: colors.textSecondary }]}>Borrow requests, new items, and returns will show here</Text></View></>);
 

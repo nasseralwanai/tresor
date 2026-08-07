@@ -3,7 +3,7 @@
  * "Mark Returned" on active borrows. "Who Wore It Best" voting card.
  */
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { TouchableOpacity, View, Text, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { Stack } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";

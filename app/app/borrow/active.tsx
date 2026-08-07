@@ -2,7 +2,7 @@
  * Active Borrow Screen — shows "Item is with [person]" + Mark Returned + Nudge buttons.
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
   Text,

@@ -3,7 +3,7 @@
  * tabbed sections (Details | History | Lending), and borrow actions.
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   Text,

@@ -4,7 +4,7 @@
  * Friends' Dreams: circle members' wishlist items with react/comment capability.
  */
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, RefreshControl } from "react-native";
 import { Stack } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";

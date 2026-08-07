@@ -4,8 +4,9 @@
  * Entrance animation: fade + slide up via moti.
  */
 
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ViewStyle } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { View as MotiView } from 'moti';
+import { Image } from 'expo-image';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
@@ -58,7 +59,13 @@ export function PieceOfTheDay({
       {/* Photo area */}
       <View style={styles.photoWrap}>
         {item.primary_image_url ? (
-          <View style={styles.photo} />
+          <Image
+            source={{ uri: item.primary_image_url }}
+            style={styles.photo}
+            contentFit="cover"
+            transition={300}
+            blurRadius={20}
+          />
         ) : (
           <ItemPhotoPlaceholder
             letter={item.brand}
@@ -248,7 +255,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// Silence unused — kept for potential future use
-void Alert;
-void typography;
-void spacing;
+

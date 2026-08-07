@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trésor — User Management & Onboarding Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0B0B0F;
+    --surface: #15151C;
+    --surface2: #1C1C26;
+    --border: #2A2A38;
+    --borderLight: #3A3A4A;
+    --text: #E8E8F0;
+    --textDim: #9A9AAE;
+    --textFaint: #5A5A6E;
+    --accent: #C9A961;
+    --accentDim: rgba(201,169,97,0.15);
+    --cyan: #22d3ee;
+    --cyanBg: rgba(34,211,238,0.08);
+    --emerald: #34d399;
+    --emeraldBg: rgba(52,211,153,0.08);
+    --violet: #a78bfa;
+    --violetBg: rgba(167,139,250,0.08);
+    --rose: #fb7185;
+    --roseBg: rgba(251,113,133,0.08);
+    --amber: #fbbf24;
+    --amberBg: rgba(251,191,36,0.08);
+    --orange: #fb923c;
+    --orangeBg: rgba(251,146,60,0.08);
+    --slate: #94a3b8;
+    --slateBg: rgba(148,163,184,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 48px; }
+  .header .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 32px; font-weight: 600; letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .header .sub { font-size: 14px; color: var(--textDim); font-weight: 300; }
+  .header .meta {
+    display: flex; gap: 24px; justify-content: center; margin-top: 20px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--textFaint);
+  }
+  .header .meta span b { color: var(--textDim); font-weight: 500; }
+
+  /* ── Diagram Card ── */
+  .diagram-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    overflow-x: auto;
+    margin-bottom: 40px;
+  }
+
+  svg { display: block; margin: 0 auto; }
+
+  /* ── Section ── */
+  .section { margin-bottom: 40px; }
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::before {
+    content: ''; width: 24px; height: 1px; background: var(--accent);
+  }
+
+  /* ── Info Cards ── */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+  }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .card-dot.cyan { background: var(--cyan); }
+  .card-dot.emerald { background: var(--emerald); }
+  .card-dot.violet { background: var(--violet); }
+  .card-dot.rose { background: var(--rose); }
+  .card-dot.amber { background: var(--amber); }
+  .card-dot.accent { background: var(--accent); }
+  .card h3 { font-size: 13px; font-weight: 600; }
+  .card ul { list-style: none; }
+  .card li {
+    font-size: 12px; color: var(--textDim); padding: 4px 0;
+    padding-left: 16px; position: relative;
+  }
+  .card li::before { content: '\2014'; position: absolute; left: 0; color: var(--textFaint); }
+  .card li b { color: var(--text); font-weight: 500; }
+
+  /* ── Flow Diagram ── */
+  .flow-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px; margin-bottom: 24px;
+  }
+  .flow-card h3 {
+    font-size: 14px; font-weight: 600; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .flow-card h3 .badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    background: var(--accentDim); color: var(--accent);
+    padding: 3px 8px; border-radius: 4px; letter-spacing: 0.05em;
+  }
+
+  /* ── Mismatch Warning ── */
+  .warning {
+    background: rgba(251,113,133,0.06);
+    border: 1px solid rgba(251,113,133,0.3);
+    border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;
+  }
+  .warning-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+  }
+  .warning-icon { width: 18px; height: 18px; }
+  .warning h3 { font-size: 13px; color: var(--rose); font-weight: 600; }
+  .warning p { font-size: 12px; color: var(--textDim); }
+  .warning ul { margin-top: 8px; padding-left: 20px; }
+  .warning li { font-size: 12px; color: var(--textDim); padding: 3px 0; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center; padding: 32px 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--textFaint); letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 768px) {
+    .header h1 { font-size: 24px; }
+    .diagram-card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="kicker">Trésor · User Management Architecture</div>
+    <h1>Phone-First Auth & Onboarding Flow</h1>
+    <p class="sub">SMS OTP primary · WhatsApp OTP secondary · Email/password fallback</p>
+    <div class="meta">
+      <span><b>Author</b> Nigel</span>
+      <span><b>Status</b> DRAFT</span>
+      <span><b>Date</b> Aug 7, 2026</span>
+      <span><b>Visualized by</b> Nasser (root)</span>
+    </div>
+  </div>
+
+  <!-- ═══ ARCHITECTURE DIAGRAM ═══ -->
+  <div class="diagram-card">
+    <svg width="1100" height="620" viewBox="0 0 1100 620">
+      <!-- Grid background -->
+      <defs>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+        </pattern>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#5A5A6E"/>
+        </marker>
+        <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#22d3ee"/>
+        </marker>
+        <marker id="arrow-emerald" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399"/>
+        </marker>
+        <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#fbbf24"/>
+        </marker>
+        <marker id="arrow-rose" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#fb7185"/>
+        </marker>
+      </defs>
+      <rect width="1100" height="620" fill="url(#grid)" rx="8"/>
+
+      <!-- ── TIER LABELS ── -->
+      <text x="170" y="35" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E" letter-spacing="0.1em">PRIMARY · 90%+</text>
+      <text x="500" y="35" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E" letter-spacing="0.1em">SECONDARY</text>
+      <text x="830" y="35" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E" letter-spacing="0.1em">TERTIARY · FALLBACK</text>
+
+      <!-- ── TIER 1: SMS OTP ── -->
+      <rect x="40" y="55" width="280" height="90" rx="8" fill="#15151C" stroke="#2A2A38" stroke-width="1"/>
+      <rect x="40" y="55" width="280" height="90" rx="8" fill="rgba(34,211,238,0.06)" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="60" y="80" font-family="Inter" font-size="13" font-weight="600" fill="#E8E8F0">UAE Mobile SMS OTP</text>
+      <text x="60" y="98" font-family="JetBrains Mono" font-size="9" fill="#9A9AAE">Supabase GoTrue (native)</text>
+      <text x="60" y="115" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">signInWithOtp({ phone })</text>
+      <text x="60" y="130" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">verifyOtp({ phone, token })</text>
+
+      <!-- ── TIER 2: WhatsApp OTP ── -->
+      <rect x="370" y="55" width="280" height="90" rx="8" fill="#15151C" stroke="#2A2A38" stroke-width="1"/>
+      <rect x="370" y="55" width="280" height="90" rx="8" fill="rgba(52,211,153,0.06)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="390" y="80" font-family="Inter" font-size="13" font-weight="600" fill="#E8E8F0">WhatsApp OTP</text>
+      <text x="390" y="98" font-family="JetBrains Mono" font-size="9" fill="#9A9AAE">Send SMS Hook (edge fn)</text>
+      <text x="390" y="115" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">GoTrue generates OTP</text>
+      <text x="390" y="130" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">Edge fn routes to WhatsApp</text>
+
+      <!-- ── TIER 3: Email/Password ── -->
+      <rect x="700" y="55" width="280" height="90" rx="8" fill="#15151C" stroke="#2A2A38" stroke-width="1"/>
+      <rect x="700" y="55" width="280" height="90" rx="8" fill="rgba(167,139,250,0.06)" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="720" y="80" font-family="Inter" font-size="13" font-weight="600" fill="#E8E8F0">Email / Password</text>
+      <text x="720" y="98" font-family="JetBrains Mono" font-size="9" fill="#9A9AAE">Supabase GoTrue (native)</text>
+      <text x="720" y="115" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">signInWithPassword()</text>
+      <text x="720" y="130" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">signUp() — existing code</text>
+
+      <!-- ── ARROWS TO GOTRUE ── -->
+      <path d="M 180 145 L 180 175 L 440 175 L 440 195" fill="none" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
+      <path d="M 510 145 L 510 195" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+      <path d="M 840 145 L 840 175 L 580 175 L 580 195" fill="none" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- ── SUPABASE GOTRUE ── -->
+      <rect x="330" y="200" width="380" height="80" rx="8" fill="#15151C" stroke="#2A2A38" stroke-width="1"/>
+      <rect x="330" y="200" width="380" height="80" rx="8" fill="rgba(251,191,36,0.04)" stroke="#fbbf24" stroke-width="1.5"/>
+      <text x="520" y="228" text-anchor="middle" font-family="Inter" font-size="14" font-weight="600" fill="#E8E8F0">Supabase GoTrue (auth.users)</text>
+      <text x="520" y="248" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9A9AAE">OTP generation · Hash storage · Session creation · Verification</text>
+      <text x="520" y="264" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">JWT 1h expiry · Refresh rotation · test_otp for local dev</text>
+
+      <!-- ── ARROW: GoTrue → Send SMS Hook ── -->
+      <path d="M 510 280 L 510 310" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-emerald)"/>
+      <text x="520" y="300" font-family="JetBrains Mono" font-size="8" fill="#5A5A6E">hook invocation</text>
+
+      <!-- ── ARROW: GoTrue → Twilio SMS (direct) ── -->
+      <path d="M 420 280 L 420 310" fill="none" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
+      <text x="380" y="300" font-family="JetBrains Mono" font-size="8" fill="#5A5A6E">direct SMS</text>
+
+      <!-- ── SEND SMS HOOK (Edge Function) ── -->
+      <rect x="370" y="315" width="280" height="70" rx="8" fill="#15151C" stroke="#2A2A38" stroke-width="1"/>
+      <rect x="370" y="315" width="280" height="70" rx="8" fill="rgba(52,211,153,0.06)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="510" y="340" text-anchor="middle" font-family="Inter" font-size="12" font-weight="600" fill="#E8E8F0">Send SMS Hook (Edge Function)</text>
+      <text x="510" y="358" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9A9AAE">Reads user_metadata.otp_channel</text>
+      <text x="510" y="372" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">Routes: 'sms' → Twilio SMS · 'whatsapp' → Twilio WA</text>
+
+      <!-- ── ARROWS: Hook → Twilio services ── -->
+      <path d="M 420 385 L 420 415" fill="none" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
+      <path d="M 560 385 L 560 415" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+
+      <!-- ── TWILIO SMS ── -->
+      <rect x="320" y="420" width="200" height="60" rx="8" fill="#15151C" stroke="#2A2A38" stroke-width="1"/>
+      <rect x="320" y="420" width="200" height="60" rx="8" fill="rgba(34,211,238,0.06)" stroke="#22d3ee" stroke-width="1.5"/>
+      <text x="420" y="445" text-anchor="middle" font-family="Inter" font-size="12" font-weight="600" fill="#E8E8F0">Twilio SMS API</text>
+      <text x="420" y="462" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">$0.015/msg · UAE Sender ID</text>
+
+      <!-- ── TWILIO WHATSAPP ── -->
+      <rect x="560" y="420" width="200" height="60" rx="8" fill="#15151C" stroke="#2A2A38" stroke-width="1"/>
+      <rect x="560" y="420" width="200" height="60" rx="8" fill="rgba(52,211,153,0.06)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="660" y="445" text-anchor="middle" font-family="Inter" font-size="12" font-weight="600" fill="#E8E8F0">Twilio WhatsApp API</text>
+      <text x="660" y="462" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">$0.021/msg · Auth template</text>
+
+      <!-- ── TEST OTP (local dev) ── -->
+      <rect x="80" y="315" width="200" height="60" rx="8" fill="#15151C" stroke="#2A2A38" stroke-width="1"/>
+      <rect x="80" y="315" width="200" height="60" rx="8" fill="rgba(251,191,36,0.06)" stroke="#fbbf24" stroke-width="1.5"/>
+      <text x="180" y="340" text-anchor="middle" font-family="Inter" font-size="12" font-weight="600" fill="#E8E8F0">Test OTP (local dev)</text>
+      <text x="180" y="358" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9A9AAE">config.toml test_otp map</text>
+      <text x="180" y="372" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">Fixed codes · No SMS sent</text>
+
+      <!-- Arrow: test_otp bypasses to GoTrue -->
+      <path d="M 280 345 L 330 270" fill="none" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#arrow-amber)"/>
+      <text x="250" y="310" font-family="JetBrains Mono" font-size="8" fill="#fbbf24">bypass</text>
+
+      <!-- ── DATABASE ── -->
+      <rect x="820" y="200" width="240" height="130" rx="8" fill="#15151C" stroke="#2A2A38" stroke-width="1"/>
+      <rect x="820" y="200" width="240" height="130" rx="8" fill="rgba(167,139,250,0.06)" stroke="#a78bfa" stroke-width="1.5"/>
+      <text x="940" y="225" text-anchor="middle" font-family="Inter" font-size="12" font-weight="600" fill="#E8E8F0">PostgreSQL (Supabase)</text>
+      <line x1="840" y1="235" x2="1040" y2="235" stroke="#2A2A38" stroke-width="1"/>
+      <text x="840" y="252" font-family="JetBrains Mono" font-size="9" fill="#9A9AAE">profiles (phone NOT NULL UNIQUE)</text>
+      <text x="840" y="268" font-family="JetBrains Mono" font-size="9" fill="#9A9AAE">otp_attempts (rate limiting)</text>
+      <text x="840" y="284" font-family="JetBrains Mono" font-size="9" fill="#9A9AAE">circles (invite validation)</text>
+      <text x="840" y="300" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">Triggers: sync_phone, new_user</text>
+      <text x="840" y="316" font-family="JetBrains Mono" font-size="9" fill="#5A5A6E">RLS on all tables</text>
+
+      <!-- Arrow: GoTrue → DB -->
+      <path d="M 710 240 L 820 240" fill="none" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- ── SECURITY BOUNDARY ── -->
+      <rect x="30" y="500" width="1040" height="80" rx="8" fill="none" stroke="#fb7185" stroke-width="1" stroke-dasharray="6,4"/>
+      <text x="50" y="522" font-family="JetBrains Mono" font-size="9" fill="#fb7185" letter-spacing="0.1em">SECURITY LAYER</text>
+      <text x="50" y="542" font-family="Inter" font-size="11" fill="#9A9AAE">RLS policies · Invite-only registration · Circle membership isolation · JWT 1h + refresh rotation</text>
+      <text x="50" y="560" font-family="Inter" font-size="11" fill="#9A9AAE">Rate limiting: 5 OTP/phone/hr · 10 OTP/IP/hr · 3 failed attempts → 30min lockout · Webhook signature verification</text>
+      <text x="50" y="575" font-family="Inter" font-size="11" fill="#5A5A6E">Session: 30-day max · 7-day inactivity timeout · Manual linking enabled</text>
+
+      <!-- ── LEGEND ── -->
+      <rect x="40" y="600" width="12" height="12" rx="2" fill="rgba(34,211,238,0.15)" stroke="#22d3ee" stroke-width="1"/>
+      <text x="58" y="610" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">Frontend/Client</text>
+      <rect x="170" y="600" width="12" height="12" rx="2" fill="rgba(52,211,153,0.15)" stroke="#34d399" stroke-width="1"/>
+      <text x="188" y="610" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">Edge Function</text>
+      <rect x="290" y="600" width="12" height="12" rx="2" fill="rgba(167,139,250,0.15)" stroke="#a78bfa" stroke-width="1"/>
+      <text x="308" y="610" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">Database</text>
+      <rect x="380" y="600" width="12" height="12" rx="2" fill="rgba(251,191,36,0.15)" stroke="#fbbf24" stroke-width="1"/>
+      <text x="398" y="610" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">Infra/Config</text>
+      <rect x="490" y="600" width="12" height="12" rx="2" fill="none" stroke="#fb7185" stroke-width="1" stroke-dasharray="2,2"/>
+      <text x="508" y="610" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">Security Boundary</text>
+    </svg>
+  </div>
+
+  <!-- ═══ ONBOARDING FLOW ═══ -->
+  <div class="section">
+    <div class="section-title">Onboarding Flow — Phone-First (Nigel's Design)</div>
+    <div class="flow-card">
+      <h3> <span class="badge">NIGEL'S FLOW</span> Phone-first, invite after auth</h3>
+      <svg width="1050" height="100" viewBox="0 0 1050 100">
+        <defs>
+          <marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#C9A961"/>
+          </marker>
+        </defs>
+
+        <!-- Screen 1: Welcome -->
+        <rect x="10" y="20" width="130" height="60" rx="8" fill="rgba(201,169,97,0.08)" stroke="#C9A961" stroke-width="1.5"/>
+        <text x="75" y="42" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#E8E8F0">Welcome</text>
+        <text x="75" y="58" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">Logo + Get Started</text>
+        <text x="75" y="72" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#5A5A6E">→ phone-input</text>
+
+        <!-- Arrow -->
+        <path d="M 140 50 L 165 50" fill="none" stroke="#C9A961" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+        <!-- Screen 2: Phone Input (NEW) -->
+        <rect x="170" y="20" width="140" height="60" rx="8" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="240" y="38" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#E8E8F0">Phone Input</text>
+        <text x="240" y="52" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#22d3ee">NEW</text>
+        <text x="240" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">+971 · SMS/WA toggle</text>
+        <text x="240" y="78" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#5A5A6E">normalizeUaePhone()</text>
+
+        <!-- Arrow -->
+        <path d="M 310 50 L 335 50" fill="none" stroke="#C9A961" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+        <!-- Screen 3: OTP Verify -->
+        <rect x="340" y="20" width="130" height="60" rx="8" fill="rgba(34,211,238,0.08)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="405" y="38" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#E8E8F0">OTP Verify</text>
+        <text x="405" y="52" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#22d3ee">REFACTORED</text>
+        <text x="405" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">6-digit code</text>
+        <text x="405" y="78" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#5A5A6E">Auto-submit · Resend</text>
+
+        <!-- Arrow -->
+        <path d="M 470 50 L 495 50" fill="none" stroke="#C9A961" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+        <!-- Decision diamond -->
+        <path d="M 530 30 L 560 50 L 530 70 L 500 50 Z" fill="rgba(251,191,36,0.08)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="530" y="48" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#fbbf24">New?</text>
+        <text x="530" y="60" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#5A5A6E">profile?</text>
+
+        <!-- Arrow: New → Invite Code -->
+        <path d="M 560 50 L 585 50" fill="none" stroke="#C9A961" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+        <!-- Screen 4: Invite Code (moved) -->
+        <rect x="590" y="20" width="130" height="60" rx="8" fill="rgba(201,169,97,0.08)" stroke="#C9A961" stroke-width="1.5"/>
+        <text x="655" y="38" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#E8E8F0">Invite Code</text>
+        <text x="655" y="52" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#fbbf24">MOVED</text>
+        <text x="655" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">After auth (RLS fix)</text>
+        <text x="655" y="78" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#5A5A6E">New users only</text>
+
+        <!-- Arrow -->
+        <path d="M 720 50 L 745 50" fill="none" stroke="#C9A961" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+        <!-- Screen 5: Profile Setup -->
+        <rect x="750" y="20" width="130" height="60" rx="8" fill="rgba(201,169,97,0.08)" stroke="#C9A961" stroke-width="1.5"/>
+        <text x="815" y="38" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#E8E8F0">Profile Setup</text>
+        <text x="815" y="52" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">Name + Avatar</text>
+        <text x="815" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#5A5A6E">phone from user.phone</text>
+        <text x="815" y="78" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#5A5A6E">joinCircle()</text>
+
+        <!-- Arrow -->
+        <path d="M 880 50 L 905 50" fill="none" stroke="#C9A961" stroke-width="1.5" marker-end="url(#flow-arrow)"/>
+
+        <!-- Screen 6: App -->
+        <rect x="910" y="20" width="120" height="60" rx="8" fill="rgba(52,211,153,0.08)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="970" y="42" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="#34d399">App (Tabs)</text>
+        <text x="970" y="58" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#9A9AAE">My Tresor | Circle</text>
+        <text x="970" y="72" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#5A5A6E">Add | Wishlist | Activity</text>
+
+        <!-- Bypass arrow: Returning user skips invite+profile -->
+        <path d="M 530 30 L 530 10 L 970 10 L 970 20" fill="none" stroke="#34d399" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#flow-arrow)"/>
+        <text x="700" y="8" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#34d399">Returning user → straight to app</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ═══ MUAATH vs NIGEL MISMATCH ═══ -->
+  <div class="warning">
+    <div class="warning-header">
+      <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2">
+        <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+      </svg>
+      <h3>Design vs Architecture Mismatch — Muaath Needs to Update</h3>
+    </div>
+    <p>Nigel's architecture (phone-first) and Muaath's current mockup (invite-first) diverge on 3 points:</p>
+    <ul>
+      <li><b>1. Flow order:</b> Muaath's mockup shows <code>Welcome → Invite Code → Bulk Capture</code>. Nigel specifies <code>Welcome → Phone Input → OTP → Invite Code → Profile Setup</code>. The invite code moves AFTER authentication.</li>
+      <li><b>2. Missing screens:</b> Muaath has no phone input screen, no OTP verification screen, and no SMS/WhatsApp channel toggle. These are new screens in Nigel's architecture.</li>
+      <li><b>3. Phone input UX:</b> Nigel specifies a UAE phone input with +971 prefix, SMS/WhatsApp segmented control, and "Use email instead" link. Muaath's mockup starts with invite code entry directly.</li>
+    </ul>
+    <p style="margin-top:12px"><b>Action:</b> Muaath needs to redesign the onboarding section (frames 1a-1b) to match Nigel's phone-first flow. The bulk capture screen stays but moves to after profile setup, not right after invite code.</p>
+  </div>
+
+  <!-- ═══ SUMMARY CARDS ═══ -->
+  <div class="section">
+    <div class="section-title">Key Facts</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot cyan"></div>
+          <h3>Auth Tiers</h3>
+        </div>
+        <ul>
+          <li><b>Primary:</b> UAE SMS OTP (Twilio, $0.015/msg)</li>
+          <li><b>Secondary:</b> WhatsApp OTP (Twilio WA, $0.021/msg)</li>
+          <li><b>Tertiary:</b> Email/password (existing, kept as fallback)</li>
+          <li><b>Local dev:</b> test_otp map — zero cost, no SMS</li>
+          <li><b>Account linking:</b> Phone + email on same user</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>New Screens Needed</h3>
+        </div>
+        <ul>
+          <li><b>phone-input.tsx</b> — phone entry + SMS/WA toggle</li>
+          <li><b>phone-otp.tsx</b> — refactor to real OTP entry</li>
+          <li><b>email-login.tsx</b> — email/password fallback</li>
+          <li><b>src/lib/phone.ts</b> — UAE normalization utility</li>
+          <li><b>send-otp/</b> — edge function for WhatsApp routing</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot violet"></div>
+          <h3>Database Changes</h3>
+        </div>
+        <ul>
+          <li><b>Migration 0008:</b> phone NOT NULL UNIQUE</li>
+          <li><b>New table:</b> otp_attempts (rate limiting)</li>
+          <li><b>New columns:</b> email, preferred_otp_channel</li>
+          <li><b>Triggers:</b> sync_profile_phone, handle_new_user</li>
+          <li><b>RLS:</b> circles SELECT for authenticated invite validation</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>Cost (5-15 users)</h3>
+        </div>
+        <ul>
+          <li><b>SMS:</b> ~$0.45/month (30 msgs)</li>
+          <li><b>WhatsApp:</b> ~$0.62/month (30 msgs)</li>
+          <li><b>Sender ID registration:</b> One-time ~$0-25</li>
+          <li><b>Total:</b> ~$1-3/month — well within $20-50 budget</li>
+          <li><b>Twilio:</b> Pay-as-you-go, no monthly minimum</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>Security</h3>
+        </div>
+        <ul>
+          <li><b>Invite-only:</b> No open signup, invite code required</li>
+          <li><b>RLS:</b> Circle membership isolation</li>
+          <li><b>JWT:</b> 1h expiry, refresh rotation</li>
+          <li><b>Rate limits:</b> 5 OTP/phone/hr, 3 fails → lockout</li>
+          <li><b>Webhook sig:</b> Standard Webhooks verification</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot accent"></div>
+          <h3>Muaath Action Items</h3>
+        </div>
+        <ul>
+          <li><b>Redesign onboarding frames 1a-1b</b> to phone-first</li>
+          <li><b>Add phone input screen</b> with +971 prefix, SMS/WA toggle</li>
+          <li><b>Add OTP verify screen</b> — 6-digit, auto-submit</li>
+          <li><b>Move invite code</b> to after OTP, before profile setup</li>
+          <li><b>Keep bulk capture</b> but move after profile setup</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    TRESOR · USER MANAGEMENT ARCHITECTURE · VISUALIZED FOR NASSER · AUG 7 2026
+  </div>
+
+</div>
+</body>
+</html>

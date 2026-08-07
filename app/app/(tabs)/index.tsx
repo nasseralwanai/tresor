@@ -18,7 +18,6 @@ import {
   TouchableOpacity,
   RefreshControl,
   Alert,
-  Pressable,
 } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -631,6 +630,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// Silence unused imports
-void Pressable;
-void typography;
+

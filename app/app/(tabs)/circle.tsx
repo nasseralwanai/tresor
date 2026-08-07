@@ -24,6 +24,7 @@ import { useAuth } from "@/hooks/useAuth";
 import type { CircleMemberWithItems } from "@/lib/circle";
 import type { Item } from "@/types/items";
 import { EmptyState } from "@/components/EmptyState";
+import { SearchBar } from "@/components/SearchBar";
 
 export default function CircleScreen() {
   const colors = useThemeColors();
@@ -32,6 +33,7 @@ export default function CircleScreen() {
   const [selectedMember, setSelectedMember] = useState<CircleMemberWithItems | null>(null);
   const [memberItems, setMemberItems] = useState<Item[]>([]);
   const [onlyLendable, setOnlyLendable] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [loadingItems, setLoadingItems] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -101,9 +103,21 @@ export default function CircleScreen() {
   }, [selectedMember, onlyLendable]);
 
   const displayItems = useMemo(() => {
-    if (onlyLendable) return memberItems.filter((i) => i.is_lendable && !i.is_private);
-    return memberItems;
-  }, [memberItems, onlyLendable]);
+    let result = memberItems;
+    if (onlyLendable) {
+      result = result.filter((i) => i.is_lendable && !i.is_private);
+    }
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      result = result.filter((i) => {
+        const brand = (i.brand ?? "").toLowerCase();
+        const model = (i.model_name ?? "").toLowerCase();
+        const category = (i.category ?? "").toLowerCase();
+        return brand.includes(q) || model.includes(q) || category.includes(q);
+      });
+    }
+    return result;
+  }, [memberItems, onlyLendable, searchQuery]);
 
   const handleItemPress = (item: Item) => { router.push(`/item/${item.id}` as any); };
 
@@ -137,6 +151,13 @@ export default function CircleScreen() {
                 <Text style={[styles.memberName, { color: colors.textPrimary }]}>{selectedMember.display_name ?? 'Unknown'}</Text>
                 <Text style={[styles.memberCount, { color: colors.textSecondary }]}>{selectedMember.item_count} items in collection</Text>
               </View>
+            </View>
+            <View style={styles.searchWrap}>
+              <SearchBar
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search brand, model, category"
+              />
             </View>
             <TouchableOpacity onPress={toggleLendable} style={[styles.filterToggle, { backgroundColor: onlyLendable ? colors.accent : colors.surface, borderColor: colors.border }]}>
               <MaterialCommunityIcons name={onlyLendable ? "check-circle" : "check-circle-outline"} size={16} color={onlyLendable ? colors.charcoal : colors.textSecondary} />
@@ -212,6 +233,7 @@ const styles = StyleSheet.create({
   memberName: { ...typography.title3, fontSize: 18 },
   memberCount: { ...typography.caption1, marginTop: 2 },
   filterToggle: { flexDirection: "row", alignItems: "center", gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: 10, borderRadius: radius.pill, borderWidth: 0.5, marginHorizontal: spacing.lg + 6, marginBottom: spacing.md, alignSelf: "flex-start" },
+  searchWrap: { paddingHorizontal: spacing.lg + 6, marginBottom: spacing.md },
   filterText: { ...typography.footnote, fontSize: 13 },
   grid: { paddingHorizontal: spacing.lg + 6, gap: 10 },
   gridLoading: { paddingVertical: spacing.xl, alignItems: "center" },

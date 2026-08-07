@@ -28,6 +28,8 @@ import { markReturned } from '@/lib/borrow';
 import { NudgeButton } from '@/components/NudgeButton';
 import { CoOwnersPanel } from '@/components/CoOwnersPanel';
 import { EmptyState } from '@/components/EmptyState';
+import { ErrorView } from '@/components/ErrorView';
+import { classifyError, type AppError } from '@/lib/errors';
 import { useAuth } from '@/hooks/useAuth';
 import { formatCurrency, formatEnum, formatDate, formatRelativeTime } from '@/lib/format';
 import type { Item, BorrowTransaction } from '@/types/items';
@@ -45,7 +47,7 @@ export default function ItemDetailScreen() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [isLendable, setIsLendable] = useState(true);
   const { user } = useAuth();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
 
   const loadData = useCallback(async () => {
     if (!id) return;
@@ -63,9 +65,9 @@ export default function ItemDetailScreen() {
         setIsPrivate(itemData.is_private);
         setIsLendable(itemData.is_lendable);
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('[item] loadData error:', e);
-      setError(e?.message ?? 'Something went wrong.');
+      setError(classifyError(e));
     } finally {
       setLoading(false);
     }
@@ -148,12 +150,7 @@ export default function ItemDetailScreen() {
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
-        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
-          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
-          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
-            <Text style={{ color: colors.accent }}>Retry</Text>
-          </TouchableOpacity>
-        </View>
+        <ErrorView error={error} onRetry={loadData} />
       </>
     );
   }

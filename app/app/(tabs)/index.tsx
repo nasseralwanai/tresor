@@ -47,8 +47,10 @@ import { CircleActivityPreview } from '@/components/home/CircleActivityPreview';
 import { CollectionValueCard } from '@/components/home/CollectionValueCard';
 import { CategoryShelf } from '@/components/home/CategoryShelf';
 import { EmptyState } from '@/components/EmptyState';
+import { ErrorView } from '@/components/ErrorView';
 import { SearchBar } from '@/components/SearchBar';
 import { FilterChip } from '@/components/FilterChip';
+import { classifyError, type AppError } from '@/lib/errors';
 import type { ItemCategory } from '@/types/items';
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -93,7 +95,7 @@ export default function YourCollectionScreen() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<ItemCategory | 'all'>(
     'all'
@@ -125,9 +127,9 @@ export default function YourCollectionScreen() {
         setCircleMemberCount(members.length);
         setActivities(activityData);
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('[home] loadData error:', e);
-      setError(e?.message ?? 'Something went wrong. Pull to retry.');
+      setError(classifyError(e));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -310,35 +312,7 @@ export default function YourCollectionScreen() {
     return (
       <>
         <Stack.Screen options={{ title: 'Your Collection' }} />
-        <View
-          style={[
-            styles.container,
-            {
-              backgroundColor: colors.background,
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-          ]}
-        >
-          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>
-            {error}
-          </Text>
-          <TouchableOpacity
-            onPress={loadData}
-            accessibilityRole="button"
-            accessibilityLabel="Retry loading collection"
-            accessibilityHint="Reload your collection data"
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={{
-              paddingHorizontal: spacing.lg,
-              paddingVertical: spacing.sm,
-              backgroundColor: colors.surface,
-              borderRadius: radius.md,
-            }}
-          >
-            <Text style={{ color: colors.accent }}>Retry</Text>
-          </TouchableOpacity>
-        </View>
+        <ErrorView error={error} onRetry={loadData} />
       </>
     );
   }
@@ -604,6 +578,10 @@ function SearchResultRow({
     <TouchableOpacity
       onPress={() => onPress(item)}
       activeOpacity={0.85}
+      accessibilityRole="button"
+      accessibilityLabel={`${item.brand} ${item.model_name || 'item'}`}
+      accessibilityHint="View item details"
+      hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
       style={[searchResultStyles.row, { backgroundColor: colors.surface, borderColor: colors.border }]}
     >
       <View style={searchResultStyles.info}>

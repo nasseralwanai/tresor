@@ -19,14 +19,14 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
-  TouchableOpacity,
 } from 'react-native';
 import { Stack } from 'expo-router';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, spacing, radius } from '@/theme';
 import { Skeleton } from '@/components/Skeleton';
 import { NotificationBell } from '@/components/NotificationBell';
 import { EmptyState } from '@/components/EmptyState';
+import { ErrorView } from '@/components/ErrorView';
+import { classifyError, type AppError } from '@/lib/errors';
 import { getFeedData, type FeedData, type ShareCard } from '@/lib/feed';
 import { useCircleId } from '@/hooks/useCircleId';
 import { useAuth } from '@/hooks/useAuth';
@@ -48,7 +48,7 @@ export default function ActivityScreen() {
   const [feedData, setFeedData] = useState<FeedData | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
   const [activeFilter, setActiveFilter] = useState<FeedFilter>('all');
   const [commentShare, setCommentShare] = useState<ShareCard | null>(null);
 
@@ -63,9 +63,9 @@ export default function ActivityScreen() {
       setError(null);
       const data = await getFeedData(circleId, user.id);
       setFeedData(data);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('[activity] loadData error:', e);
-      setError(e?.message ?? 'Something went wrong. Pull to retry.');
+      setError(classifyError(e));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -132,41 +132,7 @@ export default function ActivityScreen() {
     return (
       <>
         <Stack.Screen options={{ title: 'Activity', headerShown: false }} />
-        <View
-          style={[
-            styles.container,
-            {
-              backgroundColor: colors.background,
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-          ]}
-        >
-          <MaterialCommunityIcons
-            name="alert-circle-outline"
-            size={48}
-            color={colors.textSecondary}
-          />
-          <Text
-            style={[styles.errorText, { color: colors.textSecondary }]}
-          >
-            {error}
-          </Text>
-          <TouchableOpacity
-            onPress={loadData}
-            style={[
-              styles.retryBtn,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
-          >
-            <Text style={{ color: colors.gold, fontFamily: 'Jost', fontSize: 14 }}>
-              Retry
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <ErrorView error={error} onRetry={loadData} />
       </>
     );
   }
@@ -351,20 +317,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 0.5,
     padding: spacing.md,
-  },
-  errorText: {
-    fontFamily: 'Jost',
-    fontSize: 14,
-    marginTop: spacing.md,
-    marginBottom: spacing.md,
-    textAlign: 'center',
-    paddingHorizontal: spacing.xl,
-  },
-  retryBtn: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.md,
-    borderWidth: 0.5,
   },
   emptyText: {
     fontFamily: 'Georgia',

@@ -27,6 +27,8 @@ import { Card } from '@/components/Card';
 import { Avatar } from '@/components/Avatar';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { ErrorView } from '@/components/ErrorView';
+import { classifyError, type AppError } from '@/lib/errors';
 import { hapticLight, hapticSuccess, hapticError } from '@/lib/haptics';
 import {
   getActiveBorrows,
@@ -44,7 +46,7 @@ export default function ActiveBorrowScreen() {
   const { user } = useAuth();
   const [borrows, setBorrows] = useState<BorrowTransactionEnriched[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
   // Track which transaction is currently being mutated, so its action buttons
   // can show an ActivityIndicator while the request is in flight.
   const [pendingAction, setPendingAction] = useState<{ id: string; action: string } | null>(null);
@@ -55,9 +57,9 @@ export default function ActiveBorrowScreen() {
       setError(null);
       const data = await getActiveBorrows(user.id);
       setBorrows(data);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('[active-borrows] loadData error:', e);
-      setError(e?.message ?? 'Something went wrong. Pull to retry.');
+      setError(classifyError(e));
     } finally {
       setLoading(false);
     }
@@ -146,12 +148,7 @@ export default function ActiveBorrowScreen() {
     return (
       <>
         <Stack.Screen options={{ title: 'Active Borrows' }} />
-        <View style={[styles.container, { backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }]}>
-          <Text style={{ color: colors.textSecondary, marginBottom: spacing.md }}>{error}</Text>
-          <TouchableOpacity onPress={loadData} style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md }}>
-            <Text style={{ color: colors.accent }}>Retry</Text>
-          </TouchableOpacity>
-        </View>
+        <ErrorView error={error} onRetry={loadData} />
       </>
     );
   }

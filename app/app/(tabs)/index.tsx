@@ -17,6 +17,7 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  FlatList,
 } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -46,6 +47,9 @@ import { CircleActivityPreview } from '@/components/home/CircleActivityPreview';
 import { CollectionValueCard } from '@/components/home/CollectionValueCard';
 import { CategoryShelf } from '@/components/home/CategoryShelf';
 import { EmptyState } from '@/components/EmptyState';
+import { SearchBar } from '@/components/SearchBar';
+import { FilterChip } from '@/components/FilterChip';
+import type { ItemCategory } from '@/types/items';
 
 const CATEGORY_LABELS: Record<string, string> = {
   bag: 'Your Bags',
@@ -56,6 +60,18 @@ const CATEGORY_LABELS: Record<string, string> = {
   accessories: 'Your Accessories',
   other: 'Your Other',
 };
+
+/** Category filter chips shown below the search bar on Home. */
+const CATEGORY_CHIPS: { label: string; value: ItemCategory | 'all' }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Bags', value: 'bag' },
+  { label: 'Jewelry', value: 'jewelry' },
+  { label: 'Watches', value: 'watch' },
+  { label: 'Shoes', value: 'shoes' },
+  { label: 'Clothing', value: 'clothing' },
+  { label: 'Accessories', value: 'accessories' },
+  { label: 'Other', value: 'other' },
+];
 
 export default function YourCollectionScreen() {
   const colors = useThemeColors();
@@ -78,6 +94,10 @@ export default function YourCollectionScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<ItemCategory | 'all'>(
+    'all'
+  );
 
   const loadData = useCallback(async () => {
     if (!user?.id) {
@@ -127,6 +147,37 @@ export default function YourCollectionScreen() {
   const handleItemPress = (item: Item) => {
     router.push(`/item/${item.id}` as any);
   };
+
+  // ── Search & category filter ──
+  const isSearchActive = searchQuery.trim().length > 0;
+
+  const filteredItems = useMemo(() => {
+    let result = items;
+
+    // Category filter (active even when search is empty — chips drive this)
+    if (activeCategory !== 'all') {
+      result = result.filter((i) => i.category === activeCategory);
+    }
+
+    // Text search across brand, model_name, color, category
+    if (isSearchActive) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter((i) => {
+        const brand = (i.brand ?? '').toLowerCase();
+        const model = (i.model_name ?? '').toLowerCase();
+        const color = (i.color ?? '').toLowerCase();
+        const category = (i.category ?? '').toLowerCase();
+        return (
+          brand.includes(q) ||
+          model.includes(q) ||
+          color.includes(q) ||
+          category.includes(q)
+        );
+      });
+    }
+
+    return result;
+  }, [items, searchQuery, activeCategory, isSearchActive]);
 
   // Derived data for sections
   const itemsByCategory = useMemo(() => {
@@ -255,6 +306,10 @@ export default function YourCollectionScreen() {
           </Text>
           <TouchableOpacity
             onPress={loadData}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading collection"
+            accessibilityHint="Reload your collection data"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={{
               paddingHorizontal: spacing.lg,
               paddingVertical: spacing.sm,
@@ -314,6 +369,10 @@ export default function YourCollectionScreen() {
                 hapticLight();
                 router.push('/(tabs)/activity' as any);
               }}
+              accessibilityRole="button"
+              accessibilityLabel="View activity feed"
+              accessibilityHint="See circle activity and notifications"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={[styles.iconButton, { backgroundColor: colors.surface }]}
             >
               <MaterialCommunityIcons
@@ -324,15 +383,81 @@ export default function YourCollectionScreen() {
             </TouchableOpacity>
           </MotiView>
 
+          {/* Search Bar + Category Chips */}
+          {!empty && (
+            <View style={styles.searchSection}>
+              <SearchBar
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search by brand, model, color, category"
+              />
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.chipsRow}
+                contentContainerStyle={styles.chipsContent}
+              >
+                {CATEGORY_CHIPS.map((chip) => (
+                  <FilterChip
+                    key={chip.value}
+                    label={chip.label}
+                    selected={activeCategory === chip.value}
+                    onPress={() =>
+                      setActiveCategory(chip.value as ItemCategory | 'all')
+                    }
+                  />
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* Search Results — flat list when query is active */}
+          {!empty && isSearchActive && (
+            <View style={styles.section}>
+              <Text style={[styles.resultsHeader, { color: colors.textSecondary }]}>
+                {filteredItems.length}{' '}
+                {filteredItems.length === 1 ? 'result' : 'results'}
+              </Text>
+              {filteredItems.length === 0 ? (
+                <View style={styles.searchEmpty}>
+                  <MaterialCommunityIcons
+                    name="magnify"
+                    size={48}
+                    color={colors.textSecondary}
+                  />
+                  <Text
+                    style={[styles.searchEmptyText, { color: colors.textSecondary }]}
+                  >
+                    No pieces match your search
+                  </Text>
+                </View>
+              ) : (
+                <FlatList
+                  data={filteredItems}
+                  keyExtractor={(item) => item.id}
+                  scrollEnabled={false}
+                  contentContainerStyle={styles.resultsList}
+                  renderItem={({ item }) => (
+                    <SearchResultRow
+                      item={item}
+                      colors={colors}
+                      onPress={handleItemPress}
+                    />
+                  )}
+                />
+              )}
+            </View>
+          )}
+
           {/* 2. Piece of the Day Spotlight */}
-          {pieceOfDay && !empty && (
+          {pieceOfDay && !empty && !isSearchActive && (
             <View style={styles.section}>
               <PieceOfTheDay item={pieceOfDay} />
             </View>
           )}
 
           {/* 3. Collection Summary Strip */}
-          {!empty && insights && (
+          {!empty && !isSearchActive && insights && (
             <View style={styles.section}>
               <CollectionSummary
                 pieces={insights.totalItems}
@@ -344,7 +469,7 @@ export default function YourCollectionScreen() {
           )}
 
           {/* 4. Gentle Nudge Card — hidden until real nudge data source exists */}
-          {getNudgeTitle() && !empty && (
+          {getNudgeTitle() && !empty && !isSearchActive && (
             <View style={styles.section}>
               <GentleNudgeCard
                 title={getNudgeTitle()!}
@@ -360,7 +485,7 @@ export default function YourCollectionScreen() {
           )}
 
           {/* 5. Style of the Week */}
-          {!empty && styleOfWeek && (
+          {!empty && !isSearchActive && styleOfWeek && (
             <View style={styles.section}>
               <StyleOfTheWeek
                 item={styleOfWeek}
@@ -373,7 +498,7 @@ export default function YourCollectionScreen() {
           )}
 
           {/* 6. Recently Added Carousel */}
-          {!empty && items.length > 0 && (
+          {!empty && !isSearchActive && items.length > 0 && (
             <View style={[styles.section, { paddingHorizontal: 0 }]}>
               <RecentlyAddedCarousel
                 items={items.slice(0, 5)}
@@ -384,7 +509,7 @@ export default function YourCollectionScreen() {
           )}
 
           {/* 7. Currently Shared Section */}
-          {!empty && lentItems.length > 0 && (
+          {!empty && !isSearchActive && lentItems.length > 0 && (
             <View style={[styles.section, { paddingHorizontal: 0 }]}>
               <CurrentlyShared
                 lentItems={lentItems}
@@ -395,7 +520,7 @@ export default function YourCollectionScreen() {
           )}
 
           {/* 8. Circle Activity Preview */}
-          {!empty && activities.length > 0 && (
+          {!empty && !isSearchActive && activities.length > 0 && (
             <View style={[styles.section, { paddingHorizontal: 0 }]}>
               <CircleActivityPreview
                 activities={activities}
@@ -406,7 +531,7 @@ export default function YourCollectionScreen() {
           )}
 
           {/* 9. Collection Value Card */}
-          {!empty && insights && (
+          {!empty && !isSearchActive && insights && (
             <View style={styles.section}>
               <CollectionValueCard
                 totalValue={formatCurrency(insights.totalValue, insights.currency)}
@@ -422,6 +547,7 @@ export default function YourCollectionScreen() {
 
           {/* 10. Category Shelves */}
           {!empty &&
+            !isSearchActive &&
             Object.entries(itemsByCategory).map(([category, catItems]) => (
               <CategoryShelf
                 key={category}
@@ -447,6 +573,94 @@ export default function YourCollectionScreen() {
     </>
   );
 }
+
+// ── Search Result Row ──
+
+type ThemeColors = ReturnType<typeof useThemeColors>;
+
+function SearchResultRow({
+  item,
+  colors,
+  onPress,
+}: {
+  item: Item;
+  colors: ThemeColors;
+  onPress: (item: Item) => void;
+}) {
+  return (
+    <TouchableOpacity
+      onPress={() => onPress(item)}
+      activeOpacity={0.85}
+      style={[searchResultStyles.row, { backgroundColor: colors.surface, borderColor: colors.border }]}
+    >
+      <View style={searchResultStyles.info}>
+        <Text style={[searchResultStyles.brand, { color: colors.accent }]} numberOfLines={1}>
+          {item.brand.toUpperCase()}
+        </Text>
+        <Text style={[searchResultStyles.model, { color: colors.textPrimary }]} numberOfLines={1}>
+          {item.model_name || '—'}
+        </Text>
+        {item.category && (
+          <View style={[searchResultStyles.badge, { backgroundColor: 'rgba(201,169,97,0.10)' }]}>
+            <Text style={[searchResultStyles.badgeText, { color: colors.accent }]}>
+              {capitalize(item.category)}
+            </Text>
+          </View>
+        )}
+      </View>
+      <Text style={[searchResultStyles.value, { color: colors.textSecondary }]}>
+        {formatCurrency(item.estimated_value, item.currency)}
+      </Text>
+      <MaterialCommunityIcons name="chevron-right" size={20} color={colors.textSecondary} />
+    </TouchableOpacity>
+  );
+}
+
+const searchResultStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.md,
+    borderWidth: 0.5,
+    marginBottom: spacing.sm,
+  },
+  info: {
+    flex: 1,
+  },
+  brand: {
+    ...typography.caption2,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginBottom: 2,
+  },
+  model: {
+    ...typography.body,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+    marginTop: 6,
+  },
+  badgeText: {
+    ...typography.caption2,
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  value: {
+    ...typography.subheadline,
+    fontSize: 14,
+    fontWeight: '600',
+    marginRight: spacing.xs,
+  },
+});
 
 // ── Helpers ──
 
@@ -572,6 +786,35 @@ const styles = StyleSheet.create({
   section: {
     paddingHorizontal: spacing.lg + 6,
     marginBottom: spacing.md,
+  },
+  searchSection: {
+    paddingHorizontal: spacing.lg + 6,
+    marginBottom: spacing.sm,
+  },
+  chipsRow: {
+    marginTop: spacing.sm,
+    flexGrow: 0,
+  },
+  chipsContent: {
+    paddingRight: spacing.lg + 6,
+  },
+  resultsHeader: {
+    ...typography.footnote,
+    fontSize: 13,
+    marginBottom: spacing.sm,
+  },
+  resultsList: {
+    paddingBottom: spacing.sm,
+  },
+  searchEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.xxl,
+    gap: spacing.md,
+  },
+  searchEmptyText: {
+    ...typography.body,
+    fontSize: 15,
   },
   emptyWrap: {
     flex: 1,

@@ -51,7 +51,9 @@ export default function InviteCodeScreen() {
   };
 
   const handleContinue = () => {
-    router.push('/(auth)/phone-otp');
+    if (validation?.valid && validation.circle) {
+      router.push({ pathname: '/(auth)/phone-otp', params: { circleId: validation.circle.id } });
+    }
   };
 
   return (

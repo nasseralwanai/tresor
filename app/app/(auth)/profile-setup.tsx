@@ -16,12 +16,13 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { createProfile, uploadAvatar } from '@/lib/profile';
+import { joinCircle } from '@/lib/invite';
 import { useAuth } from '@/hooks/useAuth';
 import { hapticLight, hapticSuccess, hapticError } from '@/lib/haptics';
 
@@ -32,6 +33,7 @@ export default function ProfileSetupScreen() {
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { circleId } = useLocalSearchParams<{ circleId?: string }>();
 
   const pickAvatar = async () => {
     hapticLight();
@@ -89,6 +91,15 @@ export default function ProfileSetupScreen() {
         phone: user?.phone ?? null,
       });
 
+      // Join the circle if we have a circleId from the invite flow
+      if (circleId) {
+        try {
+          await joinCircle(circleId, userId);
+        } catch (e) {
+          // 23505 = already a member — that's fine, continue
+          console.warn('[profile-setup] joinCircle failed:', e);
+        }
+      }
       hapticSuccess();
       router.push('/(auth)/circle-preview');
     } catch {

@@ -15,7 +15,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.tresor.app"
+      "bundleIdentifier": "com.tresor.app",
+      "infoPlist": {
+        "NSUserNotificationsUsageDescription": "Tresor sends notifications about borrow requests, returns, nudges, and circle activity so you never miss what matters."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -46,7 +49,8 @@
       ],
       "expo-secure-store",
       "expo-font",
-      "expo-image"
+      "expo-image",
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true,

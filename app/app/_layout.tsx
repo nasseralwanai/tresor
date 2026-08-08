@@ -8,21 +8,30 @@
  *
  * Wrapped in ErrorBoundary to catch runtime errors gracefully.
  * OfflineBanner shows when device is offline.
+ * InAppNotificationBanner shows foreground push notifications.
+ * usePushNotifications registers for push tokens when authenticated.
+ * NotificationPermissionPrompt asks for permissions after first sign-in.
  */
 
 import { Stack, Redirect } from 'expo-router';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from '@/hooks/useAuth';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useThemeColors } from '@/theme';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { OfflineBanner } from '@/components/OfflineBanner';
+import { InAppNotificationBanner } from '@/components/InAppNotificationBanner';
+import { NotificationPermissionPrompt } from '@/components/NotificationPermissionPrompt';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 
 function RootNavigator() {
   const colors = useThemeColors();
   const { loading, session } = useAuth();
   const { isOnline } = useNetworkStatus();
+  // Register for push notifications when authenticated.
+  // Fails gracefully — no crash if APNs key is not configured.
+  usePushNotifications();
   const isAuthenticated = !!session;
 
   if (loading) {
@@ -51,6 +60,10 @@ function RootNavigator() {
         <Stack.Screen name="item" />
         <Stack.Screen name="borrow" />
       </Stack>
+      {/* In-app notification banner — shown for foreground push notifications */}
+      {isAuthenticated && <InAppNotificationBanner />}
+      {/* Notification permission prompt — shown after first sign-in */}
+      {isAuthenticated && <NotificationPermissionPrompt />}
       <Redirect href={isAuthenticated ? '/(tabs)' : '/(auth)/welcome'} />
     </>
   );

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trésor — Vault Arch Variations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TRÉSOR — Vault Arch Variations Brief
+   Three approaches to the vault arch, each proofed in both
+   colorways at both scales (128px hero, 32px favicon).
+   gold #C9A961 on charcoal #1a1715  ·  ink #1a1715 on cream #FAF7F2
+   ============================================================ */
+:root{
+  --cream:#FAF7F2;
+  --charcoal:#1a1715;
+  --charcoal-soft:#221e1c;
+  --gallery:#141110;
+  --ink:#2A241F;
+  --cream-text:#F5F0E8;
+  --gold:#C9A961;
+  --gold-bright:#E8D5A3;
+  --gold-deep:#9A7E4A;
+  --hair:rgba(245,240,232,.12);
+  --hair-gold:rgba(201,169,97,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Jost',sans-serif;
+  background:var(--gallery);
+  color:var(--cream-text);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  padding:72px 32px 96px;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+.serif{font-family:'Playfair Display',serif}
+main{position:relative;z-index:1;max-width:1080px;margin:0 auto}
+
+.kicker{
+  font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  font-weight:500;color:var(--gold);text-align:center;
+}
+h1{
+  font-family:'Playfair Display',serif;font-weight:500;
+  font-size:34px;line-height:1.2;text-align:center;margin:14px 0 10px;
+}
+.lede{
+  text-align:center;color:rgba(245,240,232,.62);font-weight:300;
+  font-size:15px;letter-spacing:.01em;max-width:580px;margin:0 auto;
+}
+.rule{width:24px;height:1px;background:var(--gold);margin:28px auto 48px}
+
+/* context bar */
+.context-bar{
+  max-width:680px;margin:0 auto 56px;padding:20px 24px;
+  border:1px solid var(--hair);border-radius:12px;
+  background:linear-gradient(180deg,#191512 0%,#141110 100%);
+  font-size:13.5px;line-height:1.6;font-weight:300;color:rgba(245,240,232,.6);
+}
+.context-bar strong{font-weight:500;color:rgba(245,240,232,.85)}
+.context-bar em{font-family:'Playfair Display',serif;font-style:italic;color:var(--gold)}
+
+/* variation plates */
+.plates{display:flex;flex-direction:column;gap:40px}
+.plate{
+  border:1px solid var(--hair);border-radius:14px;
+  background:linear-gradient(180deg,#191512 0%,#141110 100%);
+  padding:32px 30px 34px;
+}
+.plate-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px}
+.plate-index{
+  font-size:10.5px;letter-spacing:.18em;color:var(--gold-deep);
+  font-weight:500;text-transform:uppercase;
+}
+.plate h2{
+  font-family:'Playfair Display',serif;font-weight:500;
+  font-size:24px;
+}
+.plate .concept{
+  font-size:14px;line-height:1.55;font-weight:300;
+  color:rgba(245,240,232,.6);margin-bottom:28px;max-width:620px;
+}
+.plate .concept em{font-family:'Playfair Display',serif;font-style:italic;color:rgba(245,240,232,.85)}
+
+/* proof grid: 2 colorways × 2 sizes */
+.proofs{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+.proof-col{display:flex;flex-direction:column;gap:16px}
+.proof-label{
+  font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;
+  color:rgba(245,240,232,.35);text-align:center;
+}
+.proof{
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.proof--lg{padding:32px 0}
+.proof--sm{padding:14px 0}
+.proof--dark{
+  background:radial-gradient(120% 90% at 50% 0%,#241f1b 0%,#1a1715 60%);
+  border:1px solid var(--hair);
+}
+.proof--light{
+  background:#FAF7F2;
+  border:1px solid rgba(43,38,34,.08);
+}
+.proof svg{display:block}
+.proof--lg svg{width:128px;height:128px}
+.proof--sm svg{width:32px;height:32px}
+
+/* construction notes */
+.notes{
+  border-top:1px solid var(--hair);padding-top:18px;
+  font-size:12.5px;line-height:1.6;font-weight:300;color:rgba(245,240,232,.5);
+}
+.notes strong{font-weight:500;color:rgba(245,240,232,.8)}
+.notes ul{list-style:none;padding:0;margin:6px 0 0}
+.notes li{padding-left:14px;position:relative;margin-bottom:3px}
+.notes li::before{content:"·";position:absolute;left:4px;color:var(--gold)}
+
+/* handoff */
+.handoff{
+  margin-top:64px;border-top:1px solid var(--hair);padding-top:48px;
+  max-width:760px;margin-left:auto;margin-right:auto;
+}
+.handoff .kicker{margin-bottom:14px}
+.handoff h3{
+  font-family:'Playfair Display',serif;font-weight:500;font-size:22px;
+  text-align:center;margin-bottom:10px;
+}
+.assignee{
+  text-align:center;font-size:13px;font-weight:400;color:rgba(245,240,232,.6);
+  margin-bottom:28px;
+}
+.assignee strong{color:var(--gold);font-weight:500}
+.cmd-wrap{
+  background:#0d0c0b;border:1px solid var(--hair);border-radius:10px;
+  padding:20px 24px;overflow-x:auto;
+}
+.cmd-wrap .cmd-label{
+  font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;
+  color:var(--gold-deep);margin-bottom:10px;
+}
+.cmd{
+  font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;
+  color:rgba(245,240,232,.75);white-space:pre-wrap;word-break:break-word;
+}
+.cmd .c-flag{color:var(--gold)}
+.cmd .c-str{color:#E8D5A3}
+.handoff-notes{
+  margin-top:24px;font-size:12.5px;line-height:1.6;font-weight:300;
+  color:rgba(245,240,232,.5);text-align:center;
+}
+.handoff-notes em{font-family:'Playfair Display',serif;font-style:italic;color:rgba(245,240,232,.8)}
+</style>
+</head>
+<body>
+
+<!-- shared gradient def (Vermeil — from brand guide §2.2) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="grad-vermeil" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8D5A3"/>
+      <stop offset="42%" stop-color="#C9A961"/>
+      <stop offset="100%" stop-color="#9A7E4A"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<main>
+  <p class="kicker">Identity Refinement</p>
+  <h1>The Vault Arch — Three Variations</h1>
+  <p class="lede">Nasser chose the vault arch direction. Three distinct approaches, each proofed in both colorways at hero and favicon scale.</p>
+  <div class="rule"></div>
+
+  <!-- context -->
+  <div class="context-bar">
+    <strong>Decision context.</strong> The original exploration (<em>logo-concepts.html</em>) recommended Concept C — the Provenance Seal — and flagged the vault arch as <em>spatial, not personal</em>: it says <em>where</em>, never <em>whose</em>. Nasser has reviewed all three and overridden that recommendation, choosing the vault arch for its architectural quiet and scalability. These three variations are designed to address the original critique while honoring his choice — each pushes the arch in a different register so he can pick the one that earns its place in the system.
+  </div>
+
+  <section class="plates">
+
+    <!-- ================================================
+         VARIATION 1 — THE SINGLE LINE
+         ================================================ -->
+    <article class="plate">
+      <div class="plate-head">
+        <span class="plate-index">Variation 01</span>
+      </div>
+      <h2>The Single Line</h2>
+      <p class="concept">The vault arch distilled to its absolute essence. One continuous stroke traces the doorway — left jamb, crown, right jamb — and a gold sill marks the threshold you are invited across. No fill, no echo, no decoration. The treasure is the space within, defined by absence. <em>Cartier-level restraint: the confidence to do nothing but the line.</em></p>
+
+      <div class="proofs">
+        <!-- DARK colorway -->
+        <div class="proof-col">
+          <p class="proof-label">Gold · Charcoal</p>
+          <div class="proof proof--dark proof--lg">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Single Line — gold on charcoal, 128px">
+              <path d="M28 88 L28 46 A22 22 0 0 1 72 46 L72 88"
+                    fill="none" stroke="#C9A961" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="20" y1="88" x2="80" y2="88"
+                    stroke="#E8D5A3" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="proof proof--dark proof--sm">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Single Line — gold on charcoal, 32px">
+              <path d="M28 88 L28 46 A22 22 0 0 1 72 46 L72 88"
+                    fill="none" stroke="#C9A961" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="18" y1="88" x2="82" y2="88"
+                    stroke="#E8D5A3" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <!-- CREAM colorway -->
+        <div class="proof-col">
+          <p class="proof-label">Ink · Cream</p>
+          <div class="proof proof--light proof--lg">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Single Line — ink on cream, 128px">
+              <path d="M28 88 L28 46 A22 22 0 0 1 72 46 L72 88"
+                    fill="none" stroke="#1a1715" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="20" y1="88" x2="80" y2="88"
+                    stroke="#9A7E4A" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="proof proof--light proof--sm">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Single Line — ink on cream, 32px">
+              <path d="M28 88 L28 46 A22 22 0 0 1 72 46 L72 88"
+                    fill="none" stroke="#1a1715" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="18" y1="88" x2="82" y2="88"
+                    stroke="#9A7E4A" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <strong>Construction.</strong> Single SVG path: <code style="font-family:'JetBrains Mono',monospace;font-size:11px">M28 88 L28 46 A22 22 0 0 1 72 46 L72 88</code> — one unbroken line, stroke-width 3 at 128px, bumped to 4 at 32px for optical weight. Sill in gold-bright (dark) / gold-deep (cream), per the small-gold-on-light contrast rule (§2.1).
+        <ul>
+          <li><strong>Distinction from original Concept A:</strong> the inner echo arch is removed — pure single line, no depth cue. Heavier stroke for presence.</li>
+          <li><strong>Scales to 32px:</strong> silhouette holds; the arch reads as a doorway even at favicon size.</li>
+          <li><strong>Risk:</strong> the quietest of the three — may read as generic archway without brand context. Best as a secondary mark, not a standalone hero.</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- ================================================
+         VARIATION 2 — THE VAULT DOOR
+         ================================================ -->
+    <article class="plate">
+      <div class="plate-head">
+        <span class="plate-index">Variation 02</span>
+      </div>
+      <h2>The Vault Door</h2>
+      <p class="concept">The arch as a substantial vault door, viewed in architectural section. Three concentric arches recede inward — frame, door face, depth — communicating the real thickness of a bank vault door. A subtle Vermeil gold gradient washes the door face. A center seam splits it, the classic vault detail. <em>Hermès ironwork: weight, craft, the sense that something serious is sealed behind it.</em></p>
+
+      <div class="proofs">
+        <!-- DARK colorway -->
+        <div class="proof-col">
+          <p class="proof-label">Gold · Charcoal</p>
+          <div class="proof proof--dark proof--lg">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Vault Door — gold on charcoal, 128px">
+              <!-- outer frame -->
+              <path d="M22 90 L22 44 A28 28 0 0 1 78 44 L78 90"
+                    fill="none" stroke="#C9A961" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- door face with vermeil gradient fill -->
+              <path d="M30 90 L30 48 A20 20 0 0 1 70 48 L70 90"
+                    fill="url(#grad-vermeil)" fill-opacity="0.14"
+                    stroke="#C9A961" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- inner depth arch -->
+              <path d="M38 90 L38 52 A12 12 0 0 1 62 52 L62 90"
+                    fill="none" stroke="#C9A961" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+              <!-- center seam -->
+              <line x1="50" y1="40" x2="50" y2="90"
+                    stroke="#C9A961" stroke-width="0.75" opacity="0.4"/>
+              <!-- threshold -->
+              <line x1="16" y1="90" x2="84" y2="90"
+                    stroke="#E8D5A3" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="proof proof--dark proof--sm">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Vault Door — gold on charcoal, 32px">
+              <!-- simplified: outer + door face only, heavier strokes -->
+              <path d="M22 90 L22 44 A28 28 0 0 1 78 44 L78 90"
+                    fill="none" stroke="#C9A961" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M32 90 L32 50 A18 18 0 0 1 68 50 L68 90"
+                    fill="url(#grad-vermeil)" fill-opacity="0.16"
+                    stroke="#C9A961" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="14" y1="90" x2="86" y2="90"
+                    stroke="#E8D5A3" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <!-- CREAM colorway -->
+        <div class="proof-col">
+          <p class="proof-label">Ink · Cream</p>
+          <div class="proof proof--light proof--lg">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Vault Door — ink on cream, 128px">
+              <path d="M22 90 L22 44 A28 28 0 0 1 78 44 L78 90"
+                    fill="none" stroke="#1a1715" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M30 90 L30 48 A20 20 0 0 1 70 48 L70 90"
+                    fill="#1a1715" fill-opacity="0.05"
+                    stroke="#1a1715" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M38 90 L38 52 A12 12 0 0 1 62 52 L62 90"
+                    fill="none" stroke="#1a1715" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+              <line x1="50" y1="40" x2="50" y2="90"
+                    stroke="#1a1715" stroke-width="0.75" opacity="0.4"/>
+              <line x1="16" y1="90" x2="84" y2="90"
+                    stroke="#9A7E4A" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="proof proof--light proof--sm">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Vault Door — ink on cream, 32px">
+              <path d="M22 90 L22 44 A28 28 0 0 1 78 44 L78 90"
+                    fill="none" stroke="#1a1715" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M32 90 L32 50 A18 18 0 0 1 68 50 L68 90"
+                    fill="#1a1715" fill-opacity="0.06"
+                    stroke="#1a1715" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="14" y1="90" x2="86" y2="90"
+                    stroke="#9A7E4A" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <strong>Construction.</strong> Three nested arch paths (r=28, 20, 12 on a 100-unit grid), the middle filled with the Vermeil gradient (<code style="font-family:'JetBrains Mono',monospace;font-size:11px">#E8D5A3 → #C9A961 → #9A7E4A</code>, brand guide §2.2) at 14% opacity on dark, ink wash at 5% on cream. Center seam at 40% opacity. At 32px the inner arch and seam naturally retire — the mark simplifies to outer frame + filled door face.
+        <ul>
+          <li><strong>Distinct register:</strong> the only variation with fill and depth — reads as an object with mass, not just a line drawing.</li>
+          <li><strong>The gradient is the brand's Vermeil</strong>, not a new invention — ties to primary buttons and gold lit like metal (§2.2).</li>
+          <li><strong>Risk:</strong> the most complex mark; at very small sizes the layers collapse to a single arch with a tinted interior. Acceptable — the fallback reads as "arch with weight."</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- ================================================
+         VARIATION 3 — THE ARCH & T
+         ================================================ -->
+    <article class="plate">
+      <div class="plate-head">
+        <span class="plate-index">Variation 03</span>
+      </div>
+      <h2>The Arch &amp; T</h2>
+      <p class="concept">The vault arch becomes a personal frame. The italic-T monogram — already the brand's icon mark (§1.2) — is seated inside the arch, its stem aligned with the center axis. The gold accent aigu floats above its right shoulder, just inside the arch's crown. The arch no longer says just <em>where</em>; it says <em>whose</em>. <em>Tiffany-level integration: two symbols becoming one without either losing itself.</em></p>
+
+      <div class="proofs">
+        <!-- DARK colorway -->
+        <div class="proof-col">
+          <p class="proof-label">Gold · Charcoal</p>
+          <div class="proof proof--dark proof--lg">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Arch &amp; T — gold on charcoal, 128px">
+              <!-- arch frame -->
+              <path d="M26 90 L26 44 A24 24 0 0 1 74 44 L74 90"
+                    fill="none" stroke="#C9A961" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- italic T monogram -->
+              <text x="50" y="78" text-anchor="middle" font-family="'Playfair Display', serif"
+                    font-style="italic" font-weight="500" font-size="40" fill="#C9A961">T</text>
+              <!-- gold aigu -->
+              <line x1="58" y1="48" x2="64" y2="40"
+                    stroke="#E8D5A3" stroke-width="2.25" stroke-linecap="round"/>
+              <!-- threshold -->
+              <line x1="18" y1="90" x2="82" y2="90"
+                    stroke="#E8D5A3" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="proof proof--dark proof--sm">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Arch &amp; T — gold on charcoal, 32px">
+              <path d="M26 90 L26 44 A24 24 0 0 1 74 44 L74 90"
+                    fill="none" stroke="#C9A961" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="50" y="78" text-anchor="middle" font-family="'Playfair Display', serif"
+                    font-style="italic" font-weight="500" font-size="42" fill="#C9A961">T</text>
+              <line x1="57" y1="48" x2="65" y2="38"
+                    stroke="#E8D5A3" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="16" y1="90" x2="84" y2="90"
+                    stroke="#E8D5A3" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <!-- CREAM colorway -->
+        <div class="proof-col">
+          <p class="proof-label">Ink · Cream</p>
+          <div class="proof proof--light proof--lg">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Arch &amp; T — ink on cream, 128px">
+              <path d="M26 90 L26 44 A24 24 0 0 1 74 44 L74 90"
+                    fill="none" stroke="#1a1715" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="50" y="78" text-anchor="middle" font-family="'Playfair Display', serif"
+                    font-style="italic" font-weight="500" font-size="40" fill="#1a1715">T</text>
+              <line x1="58" y1="48" x2="64" y2="40"
+                    stroke="#9A7E4A" stroke-width="2.25" stroke-linecap="round"/>
+              <line x1="18" y1="90" x2="82" y2="90"
+                    stroke="#9A7E4A" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="proof proof--light proof--sm">
+            <svg viewBox="0 0 100 100" role="img" aria-label="Arch &amp; T — ink on cream, 32px">
+              <path d="M26 90 L26 44 A24 24 0 0 1 74 44 L74 90"
+                    fill="none" stroke="#1a1715" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <text x="50" y="78" text-anchor="middle" font-family="'Playfair Display', serif"
+                    font-style="italic" font-weight="500" font-size="42" fill="#1a1715">T</text>
+              <line x1="57" y1="48" x2="65" y2="38"
+                    stroke="#9A7E4A" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="16" y1="90" x2="84" y2="90"
+                    stroke="#9A7E4A" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <strong>Construction.</strong> Arch frame (stroke-width 2) cradles the Playfair Display Italic T at font-size 40, centered at x=50, y=78. The aigu — a 2.25-unit gold stroke from (58,48) to (64,40) — floats above the T's right shoulder per the monogram spec (§1.2). At 32px, stroke weights and font-size are bumped to maintain optical presence; the aigu is thickened to 2.5 so it survives favicon scale.
+        <ul>
+          <li><strong>Answers the original critique:</strong> the arch now carries identity, not just architecture. The monogram we already own is given a vault setting.</li>
+          <li><strong>System fit:</strong> uses the existing italic-T monogram and gold aigu verbatim — no new letterform, just a new frame around a known mark.</li>
+          <li><strong>Risk:</strong> the most loaded of the three — arch + T + aigu + sill is four elements. At 32px the T must be large enough to read; below 24px fall back to the bare monogram (§1.2), consistent with the brand guide's favicon strategy.</li>
+        </ul>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- ================================================
+       HANDOFF
+       ================================================ -->
+  <section class="handoff">
+    <p class="kicker">Handoff</p>
+    <h3>Assigned to Muaath</h3>
+    <p class="assignee">Run this from the project root <code style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold)">/Users/nasseralnuaimi/Projects/personal/tresor/</code></p>
+
+    <div class="cmd-wrap">
+      <p class="cmd-label">Claude Code command</p>
+      <pre class="cmd"><span class="c-flag">claude</span> -p <span class="c-str">"You are Muaath, designer for Trésor. Nasser reviewed 3 logo concepts and chose Concept A — The Vault Arch. Create 3 DISTINCT variations of the vault arch logo as pure inline SVG in a single self-contained HTML file.
+
+Read these for context:
+- design/logo-concepts.html (original 3 concepts, vault arch is Concept A)
+- design/brand-guide-v2.md (colors, typography, construction rules, §1.2 monogram, §2.1 contrast, §2.2 Vermeil gradient)
+
+The 3 variations:
+1. THE SINGLE LINE — minimalist: one continuous gold stroke traces the arch doorway (M28 88 L28 46 A22 22 0 0 1 72 46 L72 88), a gold sill marks the threshold. No fill, no echo, no decoration. Stroke-width 3 at 128px, 4 at 32px. Sill in gold-bright #E8D5A3 on dark, gold-deep #9A7E4A on cream. Cartier-level restraint.
+2. THE VAULT DOOR — layered with depth: three concentric arches recede inward (r=28, 20, 12 on 100-unit grid), the middle filled with the Vermeil gradient (#E8D5A3 → #C9A961 → #9A7E4A, §2.2) at 14% opacity on dark, ink wash at 5% on cream. Center seam at 40% opacity. At 32px simplify to outer frame + filled door face only. Hermès ironwork weight.
+3. THE ARCH & T — monogram hybrid: the italic-T monogram (Playfair Display Italic 500, §1.2) seated inside the arch at font-size 40, gold aigu floating above its right shoulder at (58,48)→(64,40), always gold #E8D5A3 on dark / #9A7E4A on cream. Arch frame stroke-width 2. At 32px bump font-size to 42 and stroke-weights for optical presence. Tiffany-level integration.
+
+Requirements for EACH variation:
+- Pure inline SVG (no external assets, no JS, no PNG fallbacks)
+- BOTH colorways: gold #C9A961 on charcoal #1A1715, AND ink #1A1715 on cream #FAF7F2
+- BOTH sizes: 128px (full detail) and 32px (simplified proof)
+- Gold aigu is ALWAYS gold: #E8D5A3 on dark, #9A7E4A on cream (never ink)
+- Scales gracefully to 32px favicon — heavier strokes at small sizes
+- Luxury, editorial, memorable — Cartier / Hermès / Tiffany quality
+
+Match the Trésor aesthetic from logo-concepts.html: dark gallery background (#141110), Playfair Display + Jost fonts, paper grain texture (feTurbulence), hairline gold rules, plate cards with rounded corners. The HTML itself is a design document, not a white page.
+
+Output: design/logo-vault-arch-variations.html"</span> \
+  --model claude-fable-5 \
+  --allowedTools <span class="c-str">"Read,Write,Bash,WebSearch,WebFetch"</span> \
+  --max-turns 30</pre>
+    </div>
+
+    <p class="handoff-notes">
+      <em>Notes for Muaath:</em> The SVGs above are the working proofs — use them as the construction reference, not just the text description. The Vermeil gradient is already defined as <code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold)">#grad-vermeil</code> in the shared defs. If Nasser picks one, the next step is clearing the arch geometry against the wordmark's cap height and defining clearspace (suggest: arch height on all sides, matching the seal's clearspace rule from §1.5).
+    </p>
+  </section>
+</main>
+
+</body>
+</html>

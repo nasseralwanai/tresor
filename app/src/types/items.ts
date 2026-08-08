@@ -10,6 +10,7 @@ export type ItemCondition = Database['public']['Enums']['item_condition'];
 export type ItemStatus = Database['public']['Enums']['item_status'];
 export type BorrowStatus = Database['public']['Enums']['borrow_status'];
 export type ActivityType = Database['public']['Enums']['activity_type'];
+// Includes 'borrow_recorded' from migration 0017
 export type OwnershipType = Database['public']['Enums']['ownership_type'];
 export type CoBorrowApproval = Database['public']['Enums']['co_borrow_approval'];
 export type LedgerEntryType = Database['public']['Enums']['ledger_entry_type'];
@@ -79,6 +80,7 @@ export interface CircleMemberWithItems {
   display_name: string | null;
   avatar_url: string | null;
   item_count: number;
+  taste_label: string | null;
 }
 
 /** A borrow transaction with enriched names.
@@ -106,6 +108,8 @@ export interface BorrowTransaction {
   due_date: string | null;
   returned_at: string | null;
   completed_at: string | null;
+  is_offline: boolean;
+  expected_return_date: string | null;
   created_at: string;
   updated_at: string;
 }

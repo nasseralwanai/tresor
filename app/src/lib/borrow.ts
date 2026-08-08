@@ -278,3 +278,62 @@ export async function getBorrowHistory(itemId: string): Promise<BorrowTransactio
     lender_name: row.lender?.display_name ?? 'Unknown',
   }));
 }
+
+/**
+ * Record an offline borrow — owner lends an item in person and records it.
+ * No request or approval needed. Status goes directly to 'active'.
+ *
+ * @param params.itemId - The item being lent
+ * @param params.borrowerId - The circle member who is borrowing
+ * @param params.lenderId - The owner recording the borrow (must be auth.uid())
+ * @param params.circleId - The circle context
+ * @param params.note - Optional note ("For the gala, handed over at dinner")
+ * @param params.expectedReturnDate - Optional expected return date
+ */
+export async function recordOfflineBorrow(params: {
+  itemId: string;
+  borrowerId: string;
+  lenderId: string;
+  circleId?: string | null;
+  note?: string | null;
+  expectedReturnDate?: Date | null;
+}): Promise<BorrowTransactionEnriched> {
+  const now = new Date().toISOString();
+
+  const insert: BorrowInsert = {
+    item_id: params.itemId,
+    borrower_id: params.borrowerId,
+    lender_id: params.lenderId,
+    circle_id: params.circleId ?? null,
+    status: 'active',
+    is_offline: true,
+    borrower_note: params.note ?? null,
+    expected_return_date: params.expectedReturnDate
+      ? params.expectedReturnDate.toISOString().split('T')[0]
+      : null,
+    approved_at: now,
+    borrowed_at: now,
+  };
+
+  const { data, error } = await supabase
+    .from('borrow_transactions')
+    .insert(insert)
+    .select(
+      `*,
+      items!borrow_transactions_item_id_fkey(brand, model_name, primary_image_url),
+      borrower:profiles!borrow_transactions_borrower_id_fkey(display_name),
+      lender:profiles!borrow_transactions_lender_id_fkey(display_name)
+      `
+    )
+    .single();
+
+  if (error) throw error;
+  return {
+    ...data,
+    item_brand: (data as any).items?.brand ?? 'Unknown',
+    item_model: (data as any).items?.model_name ?? null,
+    item_primary_image_url: (data as any).items?.primary_image_url ?? null,
+    borrower_name: (data as any).borrower?.display_name ?? 'Unknown',
+    lender_name: (data as any).lender?.display_name ?? 'Unknown',
+  };
+}

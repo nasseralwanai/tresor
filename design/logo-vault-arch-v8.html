@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trésor — The Arch &amp; the Door, Refined (v8)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TRÉSOR — v8: Two Marks, Refined
+   Concept A (The Vault Arch, from logo-concepts.html) and
+   Variation 02 (The Vault Door, from logo-vault-arch-variations.html),
+   each recut three ways. Same direction, finished drafting:
+   shared springlines, true concentric offsets, sill overhangs
+   tied to the reveal gap, seams seated at the door crown.
+   gold #C9A961 on charcoal #1A1715 · ink #1A1715 on cream #FAF7F2
+   ============================================================ */
+:root{
+  --cream:#FAF7F2;
+  --charcoal:#1A1715;
+  --gallery:#141110;
+  --cream-text:#F5F0E8;
+  --gold:#C9A961;
+  --gold-bright:#E8D5A3;
+  --gold-deep:#9A7E4A;
+  --hair:rgba(245,240,232,.12);
+  --hair-gold:rgba(201,169,97,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Jost',sans-serif;
+  background:var(--gallery);
+  color:var(--cream-text);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  padding:72px 32px 96px;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+main{position:relative;z-index:1;max-width:1240px;margin:0 auto}
+
+.kicker{
+  font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+  font-weight:500;color:var(--gold);text-align:center;
+}
+h1{
+  font-family:'Playfair Display',serif;font-weight:500;
+  font-size:34px;line-height:1.2;text-align:center;margin:14px 0 10px;
+}
+.lede{
+  text-align:center;color:rgba(245,240,232,.62);font-weight:300;
+  font-size:15px;letter-spacing:.01em;max-width:620px;margin:0 auto;
+}
+.rule{width:24px;height:1px;background:var(--gold);margin:28px auto 48px}
+
+.context-bar{
+  max-width:720px;margin:0 auto 64px;padding:20px 24px;
+  border:1px solid var(--hair);border-radius:12px;
+  background:linear-gradient(180deg,#191512 0%,#141110 100%);
+  font-size:13.5px;line-height:1.6;font-weight:300;color:rgba(245,240,232,.6);
+}
+.context-bar strong{font-weight:500;color:rgba(245,240,232,.85)}
+.context-bar em{font-family:'Playfair Display',serif;font-style:italic;color:var(--gold)}
+
+/* concept section header */
+.section-head{margin:72px 0 28px;text-align:center}
+.section-head:first-of-type{margin-top:0}
+.section-index{
+  font-size:10.5px;letter-spacing:.24em;color:var(--gold-deep);
+  font-weight:500;text-transform:uppercase;
+}
+.section-head h2{
+  font-family:'Playfair Display',serif;font-weight:500;font-size:27px;
+  margin:8px 0 8px;
+}
+.section-head .origin{
+  font-size:13px;font-weight:300;color:rgba(245,240,232,.5);
+  max-width:560px;margin:0 auto;line-height:1.55;
+}
+.section-head .origin em{font-family:'Playfair Display',serif;font-style:italic;color:rgba(245,240,232,.75)}
+
+/* plates: three refined cuts side by side */
+.plates{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media (max-width:1020px){.plates{grid-template-columns:1fr;max-width:460px;margin:0 auto}}
+.plate{
+  border:1px solid var(--hair);border-radius:14px;
+  background:linear-gradient(180deg,#191512 0%,#141110 100%);
+  padding:26px 24px 26px;display:flex;flex-direction:column;
+}
+.plate-index{
+  font-size:10.5px;letter-spacing:.18em;color:var(--gold-deep);
+  font-weight:500;text-transform:uppercase;
+}
+.plate h3{
+  font-family:'Playfair Display',serif;font-weight:500;
+  font-size:20px;margin:7px 0 6px;
+}
+.plate .concept{
+  font-size:13px;line-height:1.55;font-weight:300;
+  color:rgba(245,240,232,.6);margin-bottom:20px;min-height:82px;
+}
+.plate .concept em{font-family:'Playfair Display',serif;font-style:italic;color:rgba(245,240,232,.82)}
+
+/* proof grid: 2 colorways × 2 sizes */
+.proofs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.proof-col{display:flex;flex-direction:column;gap:10px}
+.proof-label{
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:500;
+  color:rgba(245,240,232,.35);text-align:center;
+}
+.proof{
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+}
+.proof--lg{padding:22px 0}
+.proof--sm{padding:11px 0}
+.proof--dark{
+  background:radial-gradient(120% 90% at 50% 0%,#241f1b 0%,#1a1715 60%);
+  border:1px solid var(--hair);
+}
+.proof--light{
+  background:#FAF7F2;
+  border:1px solid rgba(43,38,34,.08);
+}
+.proof svg{display:block}
+.proof--lg svg{width:128px;height:128px}
+.proof--sm svg{width:32px;height:32px}
+
+.notes{
+  margin-top:auto;border-top:1px solid var(--hair);padding-top:14px;
+  font-size:12px;line-height:1.55;font-weight:300;color:rgba(245,240,232,.5);
+}
+.notes strong{font-weight:500;color:rgba(245,240,232,.78)}
+.notes code{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:rgba(232,213,163,.85)}
+
+/* drafting rules, closing */
+.drafting{
+  margin-top:72px;border-top:1px solid var(--hair);padding-top:48px;
+  max-width:720px;margin-left:auto;margin-right:auto;
+}
+.drafting .kicker{margin-bottom:14px}
+.drafting h2{
+  font-family:'Playfair Display',serif;font-weight:500;font-size:23px;
+  text-align:center;margin-bottom:18px;
+}
+.drafting p{
+  font-size:14px;line-height:1.65;font-weight:300;
+  color:rgba(245,240,232,.66);margin-bottom:14px;
+}
+.drafting p em{font-family:'Playfair Display',serif;font-style:italic;color:var(--cream-text)}
+.drafting ul{list-style:none;margin:0 0 14px;padding:0}
+.drafting li{
+  padding-left:16px;position:relative;margin-bottom:8px;
+  font-size:13.5px;line-height:1.6;font-weight:300;color:rgba(245,240,232,.6);
+}
+.drafting li::before{content:"·";position:absolute;left:4px;color:var(--gold)}
+.drafting li strong{font-weight:500;color:rgba(245,240,232,.82)}
+</style>
+</head>
+<body>
+
+<!-- shared gradient def (Vermeil — brand guide §2.2) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="grad-vermeil" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8D5A3"/>
+      <stop offset="42%" stop-color="#C9A961"/>
+      <stop offset="100%" stop-color="#9A7E4A"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<main>
+  <p class="kicker">Identity Refinement · v8</p>
+  <h1>Two Marks, Refined</h1>
+  <p class="lede">The Vault Arch and the Vault Door, carried forward unchanged in direction and recut with finished drafting — three proofs of each, both colorways, hero and favicon scale.</p>
+  <div class="rule"></div>
+
+  <div class="context-bar">
+    <strong>What this sheet is.</strong> Concept A — <em>The Vault Arch</em> — from logo-concepts.html, and Variation 02 — <em>The Vault Door</em> — from logo-vault-arch-variations.html, and nothing else. The concepts are untouched; only the execution is refined. In the working proofs the arches sprang from staggered heights, the echo gaps drifted, and the door's seam floated above its own crown. Here every mark is drawn from one center: shared springlines, constant concentric reveals, sill overhangs equal to the reveal gap, seams seated exactly at the door-face crown. The three cuts of each mark differ only in stance and weight — proportional decisions, not new ideas.
+  </div>
+
+  <!-- ================================================================
+       I — THE VAULT ARCH (Concept A)
+       ================================================================ -->
+  <section>
+    <div class="section-head">
+      <p class="section-index">I · From Concept A</p>
+      <h2>The Vault Arch</h2>
+      <p class="origin">One unbroken line draws the doorway; a hairline echo gives the threshold depth; the gold sill is <em>the line you are invited across</em>. Three stances of the same construction — the question is proportion, nothing else.</p>
+    </div>
+
+    <div class="plates">
+
+      <!-- A·1 — THE MERIDIAN (√2 stance) -->
+      <article class="plate">
+        <p class="plate-index">Arch · Cut 1</p>
+        <h3>The Meridian</h3>
+        <p class="concept">The balanced stance. The opening is drawn to a <em>1 : √2</em> rectangle — 44 wide, 62 tall — the proportion of a folded folio. The echo is now a true concentric line, a constant 7-unit reveal, and the sill overhangs each jamb by that same 7. One number governs the whole drawing.</p>
+
+        <div class="proofs">
+          <div class="proof-col">
+            <p class="proof-label">Gold · Charcoal</p>
+            <div class="proof proof--dark proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Meridian — gold on charcoal, 128px">
+                <path d="M28 86 L28 46 A22 22 0 0 1 72 46 L72 86"
+                      fill="none" stroke="#C9A961" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M35 86 L35 46 A15 15 0 0 1 65 46 L65 86"
+                      fill="none" stroke="#C9A961" stroke-width="0.75" opacity="0.55"/>
+                <line x1="21" y1="86" x2="79" y2="86"
+                      stroke="#E8D5A3" stroke-width="1.25" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--dark proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Meridian — gold on charcoal, 32px">
+                <path d="M28 86 L28 46 A22 22 0 0 1 72 46 L72 86"
+                      fill="none" stroke="#C9A961" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="19" y1="86" x2="81" y2="86"
+                      stroke="#E8D5A3" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="proof-col">
+            <p class="proof-label">Ink · Cream</p>
+            <div class="proof proof--light proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Meridian — ink on cream, 128px">
+                <path d="M28 86 L28 46 A22 22 0 0 1 72 46 L72 86"
+                      fill="none" stroke="#1A1715" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M35 86 L35 46 A15 15 0 0 1 65 46 L65 86"
+                      fill="none" stroke="#1A1715" stroke-width="0.75" opacity="0.55"/>
+                <line x1="21" y1="86" x2="79" y2="86"
+                      stroke="#9A7E4A" stroke-width="1.25" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--light proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Meridian — ink on cream, 32px">
+                <path d="M28 86 L28 46 A22 22 0 0 1 72 46 L72 86"
+                      fill="none" stroke="#1A1715" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="19" y1="86" x2="81" y2="86"
+                      stroke="#9A7E4A" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes">
+          <strong>Drafting.</strong> Outer <code>M28 86 L28 46 A22 22</code>, echo r15 on the same springline (y 46) and center — the reveal is exactly 7 everywhere, where the original drifted from 9 at the jamb to 6 at the crown. Sill 21→79: overhang = reveal. At 32px the echo retires and the line thickens to 3.25.
+        </div>
+      </article>
+
+      <!-- A·2 — THE PORTRAIT (golden stance) -->
+      <article class="plate">
+        <p class="plate-index">Arch · Cut 2</p>
+        <h3>The Portrait</h3>
+        <p class="concept">The tall stance. The opening narrows to 40 and rises to 65 — a golden-section doorway, <em>1 : 1.618</em> — so the mark carries more air in the jambs and reads like a doorway a person stands in. The most vertical cut, and the closest cousin to the wordmark's ascenders.</p>
+
+        <div class="proofs">
+          <div class="proof-col">
+            <p class="proof-label">Gold · Charcoal</p>
+            <div class="proof proof--dark proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Portrait — gold on charcoal, 128px">
+                <path d="M30 87 L30 42 A20 20 0 0 1 70 42 L70 87"
+                      fill="none" stroke="#C9A961" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M36.5 87 L36.5 42 A13.5 13.5 0 0 1 63.5 42 L63.5 87"
+                      fill="none" stroke="#C9A961" stroke-width="0.75" opacity="0.55"/>
+                <line x1="23.5" y1="87" x2="76.5" y2="87"
+                      stroke="#E8D5A3" stroke-width="1.25" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--dark proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Portrait — gold on charcoal, 32px">
+                <path d="M30 87 L30 42 A20 20 0 0 1 70 42 L70 87"
+                      fill="none" stroke="#C9A961" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="21.5" y1="87" x2="78.5" y2="87"
+                      stroke="#E8D5A3" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="proof-col">
+            <p class="proof-label">Ink · Cream</p>
+            <div class="proof proof--light proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Portrait — ink on cream, 128px">
+                <path d="M30 87 L30 42 A20 20 0 0 1 70 42 L70 87"
+                      fill="none" stroke="#1A1715" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M36.5 87 L36.5 42 A13.5 13.5 0 0 1 63.5 42 L63.5 87"
+                      fill="none" stroke="#1A1715" stroke-width="0.75" opacity="0.55"/>
+                <line x1="23.5" y1="87" x2="76.5" y2="87"
+                      stroke="#9A7E4A" stroke-width="1.25" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--light proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Portrait — ink on cream, 32px">
+                <path d="M30 87 L30 42 A20 20 0 0 1 70 42 L70 87"
+                      fill="none" stroke="#1A1715" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="21.5" y1="87" x2="78.5" y2="87"
+                      stroke="#9A7E4A" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes">
+          <strong>Drafting.</strong> Opening 40 × 65 (φ within a third of a unit). Outer <code>A20</code> springing at y 42; echo r13.5, constant 6.5 reveal; sill overhang 6.5. The narrower crown keeps the round-cap joints crisp at favicon scale — at 32px this cut has the clearest doorway silhouette of the three.
+        </div>
+      </article>
+
+      <!-- A·3 — THE ROTUNDA (Roman stance) -->
+      <article class="plate">
+        <p class="plate-index">Arch · Cut 3</p>
+        <h3>The Rotunda</h3>
+        <p class="concept">The broad stance. The opening widens to 52 and the springline rises, so the semicircular crown dominates — a Roman arch, <em>the institutional register</em>: less a doorway you pass through, more a vault you stand before. Drawn a quarter-unit heavier to hold the wide crown.</p>
+
+        <div class="proofs">
+          <div class="proof-col">
+            <p class="proof-label">Gold · Charcoal</p>
+            <div class="proof proof--dark proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Rotunda — gold on charcoal, 128px">
+                <path d="M24 86 L24 58 A26 26 0 0 1 76 58 L76 86"
+                      fill="none" stroke="#C9A961" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M32 86 L32 58 A18 18 0 0 1 68 58 L68 86"
+                      fill="none" stroke="#C9A961" stroke-width="0.75" opacity="0.55"/>
+                <line x1="16" y1="86" x2="84" y2="86"
+                      stroke="#E8D5A3" stroke-width="1.25" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--dark proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Rotunda — gold on charcoal, 32px">
+                <path d="M24 86 L24 58 A26 26 0 0 1 76 58 L76 86"
+                      fill="none" stroke="#C9A961" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="14" y1="86" x2="86" y2="86"
+                      stroke="#E8D5A3" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="proof-col">
+            <p class="proof-label">Ink · Cream</p>
+            <div class="proof proof--light proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Rotunda — ink on cream, 128px">
+                <path d="M24 86 L24 58 A26 26 0 0 1 76 58 L76 86"
+                      fill="none" stroke="#1A1715" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M32 86 L32 58 A18 18 0 0 1 68 58 L68 86"
+                      fill="none" stroke="#1A1715" stroke-width="0.75" opacity="0.55"/>
+                <line x1="16" y1="86" x2="84" y2="86"
+                      stroke="#9A7E4A" stroke-width="1.25" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--light proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Rotunda — ink on cream, 32px">
+                <path d="M24 86 L24 58 A26 26 0 0 1 76 58 L76 86"
+                      fill="none" stroke="#1A1715" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="14" y1="86" x2="86" y2="86"
+                      stroke="#9A7E4A" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes">
+          <strong>Drafting.</strong> Outer <code>A26</code> springing at y 58 — the crown is half the opening's height, the classical ratio. Echo r18, constant 8 reveal; sill 16→84, overhang 8. Stroke 2.25 / 3.5 so the long horizontal sweep of the crown keeps the same optical weight as the taller cuts.
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ================================================================
+       II — THE VAULT DOOR (Variation 02)
+       ================================================================ -->
+  <section>
+    <div class="section-head">
+      <p class="section-index">II · From Variation 02</p>
+      <h2>The Vault Door</h2>
+      <p class="origin">Three concentric arches recede inward — frame, door face, depth — the face washed in the brand's Vermeil, split by the classic center seam. <em>Hermès ironwork: weight, craft, something serious sealed behind it.</em> Three cuts of the same door — the question is how the mass is distributed.</p>
+    </div>
+
+    <div class="plates">
+
+      <!-- D·1 — THE SECTION (true concentric) -->
+      <article class="plate">
+        <p class="plate-index">Door · Cut 1</p>
+        <h3>The Section</h3>
+        <p class="concept">The corrected drawing. All three arches now share one springline and one center — radii 28, 21, 14, a constant 7-unit reveal — so the door finally reads as <em>one object cut through</em>, not three arches stacked. The seam begins exactly at the door-face crown and the sill overhangs by the same 7.</p>
+
+        <div class="proofs">
+          <div class="proof-col">
+            <p class="proof-label">Gold · Charcoal</p>
+            <div class="proof proof--dark proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Section — gold on charcoal, 128px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#C9A961" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M29 88 L29 46 A21 21 0 0 1 71 46 L71 88"
+                      fill="url(#grad-vermeil)" fill-opacity="0.12"
+                      stroke="#C9A961" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M36 88 L36 46 A14 14 0 0 1 64 46 L64 88"
+                      fill="none" stroke="#C9A961" stroke-width="0.75" opacity="0.5"/>
+                <line x1="50" y1="25" x2="50" y2="88"
+                      stroke="#C9A961" stroke-width="0.75" opacity="0.35"/>
+                <line x1="15" y1="88" x2="85" y2="88"
+                      stroke="#E8D5A3" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--dark proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Section — gold on charcoal, 32px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#C9A961" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M29 88 L29 46 A21 21 0 0 1 71 46 L71 88"
+                      fill="url(#grad-vermeil)" fill-opacity="0.16"
+                      stroke="#C9A961" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="13" y1="88" x2="87" y2="88"
+                      stroke="#E8D5A3" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="proof-col">
+            <p class="proof-label">Ink · Cream</p>
+            <div class="proof proof--light proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Section — ink on cream, 128px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#1A1715" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M29 88 L29 46 A21 21 0 0 1 71 46 L71 88"
+                      fill="#1A1715" fill-opacity="0.05"
+                      stroke="#1A1715" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M36 88 L36 46 A14 14 0 0 1 64 46 L64 88"
+                      fill="none" stroke="#1A1715" stroke-width="0.75" opacity="0.5"/>
+                <line x1="50" y1="25" x2="50" y2="88"
+                      stroke="#1A1715" stroke-width="0.75" opacity="0.35"/>
+                <line x1="15" y1="88" x2="85" y2="88"
+                      stroke="#9A7E4A" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--light proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Section — ink on cream, 32px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#1A1715" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M29 88 L29 46 A21 21 0 0 1 71 46 L71 88"
+                      fill="#1A1715" fill-opacity="0.06"
+                      stroke="#1A1715" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="13" y1="88" x2="87" y2="88"
+                      stroke="#9A7E4A" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes">
+          <strong>Drafting.</strong> Radii 28 / 21 / 14 from one center at (50, 46) — the working proof sprang each arch from a different height (44, 48, 52), so the reveals pinched at the crown. Seam <code>y 25→88</code>, seated at the door-face crown instead of floating at 40. At 32px the depth arch and seam retire; frame and face carry the mass.
+        </div>
+      </article>
+
+      <!-- D·2 — THE IRONWORK (weight hierarchy) -->
+      <article class="plate">
+        <p class="plate-index">Door · Cut 2</p>
+        <h3>The Ironwork</h3>
+        <p class="concept">The heavy cut. The frame thickens to 3 and the reveals tighten to 6, pulling the three arches into one dense forged band; the Vermeil wash deepens and the seam is drawn a shade firmer. The register the variation asked for — <em>the door you cannot move</em> — pushed to its full weight.</p>
+
+        <div class="proofs">
+          <div class="proof-col">
+            <p class="proof-label">Gold · Charcoal</p>
+            <div class="proof proof--dark proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Ironwork — gold on charcoal, 128px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#C9A961" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M28 88 L28 46 A22 22 0 0 1 72 46 L72 88"
+                      fill="url(#grad-vermeil)" fill-opacity="0.15"
+                      stroke="#C9A961" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M34 88 L34 46 A16 16 0 0 1 66 46 L66 88"
+                      fill="none" stroke="#C9A961" stroke-width="0.75" opacity="0.45"/>
+                <line x1="50" y1="24" x2="50" y2="88"
+                      stroke="#C9A961" stroke-width="1" opacity="0.3"/>
+                <line x1="16" y1="88" x2="84" y2="88"
+                      stroke="#E8D5A3" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--dark proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Ironwork — gold on charcoal, 32px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#C9A961" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M28 88 L28 46 A22 22 0 0 1 72 46 L72 88"
+                      fill="url(#grad-vermeil)" fill-opacity="0.18"
+                      stroke="#C9A961" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="14" y1="88" x2="86" y2="88"
+                      stroke="#E8D5A3" stroke-width="2.25" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="proof-col">
+            <p class="proof-label">Ink · Cream</p>
+            <div class="proof proof--light proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Ironwork — ink on cream, 128px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#1A1715" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M28 88 L28 46 A22 22 0 0 1 72 46 L72 88"
+                      fill="#1A1715" fill-opacity="0.06"
+                      stroke="#1A1715" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M34 88 L34 46 A16 16 0 0 1 66 46 L66 88"
+                      fill="none" stroke="#1A1715" stroke-width="0.75" opacity="0.45"/>
+                <line x1="50" y1="24" x2="50" y2="88"
+                      stroke="#1A1715" stroke-width="1" opacity="0.3"/>
+                <line x1="16" y1="88" x2="84" y2="88"
+                      stroke="#9A7E4A" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--light proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Ironwork — ink on cream, 32px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#1A1715" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M28 88 L28 46 A22 22 0 0 1 72 46 L72 88"
+                      fill="#1A1715" fill-opacity="0.07"
+                      stroke="#1A1715" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="14" y1="88" x2="86" y2="88"
+                      stroke="#9A7E4A" stroke-width="2.25" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes">
+          <strong>Drafting.</strong> Radii 28 / 22 / 16, constant 6 reveal, one springline (y 46). Stroke hierarchy 3 / 1.5 / 0.75 — a full 4:1 ratio from frame to depth line, so the eye reads mass before detail. Vermeil at 15% (18% at favicon); ink wash 6–7% on cream. The strongest of the three at 32px.
+        </div>
+      </article>
+
+      <!-- D·3 — THE REVEAL (graduated recession) -->
+      <article class="plate">
+        <p class="plate-index">Door · Cut 3</p>
+        <h3>The Reveal</h3>
+        <p class="concept">The deep cut. The reveals graduate — 8 from frame to face, then 5.5 from face to depth — so the arches appear to accelerate inward, the drawn equivalent of perspective. The lightest wash and the finest seam of the three: less forged mass, more <em>drawn depth</em>, the door ajar rather than sealed.</p>
+
+        <div class="proofs">
+          <div class="proof-col">
+            <p class="proof-label">Gold · Charcoal</p>
+            <div class="proof proof--dark proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Reveal — gold on charcoal, 128px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#C9A961" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M30 88 L30 46 A20 20 0 0 1 70 46 L70 88"
+                      fill="url(#grad-vermeil)" fill-opacity="0.1"
+                      stroke="#C9A961" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M35.5 88 L35.5 46 A14.5 14.5 0 0 1 64.5 46 L64.5 88"
+                      fill="none" stroke="#C9A961" stroke-width="0.75" opacity="0.55"/>
+                <line x1="50" y1="26" x2="50" y2="88"
+                      stroke="#C9A961" stroke-width="0.6" opacity="0.35"/>
+                <line x1="14" y1="88" x2="86" y2="88"
+                      stroke="#E8D5A3" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--dark proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Reveal — gold on charcoal, 32px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#C9A961" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M30 88 L30 46 A20 20 0 0 1 70 46 L70 88"
+                      fill="url(#grad-vermeil)" fill-opacity="0.14"
+                      stroke="#C9A961" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12" y1="88" x2="88" y2="88"
+                      stroke="#E8D5A3" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="proof-col">
+            <p class="proof-label">Ink · Cream</p>
+            <div class="proof proof--light proof--lg">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Reveal — ink on cream, 128px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#1A1715" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M30 88 L30 46 A20 20 0 0 1 70 46 L70 88"
+                      fill="#1A1715" fill-opacity="0.045"
+                      stroke="#1A1715" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M35.5 88 L35.5 46 A14.5 14.5 0 0 1 64.5 46 L64.5 88"
+                      fill="none" stroke="#1A1715" stroke-width="0.75" opacity="0.55"/>
+                <line x1="50" y1="26" x2="50" y2="88"
+                      stroke="#1A1715" stroke-width="0.6" opacity="0.35"/>
+                <line x1="14" y1="88" x2="86" y2="88"
+                      stroke="#9A7E4A" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="proof proof--light proof--sm">
+              <svg viewBox="0 0 100 100" role="img" aria-label="The Reveal — ink on cream, 32px">
+                <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88"
+                      fill="none" stroke="#1A1715" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M30 88 L30 46 A20 20 0 0 1 70 46 L70 88"
+                      fill="#1A1715" fill-opacity="0.06"
+                      stroke="#1A1715" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="12" y1="88" x2="88" y2="88"
+                      stroke="#9A7E4A" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes">
+          <strong>Drafting.</strong> Radii 28 / 20 / 14.5 — reveals of 8 then 5.5, a deliberate acceleration inward. Vermeil at 10%, seam 0.6 at 35%: everything one step quieter than The Section. Sill 14→86, overhang matching the outer reveal. At 32px it simplifies identically to the others, so the three cuts stay siblings at favicon scale.
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ================================================================
+       DRAFTING RULES
+       ================================================================ -->
+  <section class="drafting">
+    <p class="kicker">What Changed</p>
+    <h2>The Drafting Rules</h2>
+    <p>Nothing in the two concepts moved — the arch is still <em>one unbroken line with an echo and a sill</em>, the door is still <em>three arches, a Vermeil face, a seam</em>. What changed is that every mark on this sheet now obeys the same four rules, which the working proofs broke in small ways that read as unfinished:</p>
+    <ul>
+      <li><strong>One center.</strong> Every arch in a mark springs from the same springline and shares one center point, so concentric lines are truly concentric — the reveals no longer pinch at the crown.</li>
+      <li><strong>One reveal.</strong> The gap between lines is a single number per cut (7, 6.5, 8, 6…), and the sill's overhang past each jamb is that same number. One measurement governs each drawing.</li>
+      <li><strong>Seated seams.</strong> The vault door's seam begins exactly at the door-face crown, not at an arbitrary height above it.</li>
+      <li><strong>Honest favicons.</strong> At 32px each mark keeps only what survives: the arch drops its echo, the door drops its depth arch and seam, and every remaining stroke thickens to hold roughly one rendered pixel.</li>
+    </ul>
+    <p>Recommended pairings if one of each advances: <em>The Portrait</em> for the arch — its golden stance gives the concept the human scale the original critique asked for — and <em>The Section</em> for the door, the cut that most reads as a single object. The Ironwork is the strongest pure favicon on the sheet if the mark must ever stand alone at 32px.</p>
+  </section>
+</main>
+
+</body>
+</html>

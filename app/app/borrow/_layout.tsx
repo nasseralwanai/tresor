@@ -13,6 +13,7 @@ export default function BorrowLayout() {
     >
       <Stack.Screen name="request" options={{ title: 'Request to Borrow' }} />
       <Stack.Screen name="active" options={{ title: 'Active Borrows' }} />
+      <Stack.Screen name="record" options={{ title: 'Record a Borrow' }} />
     </Stack>
   );
 }

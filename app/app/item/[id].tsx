@@ -113,6 +113,13 @@ export default function ItemDetailScreen() {
     }
   }, [item, user?.id]);
 
+  const handleRecordBorrow = useCallback(() => {
+    hapticSuccess();
+    if (item && user?.id) {
+      router.push({ pathname: '/borrow/record', params: { itemId: item.id } });
+    }
+  }, [item, user?.id]);
+
   const handleMarkReturned = useCallback(async () => {
     hapticSuccess();
     if (activeBorrow) {
@@ -237,6 +244,15 @@ export default function ItemDetailScreen() {
               />
             </View>
           )}
+          {/* Owner can record an offline borrow */}
+          {isOwner && item.is_lendable && !activeBorrow && (
+            <View style={styles.actionSection}>
+              <PrimaryButton
+                label="Record a Borrow"
+                onPress={handleRecordBorrow}
+              />
+            </View>
+          )}
 
           {/* Tabs */}
           <View style={[styles.tabBar, { borderColor: colors.border }]}>
@@ -312,7 +328,11 @@ function DetailsTab({
     { label: 'Condition', value: formatEnum(item.condition) },
     { label: 'Material', value: item.material ?? '—' },
     { label: 'Size', value: item.size ?? '—' },
-    { label: 'Estimated Value', value: formatCurrency(item.estimated_value, item.currency) },
+    // PRICING PRIVACY (migration 0016): estimated_value is NULL for non-owners
+    // via items_visible view. Only show the row if the value is present.
+    ...(item.estimated_value != null ? [
+      { label: 'Estimated Value', value: formatCurrency(item.estimated_value, item.currency) },
+    ] : []),
     { label: 'Authenticity', value: item.authenticity_verified ? 'Verified' : 'Unverified' },
   ];
 

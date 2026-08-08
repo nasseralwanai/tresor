@@ -30,6 +30,7 @@ import { getCollectionInsights } from '@/lib/profile';
 import { getActiveBorrows, type BorrowTransactionEnriched } from '@/lib/borrow';
 import { getCircleMembers } from '@/lib/circle';
 import { getActivityFeed } from '@/lib/activity';
+import { getPriceHistoryForUserItems, computeValueTrend } from '@/lib/priceHistory';
 import { formatCurrency, formatCurrencyCompact, capitalize } from '@/lib/format';
 import { useAuth } from '@/hooks/useAuth';
 import { useCircleId } from '@/hooks/useCircleId';
@@ -96,6 +97,12 @@ export default function YourCollectionScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<AppError | null>(null);
+  const [valueTrend, setValueTrend] = useState<{
+    sparkData: number[];
+    sparkLabels: string[];
+    quarterlyChange: string;
+    quarterlyChangePositive: boolean;
+  } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<ItemCategory | 'all'>(
     'all'
@@ -116,6 +123,16 @@ export default function YourCollectionScreen() {
       setItems(itemsData);
       setInsights(insightsData);
       setBorrows(borrowsData);
+
+      // Fetch real price history and compute value trend (non-blocking —
+      // if it fails the card just doesn't render, not a hard error)
+      try {
+        const priceHistory = await getPriceHistoryForUserItems(user.id);
+        setValueTrend(computeValueTrend(priceHistory));
+      } catch (phErr) {
+        console.warn('[home] price history fetch failed:', phErr);
+        setValueTrend(null);
+      }
 
       // Fetch circle members + activity in parallel (awaited within try/catch
       // to avoid fire-and-forget race conditions / state updates on unmounted component)
@@ -163,6 +180,46 @@ export default function YourCollectionScreen() {
   const handleSeeAllActivity = useCallback(() => {
     router.push('/(tabs)/activity' as any);
   }, []);
+
+  // ── Nudge: derive from real active borrows where the user is the lender ──
+  // A nudge is surfaced when the user has an active lend that has been out
+  // past the 48h grace period (matching the nudge_borrower() RPC constraint).
+  // If no qualifying borrow exists, the card simply doesn't render.
+  const nudgeInfo = useMemo(() => {
+    if (!user?.id) return null;
+    const myLent = borrows.filter(
+      (b) => b.lender_id === user.id && b.status === 'active'
+    );
+    if (myLent.length === 0) return null;
+
+    // Find the oldest active lend to surface as the nudge
+    const oldest = myLent.reduce((old, b) => {
+      const borrowedAt = b.borrowed_at ?? b.created_at;
+      return new Date(borrowedAt).getTime() < new Date(old.borrowed_at ?? old.created_at).getTime()
+        ? b
+        : old;
+    });
+
+    const borrowedAt = oldest.borrowed_at ?? oldest.created_at;
+    const daysOut = Math.floor(
+      (Date.now() - new Date(borrowedAt).getTime()) / 86400000
+    );
+
+    // Only surface a nudge if the borrow is past the 48h grace period
+    if (daysOut < 2) return null;
+
+    const nudgeCount = oldest.nudge_count ?? 0;
+    const title =
+      nudgeCount > 0
+        ? `${oldest.borrower_name} has had your ${oldest.item_brand} for ${daysOut} days`
+        : `${oldest.item_brand} has been with ${oldest.borrower_name} for ${daysOut} days`;
+    const subtitle =
+      nudgeCount > 0
+        ? `You've nudged ${nudgeCount} time${nudgeCount > 1 ? 's' : ''}. Tap to send another gentle reminder.`
+        : 'Tap to send a gentle reminder to bring it home.';
+
+    return { title, subtitle, iconName: 'hand-heart-outline', borrowId: oldest.id };
+  }, [borrows, user?.id]);
 
   const handleGentleNudgePress = useCallback(() => {
     hapticLight();
@@ -281,12 +338,6 @@ export default function YourCollectionScreen() {
         };
       });
   }, [borrows, items, user?.id]);
-
-  // Sparkline data — no historical price data yet; use flat zeros to avoid
-  // presenting fabricated trends as real.
-  const sparkData = useMemo(() => {
-    return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  }, []);
 
   const firstName = useMemo(() => {
     const name = profile?.display_name ?? user?.email ?? 'there';
@@ -458,13 +509,13 @@ export default function YourCollectionScreen() {
             </View>
           )}
 
-          {/* 4. Gentle Nudge Card — hidden until real nudge data source exists */}
-          {getNudgeTitle() && !empty && !isSearchActive && (
+          {/* 4. Gentle Nudge Card — shown when the user has an active lend past the 48h grace period */}
+          {nudgeInfo && !empty && !isSearchActive && (
             <View style={styles.section}>
               <GentleNudgeCard
-                title={getNudgeTitle()!}
-                subtitle={getNudgeSubtitle()}
-                iconName={getNudgeIcon()}
+                title={nudgeInfo.title}
+                subtitle={nudgeInfo.subtitle}
+                iconName={nudgeInfo.iconName}
                 onPress={handleGentleNudgePress}
                 delay={350}
               />
@@ -517,16 +568,16 @@ export default function YourCollectionScreen() {
             </View>
           )}
 
-          {/* 9. Collection Value Card */}
-          {!empty && !isSearchActive && insights && (
+          {/* 9. Collection Value Card — only shown when real price history exists */}
+          {!empty && !isSearchActive && insights && valueTrend && (
             <View style={styles.section}>
               <CollectionValueCard
                 totalValue={formatCurrency(insights.totalValue, insights.currency)}
-                quarterlyChange="+AED 0k"
-                quarterlyChangePositive
+                quarterlyChange={valueTrend.quarterlyChange}
+                quarterlyChangePositive={valueTrend.quarterlyChangePositive}
                 pieceCount={insights.totalItems}
-                sparkData={sparkData}
-                sparkLabels={['Jan', 'Apr', 'Aug']}
+                sparkData={valueTrend.sparkData}
+                sparkLabels={valueTrend.sparkLabels}
                 delay={600}
               />
             </View>
@@ -660,22 +711,6 @@ function getGreeting(): string {
   if (h < 12) return 'Good morning';
   if (h < 18) return 'Good afternoon';
   return 'Good evening';
-}
-
-/**
- * Determine a contextual nudge message based on day/time.
- * Returns null until a real data source (birthdays, events) is connected.
- */
-function getNudgeTitle(): string | null {
-  return null;
-}
-
-function getNudgeSubtitle(): string {
-  return '';
-}
-
-function getNudgeIcon(): string {
-  return 'clock-outline';
 }
 
 // ── Skeleton ──

@@ -488,6 +488,335 @@ export async function buyoutOwner(
   }
 }
 
+// ─── 8. addCoOwner ───
+
+/**
+ * Add a co-owner to an existing item.
+ *
+ * The item must already be co_owned (or will be converted if currently sole).
+ * The owner's share percentage must be adjusted to accommodate the new co-owner.
+ * The DB trigger validate_item_ownership_shares() ensures shares sum to 100.
+ *
+ * @param itemId     The item ID.
+ * @param userId     The user ID of the new co-owner.
+ * @param sharePct   The share percentage for the new co-owner (1-99).
+ * @param amountPaid Optional amount paid by the new co-owner (default 0).
+ * @param currency   Currency code (default 'AED').
+ * @returns          The created CoOwner.
+ */
+export async function addCoOwner(
+  itemId: string,
+  userId: string,
+  sharePct: number,
+  amountPaid: number = 0,
+  currency: string = 'AED'
+): Promise<CoOwner> {
+  try {
+    if (sharePct <= 0 || sharePct >= 100) {
+      throw {
+        message: 'Share percentage must be between 1 and 99.',
+        code: 'INVALID_SHARE',
+      } as CoOwnershipError;
+    }
+
+    // Fetch existing item to verify ownership type and current owner
+    const { data: item, error: itemError } = await supabase
+      .from('items')
+      .select('id, owner_id, ownership_type, circle_id')
+      .eq('id', itemId)
+      .single();
+
+    if (itemError) throw itemError;
+    if (!item) {
+      throw {
+        message: `Item ${itemId} not found`,
+        code: 'ITEM_NOT_FOUND',
+      } as CoOwnershipError;
+    }
+
+    // Fetch existing owners to adjust shares
+    const { data: existingOwners, error: ownersError } = await supabase
+      .from('item_owners')
+      .select('id, user_id, share_percentage, is_active')
+      .eq('item_id', itemId)
+      .eq('is_active', true);
+
+    if (ownersError) throw ownersError;
+
+    // Check if user is already a co-owner
+    if (existingOwners?.some((o) => o.user_id === userId)) {
+      throw {
+        message: 'This user is already a co-owner of this item.',
+        code: 'ALREADY_OWNER',
+      } as CoOwnershipError;
+    }
+
+    // If the item is currently sole-owned, convert to co_owned
+    // and add the original owner to item_owners if not present
+    if (item.ownership_type === 'sole') {
+      await supabase
+        .from('items')
+        .update({ ownership_type: 'co_owned' })
+        .eq('id', itemId);
+
+      // Check if original owner already has an item_owners row
+      const ownerExists = existingOwners?.some((o) => o.user_id === item.owner_id);
+      if (!ownerExists) {
+        // Add the original owner with (100 - newShare)%
+        const ownerShare = 100 - sharePct;
+        await supabase.from('item_owners').insert({
+          item_id: itemId,
+          user_id: item.owner_id,
+          share_percentage: ownerShare,
+          amount_paid: 0,
+          currency,
+          is_active: true,
+        });
+      } else {
+        // Adjust existing owner's share proportionally
+        const ownerRow = existingOwners!.find((o) => o.user_id === item.owner_id);
+        if (ownerRow) {
+          const newOwnerShare = Number(ownerRow.share_percentage) - sharePct;
+          if (newOwnerShare <= 0) {
+            throw {
+              message: 'Original owner share would be 0 or negative. Choose a smaller share.',
+              code: 'INVALID_SHARE',
+            } as CoOwnershipError;
+          }
+          await supabase
+            .from('item_owners')
+            .update({ share_percentage: newOwnerShare })
+            .eq('id', ownerRow.id);
+        }
+      }
+    } else {
+      // Already co-owned: adjust all existing owners proportionally
+      const existingTotal = existingOwners?.reduce(
+        (sum, o) => sum + Number(o.share_percentage), 0
+      ) ?? 0;
+
+      if (existingTotal <= 0) {
+        throw {
+          message: 'Existing ownership shares are invalid.',
+          code: 'INVALID_SHARES',
+        } as CoOwnershipError;
+      }
+
+      // Scale down existing owners to make room for new share
+      const scaleFactor = (100 - sharePct) / existingTotal;
+      for (const owner of existingOwners ?? []) {
+        const newShare = Math.round(Number(owner.share_percentage) * scaleFactor * 100) / 100;
+        await supabase
+          .from('item_owners')
+          .update({ share_percentage: newShare })
+          .eq('id', owner.id);
+      }
+    }
+
+    // Insert the new co-owner
+    const { data: newOwnerRow, error: insertError } = await supabase
+      .from('item_owners')
+      .insert({
+        item_id: itemId,
+        user_id: userId,
+        share_percentage: sharePct,
+        amount_paid: amountPaid,
+        currency,
+        is_active: true,
+      })
+      .select(
+        `*, profiles!item_owners_user_id_fkey(display_name, avatar_url)`
+      )
+      .single();
+
+    if (insertError) throw insertError;
+
+    return enrichCoOwner(newOwnerRow);
+  } catch (err) {
+    const e = toCoOwnershipError(err, `Failed to add co-owner to item ${itemId}`);
+    throw e;
+  }
+}
+
+// ─── 9. removeCoOwner ───
+
+/**
+ * Remove a co-owner from an item.
+ * Only the original item owner can remove co-owners.
+ * The removed co-owner's share is redistributed to remaining owners.
+ * If only one owner remains, the item is converted back to sole ownership.
+ *
+ * @param itemId    The item ID.
+ * @param ownerId   The co-owner's user ID to remove.
+ * @param callerId  The user ID of the person requesting removal (must be the item owner).
+ * @returns         True if the co-owner was removed.
+ */
+export async function removeCoOwner(
+  itemId: string,
+  ownerId: string,
+  callerId: string
+): Promise<boolean> {
+  try {
+    // Verify the caller is the item owner
+    const { data: item, error: itemError } = await supabase
+      .from('items')
+      .select('id, owner_id, ownership_type')
+      .eq('id', itemId)
+      .single();
+
+    if (itemError) throw itemError;
+    if (!item) {
+      throw {
+        message: `Item ${itemId} not found`,
+        code: 'ITEM_NOT_FOUND',
+      } as CoOwnershipError;
+    }
+
+    if (item.owner_id !== callerId) {
+      throw {
+        message: 'Only the original owner can remove co-owners.',
+        code: 'NOT_AUTHORIZED',
+      } as CoOwnershipError;
+    }
+
+    // Can't remove the original owner
+    if (item.owner_id === ownerId) {
+      throw {
+        message: 'Cannot remove the original owner. Use buyout instead.',
+        code: 'CANNOT_REMOVE_OWNER',
+      } as CoOwnershipError;
+    }
+
+    // Fetch the co-owner's share
+    const { data: coOwnerRow, error: coOwnerError } = await supabase
+      .from('item_owners')
+      .select('id, share_percentage')
+      .eq('item_id', itemId)
+      .eq('user_id', ownerId)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (coOwnerError) throw coOwnerError;
+    if (!coOwnerRow) {
+      throw {
+        message: 'This user is not an active co-owner.',
+        code: 'NOT_CO_OWNER',
+      } as CoOwnershipError;
+    }
+
+    const removedShare = Number(coOwnerRow.share_percentage);
+
+    // Deactivate the co-owner
+    const { error: deactivateError } = await supabase
+      .from('item_owners')
+      .update({ is_active: false })
+      .eq('id', coOwnerRow.id);
+
+    if (deactivateError) throw deactivateError;
+
+    // Fetch remaining active owners
+    const { data: remainingOwners, error: remainingError } = await supabase
+      .from('item_owners')
+      .select('id, user_id, share_percentage')
+      .eq('item_id', itemId)
+      .eq('is_active', true);
+
+    if (remainingError) throw remainingError;
+
+    if (remainingOwners && remainingOwners.length > 0) {
+      if (remainingOwners.length === 1) {
+        // Only one owner left — give them 100% and convert to sole
+        await supabase
+          .from('item_owners')
+          .update({ share_percentage: 100 })
+          .eq('id', remainingOwners[0].id);
+
+        await supabase
+          .from('items')
+          .update({ ownership_type: 'sole' })
+          .eq('id', itemId);
+      } else {
+        // Redistribute the removed share proportionally
+        const existingTotal = remainingOwners.reduce(
+          (sum, o) => sum + Number(o.share_percentage), 0
+        );
+        if (existingTotal > 0) {
+          const scaleFactor = (existingTotal + removedShare) / existingTotal;
+          for (const owner of remainingOwners) {
+            const newShare = Math.round(
+              Number(owner.share_percentage) * scaleFactor * 100
+            ) / 100;
+            await supabase
+              .from('item_owners')
+              .update({ share_percentage: newShare })
+              .eq('id', owner.id);
+          }
+        }
+      }
+    }
+
+    return true;
+  } catch (err) {
+    const e = toCoOwnershipError(err, `Failed to remove co-owner from item ${itemId}`);
+    throw e;
+  }
+}
+
+// ─── 10. getCircleMembersForCoOwnership ───
+
+/**
+ * Fetch circle members for the co-owner selection UI.
+ * Excludes users who are already co-owners of the item.
+ */
+export async function getCircleMembersForCoOwnership(
+  circleId: string,
+  itemId: string
+): Promise<Array<{ id: string; display_name: string; avatar_url: string | null }>> {
+  try {
+    // Get all circle members
+    const { data: members, error: membersError } = await supabase
+      .from('circle_members')
+      .select(
+        `user_id,
+         profiles!circle_members_user_id_fkey(display_name, avatar_url)`
+      )
+      .eq('circle_id', circleId);
+
+    if (membersError) throw membersError;
+
+    // Get existing co-owner user IDs
+    const { data: existingOwners, error: ownersError } = await supabase
+      .from('item_owners')
+      .select('user_id')
+      .eq('item_id', itemId)
+      .eq('is_active', true);
+
+    if (ownersError) throw ownersError;
+
+    const existingOwnerIds = new Set(existingOwners?.map((o) => o.user_id) ?? []);
+
+    // Also exclude the item's original owner
+    const { data: item } = await supabase
+      .from('items')
+      .select('owner_id')
+      .eq('id', itemId)
+      .maybeSingle();
+
+    if (item?.owner_id) existingOwnerIds.add(item.owner_id);
+
+    return (members ?? [])
+      .filter((m: any) => !existingOwnerIds.has(m.user_id))
+      .map((m: any) => ({
+        id: m.user_id,
+        display_name: m.profiles?.display_name ?? 'Unknown',
+        avatar_url: m.profiles?.avatar_url ?? null,
+      }));
+  } catch (err) {
+    const e = toCoOwnershipError(err, 'Failed to fetch circle members');
+    throw e;
+  }
+}
+
 // ─── Re-exports for convenience ───
 
 export type { CoOwner, OwnershipLedgerEntry, CustodyTransfer, BuyoutInput };

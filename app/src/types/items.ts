@@ -15,6 +15,7 @@ export type OwnershipType = Database['public']['Enums']['ownership_type'];
 export type CoBorrowApproval = Database['public']['Enums']['co_borrow_approval'];
 export type LedgerEntryType = Database['public']['Enums']['ledger_entry_type'];
 export type CustodyStatus = Database['public']['Enums']['custody_status'];
+export type VoteType = Database['public']['Enums']['vote_type'];
 
 /**
  * UI-facing item type — enriched version of the DB row.

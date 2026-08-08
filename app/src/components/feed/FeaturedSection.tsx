@@ -2,43 +2,95 @@
  * FeaturedSection — Section 1 of the segregated feed.
  * Contains the "Who Wore It Best" voting card with candidates,
  * and an active borrows summary card.
+ *
+ * Votes are persisted to the database via castVote() from lib/feed.
  */
 
 import { memo, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable, Alert } from 'react-native';
 import { View as MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, spacing, radius } from '@/theme';
 import { Avatar } from '@/components/Avatar';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
-import { hapticLight, hapticSuccess } from '@/lib/haptics';
+import { hapticLight, hapticSuccess, hapticError } from '@/lib/haptics';
+import { castVote } from '@/lib/feed';
+import { useAuth } from '@/hooks/useAuth';
 import type { VoteCandidate } from '@/lib/feed';
+import type { VoteType } from '@/types/items';
 
 type FeaturedSectionProps = {
   voteCandidates: VoteCandidate[];
   activeBorrowCount: number;
   onViewBorrows?: () => void;
+  onVoteCast?: (itemId: string, voteType: VoteType, voteCount: number) => void;
 };
 
 function FeaturedSectionInner({
   voteCandidates,
   activeBorrowCount,
   onViewBorrows,
+  onVoteCast,
 }: FeaturedSectionProps) {
   const colors = useThemeColors();
-  const [voteSelected, setVoteSelected] = useState<number | null>(null);
+  const { user } = useAuth();
+  const [voting, setVoting] = useState(false);
+  const [localCandidates, setLocalCandidates] = useState<VoteCandidate[]>(voteCandidates);
 
-  const handleVote = useCallback((idx: number) => {
+  // Sync from props when feed data refreshes
+  const propKey = voteCandidates.map((c) => `${c.itemId}:${c.voteCount}:${c.myVote}`).join('|');
+  const [lastPropKey, setLastPropKey] = useState(propKey);
+  if (propKey !== lastPropKey) {
+    setLastPropKey(propKey);
+    setLocalCandidates(voteCandidates);
+  }
+
+  const handleVote = useCallback(async (idx: number) => {
+    const candidate = localCandidates[idx];
+    if (!candidate?.activityId || voting) return;
     hapticSuccess();
-    setVoteSelected(idx);
-  }, []);
+    setVoting(true);
+
+    const prevVote = candidate.myVote;
+    const newVote: VoteType | null = prevVote ? null : 'love';
+
+    // Optimistic update
+    setLocalCandidates((prev) =>
+      prev.map((c, i) => {
+        if (i !== idx) return c;
+        const newVoteCount = newVote ? c.voteCount + 1 : c.voteCount - 1;
+        return { ...c, myVote: newVote, voteCount: newVoteCount };
+      })
+    );
+
+    try {
+      if (newVote) {
+        await castVote(candidate.activityId, user?.id ?? '', newVote);
+      } else {
+        // Toggle off — cast vote with same type to remove
+        await castVote(candidate.activityId, user?.id ?? '', prevVote!);
+      }
+      onVoteCast?.(candidate.itemId, newVote ?? 'love', newVote ? candidate.voteCount + 1 : candidate.voteCount - 1);
+    } catch (e: any) {
+      // Revert
+      setLocalCandidates((prev) =>
+        prev.map((c, i) =>
+          i === idx ? { ...c, myVote: prevVote, voteCount: candidate.voteCount } : c
+        )
+      );
+      hapticError();
+      Alert.alert('Error', e?.message ?? 'Could not cast vote.');
+    } finally {
+      setVoting(false);
+    }
+  }, [localCandidates, voting, user?.id, onVoteCast]);
 
   const handleViewBorrows = useCallback(() => {
     hapticLight();
     onViewBorrows?.();
   }, [onViewBorrows]);
 
-  if (voteCandidates.length === 0 && activeBorrowCount === 0) return null;
+  if (localCandidates.length === 0 && activeBorrowCount === 0) return null;
 
   return (
     <MotiView
@@ -47,7 +99,7 @@ function FeaturedSectionInner({
       transition={{ type: 'timing', duration: 450 }}
       style={styles.container}
     >
-      {voteCandidates.length > 0 && (
+      {localCandidates.length > 0 && (
         <View
           style={[
             styles.voteCard,
@@ -80,19 +132,20 @@ function FeaturedSectionInner({
 
           {/* Candidates */}
           <View style={styles.voteRow}>
-            {voteCandidates.slice(0, 2).map((candidate, idx) => {
-              const isSelected = voteSelected === idx;
-              const totalVotes = voteCandidates.reduce((s, c) => s + c.voteCount, 0);
+            {localCandidates.slice(0, 2).map((candidate, idx) => {
+              const isSelected = candidate.myVote !== null;
+              const totalVotes = localCandidates.reduce((s, c) => s + c.voteCount, 0);
               const pct = totalVotes > 0 ? Math.round((candidate.voteCount / totalVotes) * 100) : 0;
 
               return (
                 <TouchableOpacity
                   key={candidate.itemId}
                   onPress={() => handleVote(idx)}
+                  disabled={voting}
                   activeOpacity={0.85}
                   accessibilityRole="button"
-                  accessibilityLabel={`Vote for ${candidate.ownerName.split(' ')[0]}, ${pct}% with ${candidate.voteCount} votes`}
-                  accessibilityHint="Vote for this candidate"
+                  accessibilityLabel={`Vote for ${candidate.ownerName.split(' ')[0]}, ${pct}% with ${candidate.voteCount} votes${isSelected ? ', voted' : ''}`}
+                  accessibilityHint={isSelected ? 'Remove your vote' : 'Vote for this candidate'}
                   style={[
                     styles.voteCandidate,
                     {
@@ -122,7 +175,7 @@ function FeaturedSectionInner({
                       { color: isSelected ? colors.gold : colors.textSecondary },
                     ]}
                   >
-                    {pct}% · {candidate.voteCount} votes
+                    {pct}% - {candidate.voteCount} votes
                   </Text>
                 </TouchableOpacity>
               );
@@ -130,37 +183,43 @@ function FeaturedSectionInner({
           </View>
 
           {/* Vote buttons */}
-          {voteSelected === null && voteCandidates.length >= 2 && (
+          {localCandidates.some((c) => c.myVote === null) && localCandidates.length >= 2 && (
             <View style={styles.voteBtnRow}>
-              {voteCandidates.slice(0, 2).map((candidate, idx) => (
-                <Pressable
-                  key={candidate.itemId}
-                  onPress={() => handleVote(idx)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Vote ${candidate.ownerName.split(' ')[0]}`}
-                  accessibilityHint="Cast your vote"
-                  hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
-                  style={({ pressed }) => [
-                    styles.voteBtn,
-                    idx === 0
-                      ? { backgroundColor: colors.gold }
-                      : {
-                          backgroundColor: colors.surface,
-                          borderColor: colors.border,
-                        },
-                    pressed && { opacity: 0.85 },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.voteBtnText,
-                      { color: idx === 0 ? colors.charcoal : colors.textPrimary },
+              {localCandidates.slice(0, 2).map((candidate, idx) => {
+                const hasVoted = candidate.myVote !== null;
+                return (
+                  <Pressable
+                    key={candidate.itemId}
+                    onPress={() => handleVote(idx)}
+                    disabled={voting || hasVoted}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Vote ${candidate.ownerName.split(' ')[0]}`}
+                    accessibilityHint="Cast your vote"
+                    hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
+                    style={({ pressed }) => [
+                      styles.voteBtn,
+                      idx === 0
+                        ? { backgroundColor: hasVoted ? colors.surfaceElevated : colors.gold }
+                        : {
+                            backgroundColor: colors.surface,
+                            borderColor: colors.border,
+                          },
+                      pressed && { opacity: 0.85 },
                     ]}
                   >
-                    Vote {candidate.ownerName.split(' ')[0]}
-                  </Text>
-                </Pressable>
-              ))}
+                    <Text
+                      style={[
+                        styles.voteBtnText,
+                        {
+                          color: idx === 0 && !hasVoted ? colors.charcoal : colors.textSecondary,
+                        },
+                      ]}
+                    >
+                      {hasVoted ? 'Voted' : `Vote ${candidate.ownerName.split(' ')[0]}`}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
           )}
         </View>

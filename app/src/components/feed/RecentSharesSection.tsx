@@ -1,48 +1,53 @@
 /**
  * RecentSharesSection — Section 5 of the segregated feed.
  * Full-width share cards with large images, brand/model, caption,
- * 4-icon reaction bar (love, save, verify, star), and inline comments.
- * Tapping "View all comments" opens the CommentSheet.
+ * like button with real count, vote buttons (love/want/been_there),
+ * and inline comments. Tapping "View all comments" opens the CommentSheet.
+ *
+ * NO prices are shown in any feed item (pricing privacy migration 0016).
  */
 
 import { memo, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable, Alert } from 'react-native';
 import { View as MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, spacing, radius } from '@/theme';
 import { Avatar } from '@/components/Avatar';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
 import { SectionHeader } from './SectionHeader';
-import { hapticLight, hapticSuccess } from '@/lib/haptics';
+import { hapticLight, hapticSuccess, hapticError } from '@/lib/haptics';
 import { formatRelativeTime } from '@/lib/format';
-import type { ShareCard } from '@/lib/feed';
+import { toggleLike, castVote } from '@/lib/feed';
+import { useAuth } from '@/hooks/useAuth';
+import type { ShareCard, ShareComment } from '@/lib/feed';
+import type { VoteType } from '@/types/items';
 
 type RecentSharesSectionProps = {
   shares: ShareCard[];
   onSeeAll?: () => void;
   onOpenComments?: (share: ShareCard) => void;
+  onLikeToggled?: (shareId: string, liked: boolean, newCount: number) => void;
+  onVoteCast?: (shareId: string, voteType: VoteType, newVotes: { love: number; want: number; been_there: number }) => void;
 };
 
-type ReactionType = 'love' | 'save' | 'verify' | 'star';
+const VOTE_CONFIG: { type: VoteType; icon: string; label: string }[] = [
+  { type: 'love', icon: 'cards-heart-outline', label: 'Love' },
+  { type: 'want', icon: 'hand-coin-outline', label: 'Want' },
+  { type: 'been_there', icon: 'check-circle-outline', label: 'Been There' },
+];
 
-const REACTION_ICONS: Record<ReactionType, string> = {
+const VOTE_ICONS_ACTIVE: Record<VoteType, string> = {
   love: 'cards-heart',
-  save: 'bookmark-outline',
-  verify: 'check-decagram-outline',
-  star: 'star-outline',
-};
-
-const REACTION_ICONS_ACTIVE: Record<ReactionType, string> = {
-  love: 'cards-heart',
-  save: 'bookmark',
-  verify: 'check-decagram',
-  star: 'star',
+  want: 'hand-coin',
+  been_there: 'check-circle',
 };
 
 function RecentSharesSectionInner({
   shares,
   onSeeAll,
   onOpenComments,
+  onLikeToggled,
+  onVoteCast,
 }: RecentSharesSectionProps) {
   const colors = useThemeColors();
 
@@ -62,6 +67,8 @@ function RecentSharesSectionInner({
             key={share.id}
             share={share}
             onOpenComments={onOpenComments}
+            onLikeToggled={onLikeToggled}
+            onVoteCast={onVoteCast}
           />
         ))}
       </View>
@@ -72,33 +79,87 @@ function RecentSharesSectionInner({
 function ShareCardItem({
   share,
   onOpenComments,
+  onLikeToggled,
+  onVoteCast,
 }: {
   share: ShareCard;
   onOpenComments?: (share: ShareCard) => void;
+  onLikeToggled?: (shareId: string, liked: boolean, newCount: number) => void;
+  onVoteCast?: (shareId: string, voteType: VoteType, newVotes: { love: number; want: number; been_there: number }) => void;
 }) {
   const colors = useThemeColors();
-  const [reactions, setReactions] = useState<Set<ReactionType>>(new Set());
+  const { user } = useAuth();
+  const [liked, setLiked] = useState(share.likedByMe);
+  const [likeCount, setLikeCount] = useState(share.likeCount);
+  const [votes, setVotes] = useState(share.votes);
+  const [myVote, setMyVote] = useState<VoteType | null>(share.myVote);
+  const [voting, setVoting] = useState(false);
 
-  const toggleReaction = useCallback((type: ReactionType) => {
+  // Sync from props when feed data refreshes
+  const propKey = `${share.id}-${share.likeCount}-${share.likedByMe}-${share.votes.love}-${share.votes.want}-${share.votes.been_there}-${share.myVote}`;
+  const [lastPropKey, setLastPropKey] = useState(propKey);
+  if (propKey !== lastPropKey) {
+    setLastPropKey(propKey);
+    setLiked(share.likedByMe);
+    setLikeCount(share.likeCount);
+    setVotes(share.votes);
+    setMyVote(share.myVote);
+  }
+
+  const handleLike = useCallback(async () => {
+    if (!share.activityId) return;
     hapticLight();
-    setReactions((prev) => {
-      const next = new Set(prev);
-      if (next.has(type)) next.delete(type);
-      else next.add(type);
-      return next;
-    });
-  }, []);
 
-  const getReactionCount = (type: ReactionType, baseCount: number): number => {
-    return baseCount + (reactions.has(type) ? 1 : 0);
-  };
+    // Optimistic update
+    const newLiked = !liked;
+    const newCount = likeCount + (newLiked ? 1 : -1);
+    setLiked(newLiked);
+    setLikeCount(newCount);
 
-  const reactionConfig: { type: ReactionType; count: number }[] = [
-    { type: 'love', count: getReactionCount('love', share.likeCount) },
-    { type: 'save', count: getReactionCount('save', share.saveCount) },
-    { type: 'verify', count: getReactionCount('verify', share.verifiedCount) },
-    { type: 'star', count: getReactionCount('star', share.starCount) },
-  ];
+    try {
+      await toggleLike(share.activityId, user?.id ?? '');
+      onLikeToggled?.(share.id, newLiked, newCount);
+    } catch (e: any) {
+      // Revert on failure
+      setLiked(!newLiked);
+      setLikeCount(likeCount);
+      hapticError();
+      Alert.alert('Error', e?.message ?? 'Could not update like.');
+    }
+  }, [share.activityId, share.id, liked, likeCount, user?.id, onLikeToggled]);
+
+  const handleVote = useCallback(async (voteType: VoteType) => {
+    if (!share.activityId || voting) return;
+    hapticLight();
+    setVoting(true);
+
+    // Optimistic update
+    const prevVote = myVote;
+    const newVotes = { ...votes };
+    if (prevVote) newVotes[prevVote]--;
+    if (prevVote === voteType) {
+      // Toggle off
+      setMyVote(null);
+      setVotes(newVotes);
+    } else {
+      newVotes[voteType]++;
+      setMyVote(voteType);
+      setVotes(newVotes);
+    }
+
+    try {
+      await castVote(share.activityId, user?.id ?? '', voteType);
+      onVoteCast?.(share.id, voteType, newVotes);
+    } catch (e: any) {
+      // Revert on failure
+      setMyVote(prevVote);
+      setVotes(votes);
+      hapticError();
+      Alert.alert('Error', e?.message ?? 'Could not cast vote.');
+    } finally {
+      setVoting(false);
+    }
+  }, [share.activityId, share.id, myVote, votes, voting, user?.id, onVoteCast]);
 
   const handleOpenComments = useCallback(() => {
     hapticSuccess();
@@ -106,7 +167,7 @@ function ShareCardItem({
   }, [onOpenComments, share]);
 
   const visibleComments = share.comments.slice(0, 2);
-  const totalCommentCount = share.comments.length;
+  const totalCommentCount = share.commentCount;
 
   return (
     <View
@@ -157,52 +218,106 @@ function ShareCardItem({
           {share.caption}
         </Text>
 
-        {/* Reaction bar */}
+        {/* Like button + comment count */}
         <View
           style={[
-            styles.reactionBar,
+            styles.actionBar,
             {
               borderBottomWidth: StyleSheet.hairlineWidth,
               borderBottomColor: colors.border,
             },
           ]}
         >
-          {reactionConfig.map(({ type, count }) => {
-            const isActive = reactions.has(type);
-            return (
-              <Pressable
-                key={type}
-                onPress={() => toggleReaction(type)}
-                accessibilityRole="button"
-                accessibilityLabel={`${type} reaction, ${count} ${count === 1 ? 'reaction' : 'reactions'}${isActive ? ', active' : ''}`}
-                accessibilityHint={isActive ? 'Remove your reaction' : 'Add a reaction'}
-                hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
-                style={styles.reactionItem}
-              >
-                <MaterialCommunityIcons
-                  name={
-                    isActive
-                      ? (REACTION_ICONS_ACTIVE[type] as any)
-                      : (REACTION_ICONS[type] as any)
-                  }
-                  size={12}
-                  color={isActive ? colors.gold : colors.textSecondary}
-                />
-                <Text
-                  style={[
-                    styles.reactionCount,
+          <Pressable
+            onPress={handleLike}
+            accessibilityRole="button"
+            accessibilityLabel={`Like, ${likeCount} ${likeCount === 1 ? 'like' : 'likes'}${liked ? ', active' : ''}`}
+            accessibilityHint={liked ? 'Remove your like' : 'Like this share'}
+            hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
+            style={styles.actionItem}
+          >
+            <MaterialCommunityIcons
+              name={liked ? 'cards-heart' : 'cards-heart-outline'}
+              size={14}
+              color={liked ? '#E5484D' : colors.textSecondary}
+            />
+            <Text
+              style={[
+                styles.actionCount,
+                {
+                  color: liked ? '#E5484D' : colors.textSecondary,
+                  fontWeight: liked ? '500' : '400',
+                },
+              ]}
+            >
+              {likeCount}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={handleOpenComments}
+            accessibilityRole="button"
+            accessibilityLabel={`Comments, ${totalCommentCount} ${totalCommentCount === 1 ? 'comment' : 'comments'}`}
+            accessibilityHint="View and add comments"
+            hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
+            style={styles.actionItem}
+          >
+            <MaterialCommunityIcons
+              name="comment-text-outline"
+              size={14}
+              color={colors.textSecondary}
+            />
+            <Text style={[styles.actionCount, { color: colors.textSecondary }]}>
+              {totalCommentCount}
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* Vote buttons */}
+        {share.activityId && (
+          <View style={styles.voteBar}>
+            {VOTE_CONFIG.map(({ type, icon, label }) => {
+              const isActive = myVote === type;
+              const count = votes[type];
+              return (
+                <Pressable
+                  key={type}
+                  onPress={() => handleVote(type)}
+                  disabled={voting}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${label}, ${count} ${count === 1 ? 'vote' : 'votes'}${isActive ? ', active' : ''}`}
+                  accessibilityHint={isActive ? `Remove your ${label} vote` : `Vote ${label}`}
+                  hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                  style={({ pressed }) => [
+                    styles.voteBtn,
                     {
-                      color: isActive ? colors.gold : colors.textSecondary,
-                      fontWeight: isActive ? '500' : '400',
+                      borderColor: isActive ? colors.gold : colors.border,
+                      backgroundColor: isActive ? `${colors.gold}08` : colors.surfaceElevated,
                     },
+                    pressed && { opacity: 0.85 },
                   ]}
                 >
-                  {count}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+                  <MaterialCommunityIcons
+                    name={isActive ? (VOTE_ICONS_ACTIVE[type] as any) : (icon as any)}
+                    size={12}
+                    color={isActive ? colors.gold : colors.textSecondary}
+                  />
+                  <Text
+                    style={[
+                      styles.voteBtnText,
+                      {
+                        color: isActive ? colors.gold : colors.textSecondary,
+                        fontWeight: isActive ? '500' : '400',
+                      },
+                    ]}
+                  >
+                    {label} {count > 0 ? count : ''}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
 
         {/* Inline comments */}
         <View style={styles.commentsSection}>
@@ -218,24 +333,26 @@ function ShareCardItem({
           ))}
 
           {/* View all comments */}
-          <TouchableOpacity
-            onPress={handleOpenComments}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityLabel={`View all ${totalCommentCount} comments`}
-            accessibilityHint="Opens comments sheet"
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={styles.viewCommentsRow}
-          >
-            <MaterialCommunityIcons
-              name="comment-text-outline"
-              size={11}
-              color={colors.textSecondary}
-            />
-            <Text style={[styles.viewCommentsText, { color: colors.textSecondary }]}>
-              View all {totalCommentCount} comments
-            </Text>
-          </TouchableOpacity>
+          {totalCommentCount > 0 && (
+            <TouchableOpacity
+              onPress={handleOpenComments}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`View all ${totalCommentCount} comments`}
+              accessibilityHint="Opens comments sheet"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={styles.viewCommentsRow}
+            >
+              <MaterialCommunityIcons
+                name="comment-text-outline"
+                size={11}
+                color={colors.textSecondary}
+              />
+              <Text style={[styles.viewCommentsText, { color: colors.textSecondary }]}>
+                View all {totalCommentCount} comments
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -302,19 +419,38 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginBottom: 10,
   },
-  reactionBar: {
+  actionBar: {
     flexDirection: 'row',
-    gap: 14,
+    gap: 18,
     paddingBottom: 9,
   },
-  reactionItem: {
+  actionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  actionCount: {
+    fontFamily: 'Jost',
+    fontSize: 11,
+  },
+  voteBar: {
+    flexDirection: 'row',
+    gap: 6,
+    paddingBottom: 9,
+    flexWrap: 'wrap',
+  },
+  voteBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    paddingVertical: 5,
+    paddingHorizontal: 9,
+    borderRadius: radius.pill,
+    borderWidth: 1,
   },
-  reactionCount: {
+  voteBtnText: {
     fontFamily: 'Jost',
-    fontSize: 10.5,
+    fontSize: 10,
   },
   commentsSection: {
     paddingTop: 9,

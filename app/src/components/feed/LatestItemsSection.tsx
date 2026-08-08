@@ -1,7 +1,8 @@
 /**
  * LatestItemsSection — Section 2 of the segregated feed.
- * Horizontal scroll of item cards with brand, model, owner avatar,
- * and heart icon with like count.
+ * Horizontal scroll of item cards with brand, model, owner avatar.
+ *
+ * NO prices are shown in any feed item (pricing privacy migration 0016).
  */
 
 import { memo, useCallback, useMemo } from 'react';
@@ -91,16 +92,15 @@ function LatestItemsSectionInner({
                     {item.owner_name.split(' ')[0]}
                   </Text>
                 </View>
-                <View style={styles.likeRow}>
-                  <MaterialCommunityIcons
-                    name="heart-outline"
-                    size={10}
-                    color={colors.textSecondary}
-                  />
-                  <Text style={[styles.likeCount, { color: colors.textSecondary }]}>
-                    {item.estimated_value ? `${(item.estimated_value / 1000).toFixed(0)}k` : ''}
-                  </Text>
-                </View>
+                {item.is_lendable && (
+                  <View style={styles.lendableBadge}>
+                    <MaterialCommunityIcons
+                      name="hand-coin-outline"
+                      size={10}
+                      color={colors.gold}
+                    />
+                  </View>
+                )}
               </View>
             </View>
           </TouchableOpacity>
@@ -162,13 +162,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Jost',
     fontSize: 9,
   },
-  likeRow: {
-    flexDirection: 'row',
+  lendableBadge: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
     alignItems: 'center',
-    gap: 2,
-  },
-  likeCount: {
-    fontFamily: 'Jost',
-    fontSize: 9,
+    justifyContent: 'center',
   },
 });

@@ -35,9 +35,10 @@ function RootNavigator() {
         {/* Main app — shown when authenticated */}
         <Stack.Screen name="(tabs)" />
 
-        {/* Standalone routes (not in tab bar) */}
-        <Stack.Screen name="add" />
-        <Stack.Screen name="item" />
+        {/* Standalone routes — auto-discovered, no explicit name needed */}
+        <Stack.Screen name="add/bulk-import" />
+        <Stack.Screen name="add/manual" />
+        <Stack.Screen name="item/[id]" />
         <Stack.Screen name="borrow" />
       </Stack>
       <Redirect href={isAuthenticated ? '/(tabs)' : '/(auth)/welcome'} />

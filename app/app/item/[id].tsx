@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
 import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
@@ -25,6 +26,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { hapticLight, hapticSuccess } from '@/lib/haptics';
 import { getItem, updateItem, getActiveBorrowForItem, getItemBorrowHistory } from '@/lib/items';
 import { markReturned } from '@/lib/borrow';
+import { uploadItemImage } from '@/lib/images';
 import { NudgeButton } from '@/components/NudgeButton';
 import { CoOwnersPanel } from '@/components/CoOwnersPanel';
 import { EmptyState } from '@/components/EmptyState';
@@ -142,6 +144,39 @@ export default function ItemDetailScreen() {
     router.back();
   }, []);
 
+  const handleAddPhoto = useCallback(async () => {
+    if (!item || !user?.id) return;
+    hapticLight();
+
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('Permission Required', 'Please grant photo library access to upload images.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (result.canceled || !result.assets?.[0]?.uri) return;
+
+    try {
+      const imageUrl = await uploadItemImage(user.id, item.id, result.assets[0].uri);
+      // Update the item's primary_image_url if it doesn't have one
+      if (!item.primary_image_url) {
+        await updateItem(item.id, { primary_image_url: imageUrl });
+      }
+      // Reload item to show the new photo
+      loadData();
+      hapticSuccess();
+    } catch (e: any) {
+      Alert.alert('Upload Failed', e?.message ?? 'Could not upload image.');
+    }
+  }, [item, user?.id, loadData]);
+
   if (loading) {
     return (
       <>
@@ -209,6 +244,20 @@ export default function ItemDetailScreen() {
                 label={item.status === 'borrowed' ? 'Lent' : 'Available'}
               />
             </View>
+            {/* Add Photo button for owners */}
+            {isOwner && (
+              <TouchableOpacity
+                onPress={handleAddPhoto}
+                style={[styles.addPhotoBtn, { backgroundColor: colors.surface }]}
+                accessibilityRole="button"
+                accessibilityLabel="Add a photo to this item"
+                accessibilityHint="Open your photo library to select an image"
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <MaterialCommunityIcons name="camera-outline" size={18} color={colors.accent} />
+                <Text style={[styles.addPhotoText, { color: colors.accent }]}>Add Photo</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Item info */}
@@ -587,6 +636,27 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: spacing.md,
     left: spacing.lg + 6,
+  },
+  addPhotoBtn: {
+    position: 'absolute',
+    bottom: spacing.md,
+    right: spacing.lg + 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: radius.pill,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  addPhotoText: {
+    ...typography.footnote,
+    fontSize: 13,
+    fontWeight: '600',
   },
   itemInfoSection: {
     paddingHorizontal: spacing.lg + 6,

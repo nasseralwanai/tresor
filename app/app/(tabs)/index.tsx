@@ -600,7 +600,9 @@ export default function YourCollectionScreen() {
             <EmptyState
               icon="treasure-chest"
               title="Your Collection Awaits"
-              subtitle="Tap the + button to add your first luxury piece"
+              subtitle="Add your first luxury piece to begin building your private collection."
+              actionLabel="Add Your First Item"
+              onAction={handleAddItem}
             />
           )}
 

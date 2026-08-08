@@ -88,6 +88,8 @@ export function ItemPhotoPlaceholder({
         ] as StyleProp<ImageStyle>}
         contentFit="cover"
         transition={300}
+        placeholder={undefined}
+        cachePolicy="memory-disk"
       />
     );
   }

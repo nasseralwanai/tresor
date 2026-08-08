@@ -11,6 +11,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { withRetry } from '@/lib/retry';
 import type { Database } from '@/types';
 
 type BorrowInsert = Database['public']['Tables']['borrow_transactions']['Insert'];
@@ -199,55 +200,57 @@ export async function declineBorrow(transactionId: string): Promise<BorrowTransa
  * a string-interpolated `.or()` filter to avoid PostgREST filter injection.
  */
 export async function getActiveBorrows(userId: string): Promise<BorrowTransactionEnriched[]> {
-  const activeStatuses = ['requested', 'approved', 'active', 'returned_pending'];
-  const select = `*,
+  return withRetry(async () => {
+    const activeStatuses = ['requested', 'approved', 'active', 'returned_pending'];
+    const select = `*,
       items!borrow_transactions_item_id_fkey(brand, model_name, primary_image_url),
       borrower:profiles!borrow_transactions_borrower_id_fkey(display_name),
       lender:profiles!borrow_transactions_lender_id_fkey(display_name)
       `;
 
-  // Query borrows where the user is the borrower (parameterized — no interpolation)
-  const { data: borrowed, error: borrowerError } = await supabase
-    .from('borrow_transactions')
-    .select(select)
-    .eq('borrower_id', userId)
-    .in('status', activeStatuses)
-    .order('created_at', { ascending: false })
-    .limit(50);
+    // Query borrows where the user is the borrower (parameterized — no interpolation)
+    const { data: borrowed, error: borrowerError } = await supabase
+      .from('borrow_transactions')
+      .select(select)
+      .eq('borrower_id', userId)
+      .in('status', activeStatuses)
+      .order('created_at', { ascending: false })
+      .limit(50);
 
-  if (borrowerError) throw borrowerError;
+    if (borrowerError) throw borrowerError;
 
-  // Query borrows where the user is the lender (parameterized — no interpolation)
-  const { data: lent, error: lenderError } = await supabase
-    .from('borrow_transactions')
-    .select(select)
-    .eq('lender_id', userId)
-    .in('status', activeStatuses)
-    .order('created_at', { ascending: false })
-    .limit(50);
+    // Query borrows where the user is the lender (parameterized — no interpolation)
+    const { data: lent, error: lenderError } = await supabase
+      .from('borrow_transactions')
+      .select(select)
+      .eq('lender_id', userId)
+      .in('status', activeStatuses)
+      .order('created_at', { ascending: false })
+      .limit(50);
 
-  if (lenderError) throw lenderError;
+    if (lenderError) throw lenderError;
 
-  // Merge, deduplicate by id, and sort by created_at descending
-  const seen = new Set<string>();
-  const merged = [...(borrowed ?? []), ...(lent ?? [])].filter((row: any) => {
-    if (seen.has(row.id)) return false;
-    seen.add(row.id);
-    return true;
+    // Merge, deduplicate by id, and sort by created_at descending
+    const seen = new Set<string>();
+    const merged = [...(borrowed ?? []), ...(lent ?? [])].filter((row: any) => {
+      if (seen.has(row.id)) return false;
+      seen.add(row.id);
+      return true;
+    });
+    merged.sort(
+      (a: any, b: any) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
+    return merged.map((row: any) => ({
+      ...row,
+      item_brand: row.items?.brand ?? 'Unknown',
+      item_model: row.items?.model_name ?? null,
+      item_primary_image_url: row.items?.primary_image_url ?? null,
+      borrower_name: row.borrower?.display_name ?? 'Unknown',
+      lender_name: row.lender?.display_name ?? 'Unknown',
+    }));
   });
-  merged.sort(
-    (a: any, b: any) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
-
-  return merged.map((row: any) => ({
-    ...row,
-    item_brand: row.items?.brand ?? 'Unknown',
-    item_model: row.items?.model_name ?? null,
-    item_primary_image_url: row.items?.primary_image_url ?? null,
-    borrower_name: row.borrower?.display_name ?? 'Unknown',
-    lender_name: row.lender?.display_name ?? 'Unknown',
-  }));
 }
 
 /**
@@ -255,28 +258,30 @@ export async function getActiveBorrows(userId: string): Promise<BorrowTransactio
  * Returns enriched transactions with item and party names.
  */
 export async function getBorrowHistory(itemId: string): Promise<BorrowTransactionEnriched[]> {
-  const { data, error } = await supabase
-    .from('borrow_transactions')
-    .select(
-      `*,
+  return withRetry(async () => {
+    const { data, error } = await supabase
+      .from('borrow_transactions')
+      .select(
+        `*,
       items!borrow_transactions_item_id_fkey(brand, model_name, primary_image_url),
       borrower:profiles!borrow_transactions_borrower_id_fkey(display_name),
       lender:profiles!borrow_transactions_lender_id_fkey(display_name)
       `
-    )
-    .eq('item_id', itemId)
-    .order('created_at', { ascending: false })
-    .limit(50);
+      )
+      .eq('item_id', itemId)
+      .order('created_at', { ascending: false })
+      .limit(50);
 
-  if (error) throw error;
-  return (data ?? []).map((row: any) => ({
-    ...row,
-    item_brand: row.items?.brand ?? 'Unknown',
-    item_model: row.items?.model_name ?? null,
-    item_primary_image_url: row.items?.primary_image_url ?? null,
-    borrower_name: row.borrower?.display_name ?? 'Unknown',
-    lender_name: row.lender?.display_name ?? 'Unknown',
-  }));
+    if (error) throw error;
+    return (data ?? []).map((row: any) => ({
+      ...row,
+      item_brand: row.items?.brand ?? 'Unknown',
+      item_model: row.items?.model_name ?? null,
+      item_primary_image_url: row.items?.primary_image_url ?? null,
+      borrower_name: row.borrower?.display_name ?? 'Unknown',
+      lender_name: row.lender?.display_name ?? 'Unknown',
+    }));
+  });
 }
 
 /**

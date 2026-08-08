@@ -208,7 +208,7 @@ export default function CircleScreen() {
             </View>
           )}
           {members.length === 0 ? (
-            <EmptyState icon="account-group-outline" title="Your Circle Is Empty" subtitle="Invite friends to start sharing your collections" />
+            <EmptyState icon="account-group-outline" title="Your Circle Awaits" subtitle="Invite trusted friends to share your collections and track borrows together." actionLabel="Invite Members" onAction={() => { hapticLight(); Alert.alert('Invite', 'Share your circle invite code with friends to bring them in.'); }} />
           ) : (
             <View style={styles.listWrap}>
               {members.map((member) => (

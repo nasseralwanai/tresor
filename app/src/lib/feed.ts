@@ -9,6 +9,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { withRetry } from '@/lib/retry';
 import { getItems } from '@/lib/items';
 import { getCircleWishlists } from '@/lib/wishlist';
 import { getActivityFeed } from '@/lib/activity';
@@ -107,41 +108,43 @@ export async function getFeedData(
   circleId: string,
   userId: string
 ): Promise<FeedData> {
-  const [items, activities, wishlistRows, borrowRows, members] = await Promise.all([
-    getItems(circleId),
-    getActivityFeed(circleId, 50),
-    getCircleWishlists(circleId),
-    getCircleActiveBorrows(circleId),
-    getCircleMembers(circleId),
-  ]);
+  return withRetry(async () => {
+    const [items, activities, wishlistRows, borrowRows, members] = await Promise.all([
+      getItems(circleId),
+      getActivityFeed(circleId, 50),
+      getCircleWishlists(circleId),
+      getCircleActiveBorrows(circleId),
+      getCircleMembers(circleId),
+    ]);
 
-  const activeBorrowCount = borrowRows.filter(
-    (b) => b.status === 'active' || b.status === 'approved'
-  ).length;
+    const activeBorrowCount = borrowRows.filter(
+      (b) => b.status === 'active' || b.status === 'approved'
+    ).length;
 
-  // Collect all activity IDs for batch fetching interactions
-  const activityIds = activities.map((a) => a.id);
+    // Collect all activity IDs for batch fetching interactions
+    const activityIds = activities.map((a) => a.id);
 
-  // Fetch all interactions in parallel
-  const [likes, comments, votes] = await Promise.all([
-    fetchLikes(activityIds),
-    fetchComments(activityIds),
-    fetchVotes(activityIds),
-  ]);
+    // Fetch all interactions in parallel
+    const [likes, comments, votes] = await Promise.all([
+      fetchLikes(activityIds),
+      fetchComments(activityIds),
+      fetchVotes(activityIds),
+    ]);
 
-  const wishlists = groupWishlists(wishlistRows);
-  const shares = buildShareCards(items, activities, members, likes, comments, votes, userId);
-  const voteCandidates = buildVoteCandidates(items, activities, likes, comments, votes, userId);
+    const wishlists = groupWishlists(wishlistRows);
+    const shares = buildShareCards(items, activities, members, likes, comments, votes, userId);
+    const voteCandidates = buildVoteCandidates(items, activities, likes, comments, votes, userId);
 
-  return {
-    items,
-    activities,
-    wishlists,
-    shares,
-    activeBorrowCount,
-    voteCandidates,
-    members,
-  };
+    return {
+      items,
+      activities,
+      wishlists,
+      shares,
+      activeBorrowCount,
+      voteCandidates,
+      members,
+    };
+  });
 }
 
 // ─── Feed interaction fetchers ───

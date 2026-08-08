@@ -20,7 +20,7 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { useThemeColors, spacing, radius } from '@/theme';
 import { Skeleton } from '@/components/Skeleton';
 import { NotificationBell } from '@/components/NotificationBell';
@@ -214,8 +214,10 @@ export default function ActivityScreen() {
         <View style={[styles.container, { backgroundColor: colors.background }]}>
           <EmptyState
             icon="bell-off-outline"
-            title="No Activity Yet"
-            subtitle="Borrow requests, new items, and shares will appear here"
+            title="Nothing Happening Yet"
+            subtitle="Share an item with your circle to start the conversation."
+            actionLabel="Share an Item"
+            onAction={() => router.push('/(tabs)/add' as any)}
           />
         </View>
       </>

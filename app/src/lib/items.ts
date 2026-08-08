@@ -8,6 +8,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { withRetry } from '@/lib/retry';
 import type {
   ItemPhoto,
   Database,
@@ -25,17 +26,19 @@ export type ItemWithPhotos = ItemUI & { item_photos?: ItemPhoto[] };
  * Returns items enriched with the owner's display_name as owner_name.
  */
 export async function getItems(circleId: string): Promise<ItemUI[]> {
-  const { data, error } = await supabase
-    .from('items_visible')
-    .select('*, profiles!items_owner_id_fkey(display_name)')
-    .eq('circle_id', circleId)
-    .order('created_at', { ascending: false })
-    .limit(50);
-  if (error) throw error;
-  return (data ?? []).map((row: any) => ({
-    ...row,
-    owner_name: row.profiles?.display_name ?? 'Unknown',
-  }));
+  return withRetry(async () => {
+    const { data, error } = await supabase
+      .from('items_visible')
+      .select('*, profiles!items_owner_id_fkey(display_name)')
+      .eq('circle_id', circleId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    return (data ?? []).map((row: any) => ({
+      ...row,
+      owner_name: row.profiles?.display_name ?? 'Unknown',
+    }));
+  });
 }
 
 /**
@@ -43,17 +46,19 @@ export async function getItems(circleId: string): Promise<ItemUI[]> {
  * Returns the item enriched with owner_name.
  */
 export async function getItem(id: string): Promise<ItemWithPhotos | null> {
-  const { data, error } = await supabase
-    .from('items_visible')
-    .select('*, item_photos(*), profiles!items_owner_id_fkey(display_name)')
-    .eq('id', id)
-    .maybeSingle();
-  if (error) throw error;
-  if (!data) return null;
-  return {
-    ...data,
-    owner_name: (data as any).profiles?.display_name ?? 'Unknown',
-  };
+  return withRetry(async () => {
+    const { data, error } = await supabase
+      .from('items_visible')
+      .select('*, item_photos(*), profiles!items_owner_id_fkey(display_name)')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+    return {
+      ...data,
+      owner_name: (data as any).profiles?.display_name ?? 'Unknown',
+    };
+  });
 }
 
 /** Create a new item. Returns the created item enriched with owner_name. */
@@ -99,17 +104,19 @@ export async function deleteItem(id: string): Promise<void> {
  * Returns items enriched with owner_name.
  */
 export async function getMyItems(userId: string): Promise<ItemUI[]> {
-  const { data, error } = await supabase
-    .from('items_visible')
-    .select('*, profiles!items_owner_id_fkey(display_name)')
-    .eq('owner_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(50);
-  if (error) throw error;
-  return (data ?? []).map((row: any) => ({
-    ...row,
-    owner_name: row.profiles?.display_name ?? 'Unknown',
-  }));
+  return withRetry(async () => {
+    const { data, error } = await supabase
+      .from('items_visible')
+      .select('*, profiles!items_owner_id_fkey(display_name)')
+      .eq('owner_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) throw error;
+    return (data ?? []).map((row: any) => ({
+      ...row,
+      owner_name: row.profiles?.display_name ?? 'Unknown',
+    }));
+  });
 }
 
 /**
@@ -120,23 +127,25 @@ export async function getUserItems(
   userId: string,
   onlyLendable = false
 ): Promise<ItemUI[]> {
-  let query = supabase
-    .from('items_visible')
-    .select('*, profiles!items_owner_id_fkey(display_name)')
-    .eq('owner_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(50);
+  return withRetry(async () => {
+    let query = supabase
+      .from('items_visible')
+      .select('*, profiles!items_owner_id_fkey(display_name)')
+      .eq('owner_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
 
-  if (onlyLendable) {
-    query = query.eq('is_lendable', true).eq('is_private', false);
-  }
+    if (onlyLendable) {
+      query = query.eq('is_lendable', true).eq('is_private', false);
+    }
 
-  const { data, error } = await query;
-  if (error) throw error;
-  return (data ?? []).map((row: any) => ({
-    ...row,
-    owner_name: row.profiles?.display_name ?? 'Unknown',
-  }));
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data ?? []).map((row: any) => ({
+      ...row,
+      owner_name: row.profiles?.display_name ?? 'Unknown',
+    }));
+  });
 }
 
 /**
@@ -146,32 +155,34 @@ export async function getUserItems(
 export async function getActiveBorrowForItem(
   itemId: string
 ): Promise<BorrowTransactionEnriched | null> {
-  const { data, error } = await supabase
-    .from('borrow_transactions')
-    .select(
-      `*,
+  return withRetry(async () => {
+    const { data, error } = await supabase
+      .from('borrow_transactions')
+      .select(
+        `*,
       items!borrow_transactions_item_id_fkey(brand, model_name, primary_image_url),
       borrower:profiles!borrow_transactions_borrower_id_fkey(display_name),
       lender:profiles!borrow_transactions_lender_id_fkey(display_name)
       `
-    )
-    .eq('item_id', itemId)
-    .in('status', ['active', 'approved'])
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+      )
+      .eq('item_id', itemId)
+      .in('status', ['active', 'approved'])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-  if (error) throw error;
-  if (!data) return null;
+    if (error) throw error;
+    if (!data) return null;
 
-  return {
-    ...data,
-    item_brand: (data as any).items?.brand ?? 'Unknown',
-    item_model: (data as any).items?.model_name ?? null,
-    item_primary_image_url: (data as any).items?.primary_image_url ?? null,
-    borrower_name: (data as any).borrower?.display_name ?? 'Unknown',
-    lender_name: (data as any).lender?.display_name ?? 'Unknown',
-  };
+    return {
+      ...data,
+      item_brand: (data as any).items?.brand ?? 'Unknown',
+      item_model: (data as any).items?.model_name ?? null,
+      item_primary_image_url: (data as any).items?.primary_image_url ?? null,
+      borrower_name: (data as any).borrower?.display_name ?? 'Unknown',
+      lender_name: (data as any).lender?.display_name ?? 'Unknown',
+    };
+  });
 }
 
 /**
@@ -181,28 +192,30 @@ export async function getActiveBorrowForItem(
 export async function getItemBorrowHistory(
   itemId: string
 ): Promise<BorrowTransactionEnriched[]> {
-  const { data, error } = await supabase
-    .from('borrow_transactions')
-    .select(
-      `*,
+  return withRetry(async () => {
+    const { data, error } = await supabase
+      .from('borrow_transactions')
+      .select(
+        `*,
       items!borrow_transactions_item_id_fkey(brand, model_name, primary_image_url),
       borrower:profiles!borrow_transactions_borrower_id_fkey(display_name),
       lender:profiles!borrow_transactions_lender_id_fkey(display_name)
       `
-    )
-    .eq('item_id', itemId)
-    .order('created_at', { ascending: false })
-    .limit(50);
+      )
+      .eq('item_id', itemId)
+      .order('created_at', { ascending: false })
+      .limit(50);
 
-  if (error) throw error;
-  return (data ?? []).map((row: any) => ({
-    ...row,
-    item_brand: row.items?.brand ?? 'Unknown',
-    item_model: row.items?.model_name ?? null,
-    item_primary_image_url: row.items?.primary_image_url ?? null,
-    borrower_name: row.borrower?.display_name ?? 'Unknown',
-    lender_name: row.lender?.display_name ?? 'Unknown',
-  }));
+    if (error) throw error;
+    return (data ?? []).map((row: any) => ({
+      ...row,
+      item_brand: row.items?.brand ?? 'Unknown',
+      item_model: row.items?.model_name ?? null,
+      item_primary_image_url: row.items?.primary_image_url ?? null,
+      borrower_name: row.borrower?.display_name ?? 'Unknown',
+      lender_name: row.lender?.display_name ?? 'Unknown',
+    }));
+  });
 }
 
 /** Type for enriched borrow transactions with names. */

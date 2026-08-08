@@ -2,9 +2,10 @@
  * CommentSheet — bottom sheet modal for viewing and adding comments.
  * Uses @expo/ui BottomSheet (NOT @gorhom).
  * Shows a dimmed background, grab handle, comment list, and input field.
+ * Comments persist to the database via addComment() from lib/feed.
  */
 
-import { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -13,6 +14,8 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { BottomSheet } from '@expo/ui';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -20,27 +23,61 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColors, spacing, radius } from '@/theme';
 import { Avatar } from '@/components/Avatar';
 import { formatRelativeTime } from '@/lib/format';
+import { addComment } from '@/lib/feed';
+import { hapticSuccess, hapticError } from '@/lib/haptics';
+import { useAuth } from '@/hooks/useAuth';
 import type { ShareCard, ShareComment } from '@/lib/feed';
 
 type CommentSheetProps = {
   share: ShareCard | null;
   onDismiss: () => void;
+  onCommentAdded?: (shareId: string, comment: ShareComment) => void;
 };
 
-function CommentSheetInner({ share, onDismiss }: CommentSheetProps) {
+function CommentSheetInner({ share, onDismiss, onCommentAdded }: CommentSheetProps) {
   const colors = useThemeColors();
-  const [commentText] = useState('');
+  const { user } = useAuth();
+  const [commentText, setCommentText] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [localComments, setLocalComments] = useState<ShareComment[]>([]);
+  const inputRef = useRef<TextInput>(null);
 
   const isPresented = share !== null;
 
-  // Comments are not yet persisted — no comments table exists.
-  // Show existing comments from the share (currently empty) with a
-  // "Comments coming soon" placeholder instead of a functional input.
-  const allComments: ShareComment[] = share ? share.comments : [];
+  // Reset local comments when a new share is opened
+  useEffect(() => {
+    if (share) {
+      setLocalComments(share.comments);
+      setCommentText('');
+    }
+  }, [share?.id]);
+
+  const allComments = share ? localComments : [];
 
   const handleDismiss = useCallback(() => {
     onDismiss();
   }, [onDismiss]);
+
+  const handleSubmit = useCallback(async () => {
+    if (!share?.activityId || !user?.id || !commentText.trim() || submitting) return;
+
+    setSubmitting(true);
+    try {
+      const newComment = await addComment(share.activityId, user.id, commentText);
+      setLocalComments((prev) => [...prev, newComment]);
+      setCommentText('');
+      hapticSuccess();
+      onCommentAdded?.(share.id, newComment);
+    } catch (e: any) {
+      console.error('[CommentSheet] Failed to add comment:', e);
+      hapticError();
+      // Keep the text so the user can retry
+    } finally {
+      setSubmitting(false);
+    }
+  }, [share, user?.id, commentText, submitting, onCommentAdded]);
+
+  const canSubmit = commentText.trim().length > 0 && !submitting && !!share?.activityId;
 
   return (
     <BottomSheet
@@ -70,7 +107,11 @@ function CommentSheetInner({ share, onDismiss }: CommentSheetProps) {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={{ flex: 1 }}
         >
-          <View style={styles.commentsList}>
+          <ScrollView
+            style={styles.commentsList}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
             {allComments.map((comment) => (
               <View key={comment.id} style={styles.commentItem}>
                 <Avatar name={comment.authorName} size="sm" />
@@ -96,22 +137,22 @@ function CommentSheetInner({ share, onDismiss }: CommentSheetProps) {
               </View>
             ))}
 
-            {/* Coming soon placeholder */}
+            {/* Empty state */}
             {allComments.length === 0 && (
-              <View style={styles.comingSoonWrap}>
+              <View style={styles.emptyWrap}>
                 <MaterialCommunityIcons
                   name="chat-outline"
                   size={32}
                   color={colors.textSecondary}
                 />
-                <Text style={[styles.comingSoonText, { color: colors.textSecondary }]}>
-                  Comments coming soon
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                  No comments yet. Be the first to share your thoughts.
                 </Text>
               </View>
             )}
-          </View>
+          </ScrollView>
 
-          {/* Disabled comment input — no persistence yet */}
+          {/* Comment input */}
           <View
             style={[
               styles.inputRow,
@@ -130,9 +171,11 @@ function CommentSheetInner({ share, onDismiss }: CommentSheetProps) {
               <Text style={styles.inputAvatarText}>You</Text>
             </View>
             <TextInput
+              ref={inputRef}
               value={commentText}
-              editable={false}
-              placeholder="Comments coming soon"
+              onChangeText={setCommentText}
+              editable={!!share?.activityId && !submitting}
+              placeholder="Add a comment..."
               placeholderTextColor={colors.textSecondary}
               style={[
                 styles.input,
@@ -141,13 +184,17 @@ function CommentSheetInner({ share, onDismiss }: CommentSheetProps) {
                   color: colors.textPrimary,
                 },
               ]}
+              maxLength={1000}
+              returnKeyType="send"
+              onSubmitEditing={canSubmit ? handleSubmit : undefined}
             />
             <TouchableOpacity
-              disabled
+              onPress={handleSubmit}
+              disabled={!canSubmit}
               activeOpacity={0.85}
               accessibilityRole="button"
               accessibilityLabel="Send comment"
-              accessibilityHint="Comments coming soon"
+              accessibilityHint="Posts your comment to the feed"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <LinearGradient
@@ -156,10 +203,14 @@ function CommentSheetInner({ share, onDismiss }: CommentSheetProps) {
                 end={{ x: 1, y: 1 }}
                 style={[
                   styles.sendBtn,
-                  { opacity: 0.4 },
+                  { opacity: canSubmit ? 1 : 0.4 },
                 ]}
               >
-                <MaterialCommunityIcons name="send" size={14} color="#FFFFFF" />
+                {submitting ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <MaterialCommunityIcons name="send" size={14} color="#FFFFFF" />
+                )}
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -224,6 +275,18 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop: 2,
   },
+  emptyWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    gap: 12,
+  },
+  emptyText: {
+    fontFamily: 'Jost',
+    fontSize: 12,
+    fontWeight: '300',
+    textAlign: 'center',
+  },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -253,22 +316,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   sendBtn: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  comingSoonWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 40,
-    gap: 10,
-  },
-  comingSoonText: {
-    fontFamily: 'Jost',
-    fontSize: 13,
-    fontWeight: '300',
   },
 });

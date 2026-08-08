@@ -580,6 +580,117 @@ export interface Database {
         ];
       };
 
+      feed_likes: {
+        Row: {
+          id: string;
+          user_id: string;
+          activity_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          activity_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          activity_id?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'feed_likes_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'feed_likes_activity_id_fkey';
+            columns: ['activity_id'];
+            referencedRelation: 'activity_feed';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+
+      feed_comments: {
+        Row: {
+          id: string;
+          user_id: string;
+          activity_id: string;
+          comment_text: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          activity_id: string;
+          comment_text: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          activity_id?: string;
+          comment_text?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'feed_comments_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'feed_comments_activity_id_fkey';
+            columns: ['activity_id'];
+            referencedRelation: 'activity_feed';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+
+      feed_votes: {
+        Row: {
+          id: string;
+          user_id: string;
+          activity_id: string;
+          vote_type: Database['public']['Enums']['vote_type'];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          activity_id: string;
+          vote_type: Database['public']['Enums']['vote_type'];
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          activity_id?: string;
+          vote_type?: Database['public']['Enums']['vote_type'];
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'feed_votes_user_id_fkey';
+            columns: ['user_id'];
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'feed_votes_activity_id_fkey';
+            columns: ['activity_id'];
+            referencedRelation: 'activity_feed';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+
       price_history: {
         Row: {
           id: string;
@@ -1072,6 +1183,7 @@ export interface Database {
         | 'completed'
         | 'declined'
         | 'cancelled';
+      vote_type: 'love' | 'want' | 'been_there';
     };
 
     CompositeTypes: {

@@ -288,6 +288,29 @@ export default function ItemDetailScreen() {
           {activeTab === 'details' && item.ownership_type === 'co_owned' && (
             <View style={styles.coOwnersSection}>
               <CoOwnersPanel item={item} userId={user?.id} />
+              {/* Co-ownership management link */}
+              <TouchableOpacity
+                onPress={() => {
+                  hapticLight();
+                  router.push({ pathname: '/item/co-ownership', params: { id: item.id } });
+                }}
+                activeOpacity={0.7}
+                style={styles.coOwnershipLink}
+              >
+                <MaterialCommunityIcons
+                  name="account-cog-outline"
+                  size={14}
+                  color={colors.textSecondary}
+                />
+                <Text style={[styles.coOwnershipLinkText, { color: colors.textSecondary }]}>
+                  Manage Co-Ownership
+                </Text>
+                <MaterialCommunityIcons
+                  name="chevron-right"
+                  size={14}
+                  color={colors.textSecondary}
+                />
+              </TouchableOpacity>
             </View>
           )}
           {activeTab === 'history' && <HistoryTab history={borrowHistory} />}
@@ -623,6 +646,19 @@ const styles = StyleSheet.create({
   coOwnersSection: {
     paddingHorizontal: spacing.lg + 6,
     paddingTop: spacing.sm,
+  },
+  coOwnershipLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.sm + 2,
+    marginTop: spacing.xs,
+  },
+  coOwnershipLinkText: {
+    ...typography.body,
+    fontSize: 13,
+    fontWeight: '400',
   },
   detailsCard: {
     padding: 0,

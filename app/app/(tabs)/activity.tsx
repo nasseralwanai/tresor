@@ -12,7 +12,7 @@
  * Comment bottom sheet (@expo/ui BottomSheet) opens on comment interaction.
  */
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -27,7 +27,7 @@ import { NotificationBell } from '@/components/NotificationBell';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorView } from '@/components/ErrorView';
 import { classifyError, type AppError } from '@/lib/errors';
-import { getFeedData, type FeedData, type ShareCard } from '@/lib/feed';
+import { getFeedData, subscribeToFeedInteractions, type FeedData, type ShareCard, type ShareComment } from '@/lib/feed';
 import { useCircleId } from '@/hooks/useCircleId';
 import { useAuth } from '@/hooks/useAuth';
 import {
@@ -40,6 +40,7 @@ import {
   RecentSharesSection,
   CommentSheet,
 } from '@/components/feed';
+import type { VoteType } from '@/types/items';
 
 export default function ActivityScreen() {
   const colors = useThemeColors();
@@ -81,6 +82,26 @@ export default function ActivityScreen() {
     return () => { cancelled = true; };
   }, [loadData]);
 
+  // Subscribe to realtime feed interaction updates
+  const unsubscribeRef = useRef<(() => void) | null>(null);
+  useEffect(() => {
+    if (!feedData || feedData.activities.length === 0) return;
+
+    const activityIds = feedData.activities.map((a) => a.id);
+    if (activityIds.length === 0) return;
+
+    const unsub = subscribeToFeedInteractions(activityIds, () => {
+      // Silently reload feed data on any interaction change
+      loadData();
+    });
+    unsubscribeRef.current = unsub;
+
+    return () => {
+      unsub();
+      unsubscribeRef.current = null;
+    };
+  }, [feedData?.activities.length, loadData]);
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     loadData();
@@ -92,6 +113,21 @@ export default function ActivityScreen() {
 
   const handleDismissComment = useCallback(() => {
     setCommentShare(null);
+  }, []);
+
+  // When a comment is added in the sheet, update the feed data optimistically
+  const handleCommentAdded = useCallback((shareId: string, comment: ShareComment) => {
+    setFeedData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        shares: prev.shares.map((s) =>
+          s.id === shareId
+            ? { ...s, comments: [...s.comments, comment], commentCount: s.commentCount + 1 }
+            : s
+        ),
+      };
+    });
   }, []);
 
   // Filter activities based on active filter pill
@@ -251,7 +287,11 @@ export default function ActivityScreen() {
         </ScrollView>
 
         {/* Comment bottom sheet */}
-        <CommentSheet share={commentShare} onDismiss={handleDismissComment} />
+        <CommentSheet
+          share={commentShare}
+          onDismiss={handleDismissComment}
+          onCommentAdded={handleCommentAdded}
+        />
       </View>
     </>
   );

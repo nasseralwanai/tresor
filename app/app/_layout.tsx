@@ -35,10 +35,9 @@ function RootNavigator() {
         {/* Main app — shown when authenticated */}
         <Stack.Screen name="(tabs)" />
 
-        {/* Standalone routes — auto-discovered, no explicit name needed */}
-        <Stack.Screen name="add/bulk-import" />
-        <Stack.Screen name="add/manual" />
-        <Stack.Screen name="item/[id]" />
+        {/* Standalone routes — auto-discovered by Expo Router */}
+        <Stack.Screen name="add" />
+        <Stack.Screen name="item" />
         <Stack.Screen name="borrow" />
       </Stack>
       <Redirect href={isAuthenticated ? '/(tabs)' : '/(auth)/welcome'} />

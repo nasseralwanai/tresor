@@ -27,6 +27,12 @@ export interface Database {
           display_name: string | null;
           avatar_url: string | null;
           push_token: string | null;
+          notification_settings: {
+            borrow_requests: boolean;
+            borrow_nudges: boolean;
+            circle_activity: boolean;
+            item_shares: boolean;
+          } | null;
           bio: string | null;
           taste_label: string | null;
           taste_label_custom: string | null;
@@ -41,6 +47,12 @@ export interface Database {
           display_name?: string | null;
           avatar_url?: string | null;
           push_token?: string | null;
+          notification_settings?: {
+            borrow_requests: boolean;
+            borrow_nudges: boolean;
+            circle_activity: boolean;
+            item_shares: boolean;
+          } | null;
           bio?: string | null;
           taste_label?: string | null;
           taste_label_custom?: string | null;
@@ -55,6 +67,12 @@ export interface Database {
           display_name?: string | null;
           avatar_url?: string | null;
           push_token?: string | null;
+          notification_settings?: {
+            borrow_requests: boolean;
+            borrow_nudges: boolean;
+            circle_activity: boolean;
+            item_shares: boolean;
+          } | null;
           bio?: string | null;
           created_at?: string;
           updated_at?: string;

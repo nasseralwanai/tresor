@@ -385,6 +385,11 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+# Cron schedules for scheduled edge functions
+# Runs daily at 09:00 UTC — checks for overdue borrows and sends nudges
+[functions.check-overdue-borrows]
+schedule = "0 9 * * *"
+
 [analytics]
 enabled = true
 port = 54327

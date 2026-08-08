@@ -26,6 +26,7 @@ import { getMyItems } from '@/lib/items';
 import { getMyCircle } from '@/lib/circle';
 import { formatRelativeTime } from '@/lib/format';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/lib/supabase';
 import type { Item } from '@/types/items';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorView } from '@/components/ErrorView';
@@ -35,6 +36,13 @@ export default function ProfileScreen() {
   const colors = useThemeColors();
   const { user, signOut } = useAuth();
   const [darkMode, setDarkMode] = useState(false);
+  const [notifSettings, setNotifSettings] = useState({
+    borrow_requests: true,
+    borrow_nudges: true,
+    circle_activity: true,
+    item_shares: true,
+  });
+  const [notifSettingsLoading, setNotifSettingsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState<{
     id: string;
     full_name: string;
@@ -60,6 +68,25 @@ export default function ProfileScreen() {
       setUserInfo(info);
       setItems(items);
       setCircle(circleData);
+
+      // Load notification settings from profiles table
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('notification_settings')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (profile?.notification_settings) {
+          setNotifSettings({
+            borrow_requests: profile.notification_settings.borrow_requests ?? true,
+            borrow_nudges: profile.notification_settings.borrow_nudges ?? true,
+            circle_activity: profile.notification_settings.circle_activity ?? true,
+            item_shares: profile.notification_settings.item_shares ?? true,
+          });
+        }
+      } catch {
+        // Fail silently — defaults remain all-true
+      }
     } catch (e: unknown) {
       console.error('[profile] loadData error:', e);
       setError(classifyError(e));
@@ -75,6 +102,29 @@ export default function ProfileScreen() {
     setRefreshing(true);
     loadData();
   }, [loadData]);
+
+  const handleNotifToggle = useCallback(
+    async (key: keyof typeof notifSettings, value: boolean) => {
+      if (!user?.id) return;
+      const newSettings = { ...notifSettings, [key]: value };
+      setNotifSettings(newSettings);
+      setNotifSettingsLoading(true);
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ notification_settings: newSettings })
+          .eq('id', user.id);
+        if (error) throw error;
+      } catch (e) {
+        // Revert on failure
+        setNotifSettings(notifSettings);
+        console.warn('[profile] Failed to save notification settings:', e);
+      } finally {
+        setNotifSettingsLoading(false);
+      }
+    },
+    [user?.id, notifSettings]
+  );
 
   const itemsLent = items.filter((i) => i.status === 'borrowed').length;
   const stats = [
@@ -249,19 +299,6 @@ export default function ProfileScreen() {
               style={[styles.settingRow, styles.settingTap]}
             >
               <View style={styles.settingLeft}>
-                <MaterialCommunityIcons name="bell-outline" size={20} color={colors.textPrimary} />
-                <Text style={[styles.settingText, { color: colors.textPrimary }]}>
-                  Notifications
-                </Text>
-              </View>
-              <MaterialCommunityIcons name="chevron-right" size={22} color={colors.textSecondary} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'This setting will be available in a future update.'); }}
-              style={[styles.settingRow, styles.settingTap]}
-            >
-              <View style={styles.settingLeft}>
                 <MaterialCommunityIcons name="shield-key-outline" size={20} color={colors.textPrimary} />
                 <Text style={[styles.settingText, { color: colors.textPrimary }]}>
                   Privacy
@@ -269,6 +306,80 @@ export default function ProfileScreen() {
               </View>
               <MaterialCommunityIcons name="chevron-right" size={22} color={colors.textSecondary} />
             </TouchableOpacity>
+          </Card>
+
+          {/* Notification Preferences */}
+          <Card style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <MaterialCommunityIcons name="bell-outline" size={20} color={colors.accent} />
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                Notifications
+              </Text>
+            </View>
+
+            <View style={styles.settingRow}>
+              <View style={styles.settingLeft}>
+                <MaterialCommunityIcons name="hand-coin-outline" size={18} color={colors.textSecondary} />
+                <Text style={[styles.settingText, { color: colors.textPrimary }]}>
+                  Borrow Requests
+                </Text>
+              </View>
+              <Toggle
+                value={notifSettings.borrow_requests}
+                onValueChange={(v) => handleNotifToggle('borrow_requests', v)}
+                disabled={notifSettingsLoading}
+                accessibilityLabel="Borrow request notifications"
+              />
+            </View>
+
+            <View style={styles.settingRow}>
+              <View style={styles.settingLeft}>
+                <MaterialCommunityIcons name="clock-alert-outline" size={18} color={colors.textSecondary} />
+                <Text style={[styles.settingText, { color: colors.textPrimary }]}>
+                  Borrow Nudges
+                </Text>
+              </View>
+              <Toggle
+                value={notifSettings.borrow_nudges}
+                onValueChange={(v) => handleNotifToggle('borrow_nudges', v)}
+                disabled={notifSettingsLoading}
+                accessibilityLabel="Borrow nudge notifications"
+              />
+            </View>
+
+            <View style={styles.settingRow}>
+              <View style={styles.settingLeft}>
+                <MaterialCommunityIcons name="account-group-outline" size={18} color={colors.textSecondary} />
+                <Text style={[styles.settingText, { color: colors.textPrimary }]}>
+                  Circle Activity
+                </Text>
+              </View>
+              <Toggle
+                value={notifSettings.circle_activity}
+                onValueChange={(v) => handleNotifToggle('circle_activity', v)}
+                disabled={notifSettingsLoading}
+                accessibilityLabel="Circle activity notifications"
+              />
+            </View>
+
+            <View style={styles.settingRow}>
+              <View style={styles.settingLeft}>
+                <MaterialCommunityIcons name="gift-outline" size={18} color={colors.textSecondary} />
+                <Text style={[styles.settingText, { color: colors.textPrimary }]}>
+                  Item Shares
+                </Text>
+              </View>
+              <Toggle
+                value={notifSettings.item_shares}
+                onValueChange={(v) => handleNotifToggle('item_shares', v)}
+                disabled={notifSettingsLoading}
+                accessibilityLabel="Item share notifications"
+              />
+            </View>
+          </Card>
+
+          <Card style={styles.section}>
+            <Text style={[styles.settingsLabel, { color: colors.textSecondary }]}>SUPPORT</Text>
 
             <TouchableOpacity
               onPress={() => { hapticLight(); Alert.alert('Coming Soon', 'This setting will be available in a future update.'); }}

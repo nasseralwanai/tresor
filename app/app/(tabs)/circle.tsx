@@ -166,7 +166,7 @@ export default function CircleScreen() {
               <FlatList data={displayItems} keyExtractor={(item) => item.id} numColumns={2} scrollEnabled={false} contentContainerStyle={styles.grid} renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => { hapticLight(); handleItemPress(item); }} activeOpacity={0.85} style={[styles.gridCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                   <View style={{ position: "relative" }}>
-                    <ItemPhotoPlaceholder letter={item.brand} size={150} style={styles.gridPhoto} />
+                    <ItemPhotoPlaceholder letter={item.brand} size={150} imageUrl={item.primary_image_url} seed={item.id} style={styles.gridPhoto} />
                     <View style={styles.gridBadgeRow}>
                       {item.is_private && <View style={[styles.gridLock, { backgroundColor: colors.surface }]}><MaterialCommunityIcons name="lock" size={11} color={colors.textSecondary} /></View>}
                       {!item.is_lendable && <View style={[styles.gridNoLend, { backgroundColor: colors.surfaceElevated }]}><Text style={[styles.gridNoLendText, { color: colors.textSecondary }]}>Not for lending</Text></View>}

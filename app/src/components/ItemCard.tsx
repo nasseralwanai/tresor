@@ -34,7 +34,13 @@ export function ItemCard({ item, onPress }: ItemCardProps) {
       style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
     >
       <View style={styles.photoWrap}>
-        <ItemPhotoPlaceholder letter={item.brand} size={130} style={styles.photo} />
+        <ItemPhotoPlaceholder
+          letter={item.brand}
+          size={130}
+          imageUrl={item.primary_image_url}
+          seed={item.id}
+          style={styles.photo}
+        />
         <View style={styles.badgePos}>
           <Badge variant={badgeVariant} label={badgeLabel} />
         </View>

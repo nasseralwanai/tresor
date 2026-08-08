@@ -150,7 +150,7 @@ export async function getActiveBorrowForItem(
     .from('borrow_transactions')
     .select(
       `*,
-      items!borrow_transactions_item_id_fkey(brand, model_name),
+      items!borrow_transactions_item_id_fkey(brand, model_name, primary_image_url),
       borrower:profiles!borrow_transactions_borrower_id_fkey(display_name),
       lender:profiles!borrow_transactions_lender_id_fkey(display_name)
       `
@@ -168,6 +168,7 @@ export async function getActiveBorrowForItem(
     ...data,
     item_brand: (data as any).items?.brand ?? 'Unknown',
     item_model: (data as any).items?.model_name ?? null,
+    item_primary_image_url: (data as any).items?.primary_image_url ?? null,
     borrower_name: (data as any).borrower?.display_name ?? 'Unknown',
     lender_name: (data as any).lender?.display_name ?? 'Unknown',
   };
@@ -184,7 +185,7 @@ export async function getItemBorrowHistory(
     .from('borrow_transactions')
     .select(
       `*,
-      items!borrow_transactions_item_id_fkey(brand, model_name),
+      items!borrow_transactions_item_id_fkey(brand, model_name, primary_image_url),
       borrower:profiles!borrow_transactions_borrower_id_fkey(display_name),
       lender:profiles!borrow_transactions_lender_id_fkey(display_name)
       `
@@ -198,6 +199,7 @@ export async function getItemBorrowHistory(
     ...row,
     item_brand: row.items?.brand ?? 'Unknown',
     item_model: row.items?.model_name ?? null,
+    item_primary_image_url: row.items?.primary_image_url ?? null,
     borrower_name: row.borrower?.display_name ?? 'Unknown',
     lender_name: row.lender?.display_name ?? 'Unknown',
   }));
@@ -207,6 +209,7 @@ export async function getItemBorrowHistory(
 export type BorrowTransactionEnriched = Database['public']['Tables']['borrow_transactions']['Row'] & {
   item_brand: string;
   item_model: string | null;
+  item_primary_image_url: string | null;
   borrower_name: string;
   lender_name: string;
 };

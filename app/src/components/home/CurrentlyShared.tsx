@@ -71,7 +71,9 @@ function CurrentlySharedInner({
               <ItemPhotoPlaceholder
                 letter={lent.item.brand}
                 size={44}
-                style={[styles.photo, { backgroundColor: colors.surfaceElevated }]}
+                imageUrl={lent.item.primary_image_url}
+                seed={lent.item.id}
+                style={styles.photo}
               />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.itemName, { color: colors.textPrimary }]}>

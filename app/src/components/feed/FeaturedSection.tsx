@@ -104,6 +104,8 @@ function FeaturedSectionInner({
                   <ItemPhotoPlaceholder
                     letter={candidate.brand}
                     size={54}
+                    imageUrl={candidate.imageUrl}
+                    seed={candidate.itemId}
                     style={styles.votePhoto}
                   />
                   <Text

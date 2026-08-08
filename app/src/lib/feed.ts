@@ -64,6 +64,7 @@ export interface VoteCandidate {
   ownerName: string;
   ownerId: string;
   voteCount: number;
+  imageUrl: string | null;
 }
 
 /** The full aggregated feed data for the Circle Feed screen. */
@@ -251,5 +252,6 @@ function buildVoteCandidates(items: Item[]): VoteCandidate[] {
       ownerName: item.owner_name,
       ownerId: item.owner_id,
       voteCount: 0,
+      imageUrl: item.primary_image_url,
     }));
 }

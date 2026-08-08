@@ -1,13 +1,18 @@
 {
   "expo": {
-    "name": "Trésor",
+    "name": "Tresor",
     "slug": "tresor",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "tresor",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1715"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.tresor.app"
@@ -15,7 +20,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundColor": "#0A0A0B"
+        "backgroundColor": "#1a1715"
       },
       "package": "com.tresor.app"
     },

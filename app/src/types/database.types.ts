@@ -28,6 +28,10 @@ export interface Database {
           avatar_url: string | null;
           push_token: string | null;
           bio: string | null;
+          taste_label: string | null;
+          taste_label_custom: string | null;
+          taste_label_auto: string | null;
+          taste_label_updated_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -38,6 +42,10 @@ export interface Database {
           avatar_url?: string | null;
           push_token?: string | null;
           bio?: string | null;
+          taste_label?: string | null;
+          taste_label_custom?: string | null;
+          taste_label_auto?: string | null;
+          taste_label_updated_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -306,6 +314,8 @@ export interface Database {
           last_nudged_at: string | null;
           nudge_count: number;
           is_co_owned_borrow: boolean;
+          is_offline: boolean;
+          expected_return_date: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -330,6 +340,8 @@ export interface Database {
           last_nudged_at?: string | null;
           nudge_count?: number;
           is_co_owned_borrow?: boolean;
+          is_offline?: boolean;
+          expected_return_date?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -352,6 +364,8 @@ export interface Database {
           condition_before?: Database['public']['Enums']['item_condition'] | null;
           condition_after?: Database['public']['Enums']['item_condition'] | null;
           is_co_owned_borrow?: boolean;
+          is_offline?: boolean;
+          expected_return_date?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -1039,7 +1053,8 @@ export interface Database {
         | 'custody_transferred'
         | 'co_owner_added'
         | 'co_owner_removed'
-        | 'share_buyout';
+        | 'share_buyout'
+        | 'borrow_recorded';
       ownership_type: 'sole' | 'co_owned';
       co_borrow_approval: 'custodian' | 'any_owner';
       ledger_entry_type:

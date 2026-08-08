@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<title>Trésor — Full Application Mockup v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TRÉSOR — Warm Atelier Design System
+   Gallery presentation: sixteen catalogue plates, side by side.
+   v4 — monogram avatars only, pricing privacy (item detail and
+   wishlist alone), the circle as a curated member register with
+   taste labels, the wishlist as a browsing grid, offline
+   Record-a-Borrow plate.
+   ============================================================ */
+:root{
+  --cream:#FAF7F2;
+  --surf:#FFFFFF;
+  --sub:#F1EBE1;
+  --charcoal:#1a1715;
+  --charcoal-soft:#221e1c;
+  --gallery:#141110;
+  --ink:#2A241F;
+  --ink2:#5C5347;
+  --ink3:#8D8272;
+  --cream-text:#F5F0E8;
+  --gold:#C9A961;
+  --gold-bright:#E8D5A3;
+  --gold-deep:#9A7E4A;
+  --gold-grad:linear-gradient(135deg,#E8D5A3 0%,#C9A961 45%,#9A7E4A 100%);
+  --card-grad:linear-gradient(180deg,#FFFFFF 0%,#FCF8F0 100%);
+  --avail:#6E7F5C;
+  --avail-bg:#EFF2E9;
+  --pending:#B07E3C;
+  --pending-bg:#F6EDDD;
+  --error:#9C4A3C;
+  --hair:rgba(42,36,31,.12);
+  --hair-gold:rgba(201,169,97,.45);
+  --sh:0 1px 2px rgba(58,44,26,.05),0 6px 18px rgba(58,44,26,.08);
+  --sh-lift:0 2px 6px rgba(58,44,26,.08),0 18px 40px rgba(58,44,26,.15);
+  --rs:10px;
+  --rm:14px;
+  --rl:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Jost',sans-serif;
+  background:var(--gallery);
+  color:var(--cream-text);
+  -webkit-font-smoothing:antialiased;
+  letter-spacing:.01em;
+}
+/* paper-grain over the gallery wall */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.05;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+img{display:block}
+.serif{font-family:'Playfair Display',serif}
+
+/* ---------- Gallery chrome ---------- */
+.masthead{
+  position:relative;z-index:1;
+  padding:76px 56px 52px;
+  border-bottom:1px solid rgba(201,169,97,.22);
+  animation:fadein .9s ease-out both;
+}
+.masthead .kick{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.masthead h1{font-family:'Playfair Display',serif;font-weight:500;font-size:64px;letter-spacing:.01em;margin:14px 0 6px;color:var(--cream-text)}
+.masthead h1 em{font-style:italic;color:var(--gold-bright)}
+.masthead p{font-weight:300;font-size:15px;color:rgba(245,240,232,.62);max-width:560px;line-height:1.65}
+.masthead .meta{margin-top:24px;display:flex;gap:26px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(245,240,232,.4)}
+.masthead .meta b{color:var(--gold);font-weight:500}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+.platenav{
+  position:sticky;top:0;z-index:50;
+  display:flex;gap:4px;flex-wrap:wrap;align-items:center;
+  padding:14px 56px;
+  background:rgba(20,17,16,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(201,169,97,.16);
+  animation:fadein 1.1s ease-out both;
+}
+.platenav span.lbl{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(245,240,232,.4);margin-right:14px}
+.platenav a{
+  font-size:12px;font-weight:400;letter-spacing:.06em;text-decoration:none;
+  color:rgba(245,240,232,.66);padding:6px 12px;border-radius:999px;border:1px solid transparent;
+  transition:all .25s ease;
+}
+.platenav a:hover,.platenav a:focus-visible{color:var(--gold-bright);border-color:rgba(201,169,97,.4)}
+.platenav a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.platenav a em{font-family:'Playfair Display',serif;font-style:italic;color:var(--gold);margin-right:5px}
+
+.gallery{position:relative;z-index:1;overflow-x:auto;padding:84px 56px 104px;}
+.row{display:flex;align-items:flex-start;gap:84px;width:max-content}
+.chapter{
+  align-self:stretch;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  min-width:130px;padding:0 10px;border-left:1px solid rgba(201,169,97,.25);
+}
+.chapter .num{font-family:'Playfair Display',serif;font-style:italic;font-size:40px;color:var(--gold);line-height:1}
+.chapter .name{margin-top:14px;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:rgba(245,240,232,.5);writing-mode:vertical-rl;text-orientation:mixed}
+
+/* ---------- Catalogue plate (the signature) ---------- */
+.plate{display:flex;flex-direction:column;align-items:center;animation:rise .7s ease-out both}
+.plate:nth-child(odd){animation-delay:.08s}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.caption{
+  margin-top:32px;width:390px;text-align:center;
+  padding-top:20px;border-top:1px solid rgba(201,169,97,.4);position:relative;
+}
+.caption::before{
+  content:"";position:absolute;top:-3px;left:50%;transform:translateX(-50%);
+  width:5px;height:5px;background:var(--gold);border-radius:50%;
+}
+.caption .pl-no{font-size:10px;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.caption h3{font-family:'Playfair Display',serif;font-weight:500;font-style:italic;font-size:21px;color:var(--cream-text);margin:7px 0 6px}
+.caption p{font-size:11.5px;font-weight:300;line-height:1.6;color:rgba(245,240,232,.5);max-width:340px;margin:0 auto}
+.caption p b{color:rgba(232,213,163,.85);font-weight:400}
+
+/* ---------- Phone frame 390 × 844 ---------- */
+.phone{
+  width:390px;height:844px;flex:none;position:relative;
+  background:var(--cream);border-radius:52px;overflow:hidden;
+  box-shadow:0 0 0 1px rgba(201,169,97,.35),0 0 0 10px #060505,0 0 0 11px rgba(201,169,97,.22),0 44px 90px rgba(0,0,0,.6);
+  color:var(--ink);
+  display:flex;flex-direction:column;
+}
+.phone.dark{background:var(--charcoal);color:var(--cream-text)}
+/* the same paper grain, carried onto every screen */
+.phone::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.045;z-index:40;border-radius:inherit;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+
+/* iOS status bar */
+.status{
+  flex:none;height:54px;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 32px 8px;font-size:14px;font-weight:500;letter-spacing:.02em;position:relative;z-index:6;
+}
+.status svg{display:block}
+.screen{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* ---------- shared atoms ---------- */
+.kicker{font-size:10px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-deep)}
+.phone.dark .kicker{color:var(--gold)}
+.h-display{font-family:'Playfair Display',serif;font-weight:500;line-height:1.12}
+.hairline{height:1px;background:var(--hair)}
+.hairline.gold{background:var(--hair-gold)}
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  height:56px;border-radius:14px;font-family:'Jost',sans-serif;font-size:15px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  border:none;cursor:pointer;transition:transform .2s ease,opacity .2s ease;width:100%;
+}
+.btn:active{transform:scale(.98);opacity:.9}
+.btn-gold{background:var(--gold-grad);color:var(--charcoal);box-shadow:0 8px 24px rgba(201,169,97,.35)}
+.btn-dark{background:linear-gradient(180deg,#2A2522,#1a1715);color:var(--cream-text);box-shadow:var(--sh)}
+.btn-ghost{background:transparent;border:1px solid var(--hair-gold);color:var(--gold-deep)}
+.link{font-size:13px;font-weight:400;color:var(--ink3);text-decoration:none;border-bottom:1px solid var(--hair);padding-bottom:2px}
+.phone.dark .link{color:rgba(245,240,232,.55);border-color:rgba(245,240,232,.2)}
+.backbar{display:flex;align-items:center;gap:8px;padding:10px 24px 0;color:var(--ink2);font-size:13px;letter-spacing:.08em}
+
+.av{
+  display:flex;align-items:center;justify-content:center;border-radius:50%;
+  font-family:'Playfair Display',serif;font-weight:500;color:#fff;flex:none;
+  background:linear-gradient(135deg,#C9A961,#8B6F3E);
+  overflow:hidden;
+}
+.av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.av.v2{background:linear-gradient(135deg,#A98F6B,#5C4A33)}
+.av.v3{background:linear-gradient(135deg,#7D6B54,#3E3428)}
+.av.v4{background:linear-gradient(135deg,#B99C5F,#6E5A38)}
+.av.v5{background:linear-gradient(135deg,#8F7B4F,#4A3D28)}
+
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;border-radius:999px}
+.badge .dot{width:5px;height:5px;border-radius:50%}
+.badge.avail{background:var(--avail-bg);color:var(--avail)}
+.badge.avail .dot{background:var(--avail)}
+.badge.borrowed{background:var(--pending-bg);color:var(--pending)}
+.badge.borrowed .dot{background:var(--pending)}
+.badge.goldb{background:linear-gradient(135deg,rgba(232,213,163,.35),rgba(201,169,97,.18));color:var(--gold-deep)}
+
+.price{font-family:'Playfair Display',serif;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* tab bar */
+.tabbar{
+  flex:none;height:82px;background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(250,247,242,.94));backdrop-filter:blur(8px);
+  border-top:1px solid var(--hair);display:flex;align-items:flex-start;padding-top:12px;
+  position:relative;z-index:8;
+}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--ink3);font-size:9px;letter-spacing:.16em;text-transform:uppercase;font-weight:500}
+.tab.on{color:var(--gold-deep)}
+.tab svg{stroke:currentColor}
+/* dark rooms get a dark bar */
+.phone.dark .tabbar{background:linear-gradient(180deg,rgba(34,30,28,.96),rgba(26,23,21,.96));border-top-color:rgba(201,169,97,.18)}
+.phone.dark .tab{color:rgba(245,240,232,.42)}
+.phone.dark .tab.on{color:var(--gold-bright)}
+
+/* segmented control — research §4 */
+.seg{display:flex;background:var(--sub);border-radius:var(--rs);padding:3px;width:100%}
+.seg button{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:44px;
+  border:none;border-radius:8px;background:transparent;font-family:'Jost',sans-serif;
+  font-size:13px;font-weight:500;letter-spacing:.06em;color:var(--ink3);cursor:pointer;
+}
+.seg button.on{background:var(--card-grad);color:var(--gold-deep);box-shadow:var(--sh)}
+
+/* OTP boxes — research §3: 36 × 44, auto-focus, glow on active */
+.otp{display:flex;gap:10px;justify-content:center}
+.otp .box{
+  width:36px;height:44px;border:1px solid var(--hair);border-radius:9px;background:var(--card-grad);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:21px;font-weight:600;color:var(--ink);
+}
+.otp .box.fill{border-color:rgba(201,169,97,.5);background:linear-gradient(180deg,#FFFDF9,#FBF5E9)}
+.otp .box.active{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,97,.28);animation:glow 1.6s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 3px rgba(201,169,97,.28)}50%{box-shadow:0 0 0 5px rgba(201,169,97,.14)}}
+
+/* inputs */
+.field{
+  display:flex;align-items:center;gap:12px;height:58px;background:var(--card-grad);
+  border:1px solid var(--hair);border-radius:var(--rm);padding:0 18px;box-shadow:var(--sh);
+}
+.field .ph{color:#B9AE9C;font-size:17px;letter-spacing:.06em;font-weight:300}
+.field .val{font-size:17px;letter-spacing:.06em;font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* product cards */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pcard{background:var(--card-grad);border:1px solid var(--hair);border-radius:var(--rm);overflow:hidden;box-shadow:var(--sh);animation:cardrise .6s ease-out both}
+.pgrid .pcard:nth-child(1){animation-delay:.06s}
+.pgrid .pcard:nth-child(2){animation-delay:.12s}
+.pgrid .pcard:nth-child(3){animation-delay:.18s}
+.pgrid .pcard:nth-child(4){animation-delay:.24s}
+.pgrid .pcard:nth-child(5){animation-delay:.30s}
+.pgrid .pcard:nth-child(6){animation-delay:.36s}
+.pgrid .pcard:nth-child(7){animation-delay:.42s}
+.pgrid .pcard:nth-child(8){animation-delay:.48s}
+@keyframes cardrise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.pcard .imgwrap{position:relative;aspect-ratio:4/4.6;overflow:hidden;background:linear-gradient(160deg,#EFE7D8,#E2D5BE)}
+.pcard img{width:100%;height:100%;object-fit:cover}
+.pcard .imgwrap::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,23,21,0) 62%,rgba(26,23,21,.18));pointer-events:none}
+.pcard .body{padding:11px 13px 13px}
+.pcard .brand{font-family:'Playfair Display',serif;font-weight:600;font-size:14px;color:var(--ink)}
+.pcard .model{font-size:11px;font-weight:300;color:var(--ink3);margin:2px 0 8px;line-height:1.35}
+.pcard .rowx{display:flex;align-items:center;justify-content:space-between}
+.pcard .price{font-size:13px}
+.chiprow{display:flex;gap:8px;overflow-x:auto;padding:2px 0}
+.chip{flex:none;font-size:11px;font-weight:400;letter-spacing:.08em;padding:7px 14px;border-radius:999px;border:1px solid var(--hair);color:var(--ink2);background:var(--surf)}
+.chip.on{background:linear-gradient(180deg,#2A2522,#1a1715);color:var(--gold-bright);border-color:var(--charcoal)}
+
+/* activity feed */
+.evt{display:flex;gap:12px;align-items:flex-start;padding:14px 0}
+.evt .txt{flex:1;font-size:13px;line-height:1.5;color:var(--ink2);font-weight:300}
+.evt .txt b{font-weight:500;color:var(--ink)}
+.evt .txt .it{font-family:'Playfair Display',serif;font-style:italic;color:var(--gold-deep)}
+.evt .when{font-size:10.5px;color:var(--ink3);margin-top:3px;letter-spacing:.06em}
+.evt .thumb{width:46px;height:46px;border-radius:10px;object-fit:cover;flex:none;border:1px solid var(--hair);box-shadow:var(--sh)}
+.datediv{display:flex;align-items:center;gap:12px;margin:16px 0 4px}
+.datediv span{font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-deep);font-weight:500}
+.datediv i{flex:1;height:1px;background:linear-gradient(90deg,var(--hair-gold),var(--hair))}
+
+/* member rows */
+.mrow{display:flex;align-items:center;gap:13px;padding:14px 0;border-bottom:1px solid var(--hair)}
+.mrow .nm{font-family:'Playfair Display',serif;font-size:15.5px;font-weight:500;color:var(--ink)}
+.mrow .sub{font-size:11px;color:var(--ink3);font-weight:300;margin-top:2px}
+
+/* timeline */
+.tl{position:relative;padding-left:24px}
+.tl::before{content:"";position:absolute;left:6px;top:8px;bottom:8px;width:1px;background:var(--hair)}
+.tlrow{position:relative;padding:9px 0}
+.tlrow .nd{position:absolute;left:-24px;top:13px;width:13px;height:13px;border-radius:50%;background:var(--cream);border:1.5px solid var(--ink3)}
+.tlrow.done .nd{background:var(--gold);border-color:var(--gold)}
+.tlrow.now .nd{background:var(--gold-bright);border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,169,97,.25);animation:glow 1.8s ease-in-out infinite}
+.tlrow .st{font-size:13px;font-weight:500;color:var(--ink)}
+.tlrow.now .st{color:var(--gold-deep)}
+.tlrow .sd{font-size:11px;color:var(--ink3);font-weight:300;margin-top:1px}
+
+/* progress bars (wishlist) */
+.prog{height:5px;border-radius:999px;background:var(--sub);overflow:hidden}
+.prog i{display:block;height:100%;border-radius:999px;background:var(--gold-grad)}
+
+.scrollpad{flex:1;overflow:hidden;padding:0 24px}
+
+footer.colophon{position:relative;z-index:1;padding:44px 56px 68px;border-top:1px solid rgba(201,169,97,.18);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.35);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+footer.colophon b{color:var(--gold);font-weight:500}
+
+/* v4 — the circle as a member register, two cards to a row */
+.memgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.memcard{background:var(--card-grad);border:1px solid var(--hair);border-radius:var(--rm);padding:13px 12px 11px;box-shadow:var(--sh);text-align:center}
+.memcard .av{margin:0 auto}
+.memcard.me .av{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--gold)}
+.memcard .nm{font-family:'Playfair Display',serif;font-size:13px;font-weight:500;color:var(--ink);margin-top:8px;line-height:1.25}
+.taste{font-family:'Playfair Display',serif;font-style:italic;font-size:12px;color:var(--gold-deep);line-height:1.3}
+.memcard .taste{margin-top:2px}
+.memcard .hl{width:100%;aspect-ratio:8/3;object-fit:cover;border-radius:8px;border:1px solid var(--hair);margin-top:9px}
+.memcard .act{font-size:9.5px;color:var(--ink3);font-weight:300;margin-top:7px;letter-spacing:.06em}
+/* v4 — wishlist browse */
+.wfilters{display:flex;gap:14px;align-items:center}
+.wfilters a{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);text-decoration:none;display:inline-flex;align-items:center;gap:3px;font-weight:500}
+.wact{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);text-decoration:none;display:inline-flex;align-items:center;gap:4px;font-weight:500}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+@media (max-width:720px){
+  .masthead,.platenav,.gallery{padding-left:20px;padding-right:20px}
+  .masthead h1{font-size:42px}
+}
+</style>
+</head>
+<body>
+
+<!-- The Provenance Seal (Concept C) — recolors via currentColor; the aigu via --aigu -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="mark-provenance-seal" viewBox="0 0 100 100">
+      <defs>
+        <path id="seal-arc" d="M50 50 m -39.5 0 a 39.5 39.5 0 1 1 79 0 a 39.5 39.5 0 1 1 -79 0"/>
+      </defs>
+      <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="0.75"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="currentColor" stroke-width="0.75" opacity="0.7"/>
+      <text font-family="Jost, sans-serif" font-size="6.4" font-weight="500" letter-spacing="2.6" fill="currentColor"><textPath href="#seal-arc" startOffset="0">TRÉSOR&#160;&#160;·&#160;&#160;LE CERCLE&#160;&#160;·&#160;&#160;PROVENANCE&#160;&#160;·&#160;&#160;</textPath></text>
+      <text x="47" y="61" text-anchor="middle" font-family="'Playfair Display', serif" font-style="italic" font-weight="500" font-size="34" fill="currentColor">T</text>
+      <line x1="56" y1="36" x2="61" y2="30" stroke="var(--aigu,#E8D5A3)" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ═══════════════════ MASTHEAD ═══════════════════ -->
+<header class="masthead">
+  <div class="kick">Design Direction · Warm Atelier · v4</div>
+  <h1>Trésor <em>— the full application</em></h1>
+  <p>Sixteen screens presented as catalogue plates — three skippable arrival plates now open the house before any ask. Onboarding follows Nigel's phone-first architecture; every pattern below is drawn from the sixteen-source research file — UAE phone conventions, OTP behaviour, WhatsApp delivery, and the editorial restraint of Net-a-Porter and SSENSE.</p>
+  <div class="meta">
+    <span>Frame <b>390 × 844</b></span>
+    <span>Type <b>Playfair Display + Jost</b></span>
+    <span>Accent <b>#C9A961</b></span>
+    <span>Muaath · August 2026</span>
+  </div>
+</header>
+
+<!-- ═══════════════════ PLATE NAV ═══════════════════ -->
+<nav class="platenav" aria-label="Screens">
+  <span class="lbl">Plates</span>
+  <a href="#p1"><em>I</em>Welcome</a>
+  <a href="#p2"><em>II</em>About</a>
+  <a href="#p3"><em>III</em>Experience</a>
+  <a href="#p4"><em>IV</em>For You</a>
+  <a href="#p5"><em>V</em>Phone</a>
+  <a href="#p6"><em>VI</em>Code</a>
+  <a href="#p7"><em>VII</em>Invitation</a>
+  <a href="#p8"><em>VIII</em>Profile</a>
+  <a href="#p9"><em>IX</em>Collection</a>
+  <a href="#p10"><em>X</em>Item</a>
+  <a href="#p11"><em>XI</em>Add</a>
+  <a href="#p12"><em>XII</em>Activity</a>
+  <a href="#p13"><em>XIII</em>Circle</a>
+  <a href="#p14"><em>XIV</em>Borrow</a>
+  <a href="#p15"><em>XV</em>Record</a>
+  <a href="#p16"><em>XVI</em>Wishlist</a>
+</nav>
+
+<main class="gallery">
+<div class="row">
+
+  <!-- chapter marker -->
+  <div class="chapter">
+    <div class="num">I.</div>
+    <div class="name">Arrival — Onboarding</div>
+  </div>
+
+  <!-- ════════ PLATE I — WELCOME ════════ -->
+  <section class="plate" id="p1">
+    <div class="phone dark">
+      <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800&q=80&auto=format&fit=crop" alt="A gold watch resting on dark leather — evening still life" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,23,21,.55) 0%,rgba(26,23,21,.25) 34%,rgba(26,23,21,.82) 68%,rgba(26,23,21,.96) 100%)"></div>
+      <div class="status" style="color:var(--cream-text)">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen" style="justify-content:space-between;padding:0 24px 54px;position:relative;z-index:2">
+        <div style="display:flex;justify-content:center;margin-top:26px">
+          <svg width="48" height="48" viewBox="0 0 100 100" style="color:var(--gold);--aigu:#E8D5A3" role="img" aria-label="Trésor — the Provenance Seal"><use href="#mark-provenance-seal"/></svg>
+        </div>
+        <div>
+          <div class="kicker" style="color:var(--gold-bright);text-align:center;margin-bottom:18px">By invitation only</div>
+          <div class="h-display" style="font-size:64px;text-align:center;color:var(--cream-text);letter-spacing:.01em">Trésor</div>
+          <div style="width:44px;height:1px;background:var(--gold-grad);margin:24px auto"></div>
+          <p style="text-align:center;font-weight:300;font-size:16.5px;line-height:1.6;color:rgba(245,240,232,.82);max-width:280px;margin:0 auto 44px">Your private circle for <span class="serif" style="font-style:italic;color:var(--gold-bright)">luxury collections</span>.</p>
+          <a class="btn btn-gold" href="#p2" style="text-decoration:none">Begin</a>
+          <p style="text-align:center;margin-top:24px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(245,240,232,.42)">Membership by invitation · Dubai</p>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate I · Onboarding</div>
+      <h3>Welcome</h3>
+      <p>A full-screen brand moment before any ask — <b>show value before effort</b> (Zigpoll, Net-a-Porter pattern). One action, no progress bar.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE II — INFO · WHAT IS TRÉSOR ════════ -->
+  <section class="plate" id="p2">
+    <div class="phone dark">
+      <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1617038220319-276d3cfab638?w=800&q=80&auto=format&fit=crop" alt="Gold jewellery resting on dark velvet" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,23,21,.6) 0%,rgba(26,23,21,.26) 32%,rgba(26,23,21,.84) 64%,rgba(26,23,21,.97) 100%)"></div>
+      <div class="status" style="color:var(--cream-text)">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen" style="position:relative;z-index:2;padding:0 24px 40px">
+        <div style="display:flex;justify-content:flex-end;padding-top:4px">
+          <a href="#p5" style="font-size:12px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.55);text-decoration:none">Skip</a>
+        </div>
+        <div style="margin-top:auto">
+          <div class="kicker" style="font-size:11px;margin-bottom:16px">By Invitation Only</div>
+          <h2 class="h-display" style="font-size:38px;color:var(--cream-text)">A private circle for <span class="serif" style="font-style:italic;color:var(--gold-bright)">luxury collections</span>.</h2>
+          <p style="font-size:15px;font-weight:300;line-height:1.6;color:rgba(245,240,232,.78);margin-top:16px;max-width:315px">Trésor is an invite-only platform where a trusted circle of collectors catalogue, share, and lend their finest pieces — bags, jewellery, watches — with full provenance.</p>
+        <div style="display:flex;gap:8px;justify-content:center;margin:30px 0 22px" aria-label="Page 1 of 3">
+          <span style="width:18px;height:6px;border-radius:999px;background:var(--gold)"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:rgba(245,240,232,.28)"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:rgba(245,240,232,.28)"></span>
+        </div>
+          <a class="btn btn-gold" href="#p3" style="text-decoration:none">Continue</a>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate II · Onboarding</div>
+      <h3>What Is Trésor</h3>
+      <p>First of three skippable arrival plates — a full-bleed still life under the charcoal scrim, one Playfair statement, <b>Skip</b> always present top-right. Value before any ask.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE III — INFO · WHAT YOU CAN DO ════════ -->
+  <section class="plate" id="p3">
+    <div class="phone dark">
+      <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=80&auto=format&fit=crop" alt="Editorial rail of luxury garments in low light" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,23,21,.62) 0%,rgba(26,23,21,.34) 28%,rgba(26,23,21,.88) 58%,rgba(26,23,21,.97) 100%)"></div>
+      <div class="status" style="color:var(--cream-text)">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen" style="position:relative;z-index:2;padding:0 24px 40px">
+        <div style="display:flex;justify-content:flex-end;padding-top:4px">
+          <a href="#p5" style="font-size:12px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.55);text-decoration:none">Skip</a>
+        </div>
+        <div style="margin-top:auto">
+          <div class="kicker" style="font-size:11px;margin-bottom:16px">The Experience</div>
+          <h2 class="h-display" style="font-size:36px;color:var(--cream-text)">Catalogue, lend, borrow, <span class="serif" style="font-style:italic;color:var(--gold-bright)">wishlist</span>.</h2>
+          <p style="font-size:15px;font-weight:300;line-height:1.6;color:rgba(245,240,232,.78);margin-top:14px;max-width:320px">Photograph your collection with AI assistance. Lend pieces to trusted friends. Borrow what you have always wanted. Track every item's journey through your circle.</p>
+          <div style="display:flex;flex-direction:column;gap:13px;margin-top:20px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold-bright)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+            <div>
+              <div style="font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.92)">Catalogue</div>
+              <div style="font-size:12px;font-weight:300;color:rgba(245,240,232,.55);margin-top:2px">Photograph and organise your collection</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold-bright)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><path d="M17 3l4 4-4 4"/><path d="M21 7H7"/><path d="M7 21l-4-4 4-4"/><path d="M3 17h14"/></svg>
+            <div>
+              <div style="font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.92)">Lend &amp; Borrow</div>
+              <div style="font-size:12px;font-weight:300;color:rgba(245,240,232,.55);margin-top:2px">Share pieces within your circle</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold-bright)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <div>
+              <div style="font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.92)">Wishlist</div>
+              <div style="font-size:12px;font-weight:300;color:rgba(245,240,232,.55);margin-top:2px">Save items you admire</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold-bright)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><rect x="4.5" y="3" width="15" height="18" rx="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></svg>
+            <div>
+              <div style="font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.92)">Track</div>
+              <div style="font-size:12px;font-weight:300;color:rgba(245,240,232,.55);margin-top:2px">Follow every item's provenance</div>
+            </div>
+          </div>
+          </div>
+        <div style="display:flex;gap:8px;justify-content:center;margin:30px 0 22px" aria-label="Page 2 of 3">
+          <span style="width:6px;height:6px;border-radius:50%;background:rgba(245,240,232,.28)"></span>
+          <span style="width:18px;height:6px;border-radius:999px;background:var(--gold)"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:rgba(245,240,232,.28)"></span>
+        </div>
+          <a class="btn btn-gold" href="#p4" style="text-decoration:none">Continue</a>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate III · Onboarding</div>
+      <h3>What You Can Do</h3>
+      <p>The experience in four verbs. Feature rows keep the house's <b>1.5&nbsp;px hairline icon</b> language; the gold pill marks page two of three.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE IV — INFO · WHO IT IS FOR ════════ -->
+  <section class="plate" id="p4">
+    <div class="phone dark">
+      <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80&auto=format&fit=crop" alt="Dubai skyline at dusk, gold light on glass towers" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,23,21,.55) 0%,rgba(26,23,21,.26) 30%,rgba(26,23,21,.86) 62%,rgba(26,23,21,.97) 100%)"></div>
+      <div class="status" style="color:var(--cream-text)">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen" style="position:relative;z-index:2;padding:0 24px 40px">
+        <div style="margin-top:auto">
+          <div class="kicker" style="font-size:11px;margin-bottom:16px">Your Circle</div>
+          <h2 class="h-display" style="font-size:38px;color:var(--cream-text)">For the people you <span class="serif" style="font-style:italic;color:var(--gold-bright)">trust</span>.</h2>
+          <p style="font-size:15px;font-weight:300;line-height:1.6;color:rgba(245,240,232,.78);margin-top:16px;max-width:320px">Trésor is not a marketplace. It is your private circle — friends, family, colleagues who share your taste. Every member is invited. Every transaction is between people you know.</p>
+          <div style="display:flex;align-items:center;margin-top:22px">
+            <div class="av" style="width:40px;height:40px;font-size:15px;border:2px solid rgba(26,23,21,.85)">M</div>
+            <div class="av v2" style="width:40px;height:40px;font-size:15px;border:2px solid rgba(26,23,21,.85);margin-left:-11px">N</div>
+            <div class="av v3" style="width:40px;height:40px;font-size:15px;border:2px solid rgba(26,23,21,.85);margin-left:-11px">F</div>
+            <div class="av v4" style="width:40px;height:40px;font-size:15px;border:2px solid rgba(26,23,21,.85);margin-left:-11px">L</div>
+            <div class="av v5" style="width:40px;height:40px;font-size:15px;border:2px solid rgba(26,23,21,.85);margin-left:-11px">S</div>
+            <span style="margin-left:12px;font-size:10.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(245,240,232,.6)">The Dubai Atelier Circle</span>
+          </div>
+        <div style="display:flex;gap:8px;justify-content:center;margin:30px 0 22px" aria-label="Page 3 of 3">
+          <span style="width:6px;height:6px;border-radius:50%;background:rgba(245,240,232,.28)"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:rgba(245,240,232,.28)"></span>
+          <span style="width:18px;height:6px;border-radius:999px;background:var(--gold)"></span>
+        </div>
+          <a class="btn btn-gold" href="#p5" style="text-decoration:none">Get Started</a>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate IV · Onboarding</div>
+      <h3>Who It Is For</h3>
+      <p>Not a marketplace — a register of people. Five members overlap into a circle beneath the copy; <b>Get Started</b> hands over to Phone Input, Plate V.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE V — PHONE INPUT ════════ -->
+  <section class="plate" id="p5">
+    <div class="phone">
+      <div class="status">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center;color:var(--ink)">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="backbar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </div>
+      <div class="screen" style="padding:42px 24px 44px">
+        <div class="kicker">Membership</div>
+        <h2 class="h-display" style="font-size:34px;margin:12px 0 10px">Your Number</h2>
+        <p style="font-weight:300;font-size:14.5px;line-height:1.6;color:var(--ink2);margin-bottom:42px">We'll send a verification code to confirm it's you. Nothing is shared with your circle.</p>
+
+        <!-- +971 fixed prefix, UAE flag as SVG, single masked field -->
+        <div class="field">
+          <svg width="24" height="16" viewBox="0 0 30 20" style="border-radius:3px;box-shadow:0 0 0 1px var(--hair);flex:none" aria-label="United Arab Emirates">
+            <rect width="30" height="20" fill="#FFFFFF"/>
+            <rect width="30" height="6.67" fill="#00843D"/>
+            <rect y="13.33" width="30" height="6.67" fill="#000000"/>
+            <rect width="8" height="20" fill="#CE1126"/>
+          </svg>
+          <span style="font-size:17px;font-weight:500;color:var(--ink);letter-spacing:.04em">+971</span>
+          <span style="width:1px;height:24px;background:var(--hair)"></span>
+          <span class="val">50 123 <span style="color:#B9AE9C">4 567</span></span>
+          <span style="margin-left:auto;width:1.5px;height:22px;background:var(--gold);animation:glow 1.2s ease-in-out infinite;border-radius:2px"></span>
+        </div>
+        <p style="font-size:11.5px;font-weight:300;color:var(--ink3);margin:10px 2px 34px;letter-spacing:.04em">UAE mobile · 5X XXX XXXX</p>
+
+        <!-- SMS / WhatsApp segmented control -->
+        <div class="kicker" style="margin-bottom:10px">Deliver My Code Via</div>
+        <div class="seg" role="tablist">
+          <button class="on" role="tab" aria-selected="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            SMS
+          </button>
+          <button role="tab" aria-selected="false">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+            WhatsApp
+          </button>
+        </div>
+
+        <div style="margin-top:auto">
+          <button class="btn btn-dark">Send Code</button>
+          <p style="text-align:center;margin-top:18px"><a class="link" href="#p5">Use email instead</a></p>
+          <p style="text-align:center;margin-top:16px;font-size:10.5px;font-weight:300;color:var(--ink3);letter-spacing:.06em">Codes arrive from sender “TRESOR” · may take a few seconds</p>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate V · Onboarding</div>
+      <h3>Phone Input — UAE</h3>
+      <p>Fixed <b>+971 prefix with SVG flag</b>, single masked field <b>5X XXX XXXX</b> (Baymard: 89% mis-format without masks), SMS-default segmented toggle, email as tertiary fallback.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE VI — OTP ════════ -->
+  <section class="plate" id="p6">
+    <div class="phone">
+      <div class="status">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center;color:var(--ink)">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="backbar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </div>
+      <div class="screen" style="padding:42px 24px 44px">
+        <div class="kicker">Verification</div>
+        <h2 class="h-display" style="font-size:34px;margin:12px 0 10px">Enter the Code</h2>
+        <p style="font-weight:300;font-size:14.5px;line-height:1.6;color:var(--ink2)">Code sent to <b style="font-weight:500;color:var(--ink)">+971 50 123 4567</b> via SMS.</p>
+
+        <div class="otp" style="margin:48px 0 16px">
+          <div class="box fill">8</div>
+          <div class="box fill">2</div>
+          <div class="box fill">4</div>
+          <div class="box active"></div>
+          <div class="box"></div>
+          <div class="box"></div>
+        </div>
+        <p style="text-align:center;font-size:11.5px;font-weight:300;color:var(--ink3);letter-spacing:.05em">Verifies automatically on the sixth digit</p>
+
+        <div style="display:flex;justify-content:center;gap:30px;margin-top:48px">
+          <span style="font-size:13px;color:var(--ink3);font-weight:300">Resend in <b style="font-weight:500;color:var(--gold-deep);font-variant-numeric:tabular-nums">0:05</b></span>
+          <a class="link" href="#p5">Change number</a>
+        </div>
+
+        <div style="margin-top:auto;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--ink3);font-size:11px;letter-spacing:.18em;text-transform:uppercase">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          Delivered by SMS
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate VI · Onboarding</div>
+      <h3>OTP Verification</h3>
+      <p>Six boxes at <b>36 × 44 px</b>, three filled to show progression, active box carries a <b>pulsing gold glow</b>; auto-focus and auto-submit per Authgear/Twilio — no Verify button. Resend rate-limited 5 s.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE VII — INVITE CODE ════════ -->
+  <section class="plate" id="p7">
+    <div class="phone">
+      <div class="status">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center;color:var(--ink)">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen" style="padding:56px 24px 44px">
+        <div class="kicker">After Verification</div>
+        <h2 class="h-display" style="font-size:34px;margin:12px 0 10px">Your Invitation</h2>
+        <p style="font-weight:300;font-size:14.5px;line-height:1.6;color:var(--ink2);margin-bottom:48px">A member of a circle has reserved a place for you.</p>
+
+        <div style="border-bottom:1.5px solid var(--gold);padding-bottom:12px">
+          <span class="serif" style="font-style:italic;font-size:24px;color:#B9AE9C">Enter your invite code</span>
+        </div>
+        <p style="font-size:11.5px;font-weight:300;color:var(--ink3);margin:10px 2px 44px;letter-spacing:.04em">Six characters · found in your invitation message</p>
+
+        <!-- circle preview: value before effort -->
+        <div style="background:linear-gradient(160deg,#FFFFFF, #FBF6ED);border:1px solid var(--hair-gold);border-radius:var(--rl);padding:24px;box-shadow:var(--sh-lift)">
+          <div class="kicker" style="margin-bottom:10px">You Are Joining</div>
+          <div class="serif" style="font-weight:600;font-size:21px;color:var(--ink)">The Dubai Atelier Circle</div>
+          <p style="font-size:12.5px;font-weight:300;line-height:1.6;color:var(--ink2);margin:8px 0 18px">Six collectors sharing handbags, jewellery and watches — quietly, between friends.</p>
+          <div style="display:flex;align-items:center">
+            <div class="av" style="width:36px;height:36px;font-size:14px;border:2px solid #fff">M</div>
+            <div class="av v2" style="width:36px;height:36px;font-size:14px;border:2px solid #fff;margin-left:-10px">N</div>
+            <div class="av v3" style="width:36px;height:36px;font-size:14px;border:2px solid #fff;margin-left:-10px">F</div>
+            <div class="av v4" style="width:36px;height:36px;font-size:14px;border:2px solid #fff;margin-left:-10px">L</div>
+            <div class="av v5" style="width:36px;height:36px;font-size:14px;border:2px solid #fff;margin-left:-10px">S</div>
+            <span style="margin-left:12px;font-size:11px;letter-spacing:.1em;color:var(--ink3)">5 members · 128 pieces</span>
+          </div>
+        </div>
+
+        <div style="margin-top:auto">
+          <button class="btn btn-dark">Join Circle</button>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate VII · Onboarding</div>
+      <h3>Invite Code</h3>
+      <p>Positioned <b>after auth</b> — fixes the RLS bug where anonymous users can't validate codes (Nigel §7). Playfair-italic placeholder over a gold underline; the circle preview shows social proof first.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE VIII — PROFILE SETUP ════════ -->
+  <section class="plate" id="p8">
+    <div class="phone">
+      <div class="status">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center;color:var(--ink)">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen" style="padding:56px 24px 44px">
+        <div class="kicker">Almost There</div>
+        <h2 class="h-display" style="font-size:34px;margin:12px 0 10px">Introduce Yourself</h2>
+        <p style="font-weight:300;font-size:14.5px;line-height:1.6;color:var(--ink2)">A name and a photograph — that's all your circle sees.</p>
+
+        <div style="display:flex;justify-content:center;margin:50px 0 54px">
+          <div style="position:relative">
+            <div class="av" style="width:120px;height:120px;font-size:46px;box-shadow:0 0 0 3px var(--cream),0 0 0 4.5px var(--gold),0 16px 36px rgba(201,169,97,.3)">M</div>
+            <button aria-label="Add photo" style="position:absolute;right:-4px;bottom:-2px;width:38px;height:38px;border-radius:50%;background:var(--charcoal);border:2.5px solid var(--cream);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);cursor:pointer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="kicker" style="margin-bottom:10px">Your Name</div>
+        <div class="field"><span class="val" style="letter-spacing:.02em">Mariam</span><span style="width:1.5px;height:22px;background:var(--gold);border-radius:2px"></span></div>
+
+        <div style="margin-top:auto">
+          <button class="btn btn-gold">Complete Setup</button>
+          <p style="text-align:center;margin-top:16px;font-size:11px;font-weight:300;color:var(--ink3);letter-spacing:.06em">Linked to +971 50 123 4567</p>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate VIII · Onboarding</div>
+      <h3>Profile Setup</h3>
+      <p><b>Name + avatar only</b> — luxury onboarding respects the member's time (Eleken, Arounda). Gradient-initial monogram until a photograph is added; phone carried over from auth.</p>
+    </div>
+  </section>
+
+  <!-- chapter marker -->
+  <div class="chapter">
+    <div class="num">II.</div>
+    <div class="name">The Application</div>
+  </div>
+
+  <!-- ════════ PLATE IX — HOME / COLLECTION ════════ -->
+  <section class="plate" id="p9">
+    <div class="phone">
+      <div class="status">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center;color:var(--ink)">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen">
+        <div style="padding:16px 24px 8px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg width="28" height="28" viewBox="0 0 100 100" style="color:#1a1715;--aigu:#9A7E4A;flex:none" role="img" aria-label="Trésor seal"><use href="#mark-provenance-seal"/></svg>
+            <div class="kicker">The Dubai Atelier Circle</div>
+          </div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:8px">
+            <h2 class="h-display" style="font-size:32px">Your Collection</h2>
+            <div class="av" style="width:36px;height:36px;font-size:14px">M</div>
+          </div>
+          <p style="font-size:12px;font-weight:300;color:var(--ink3);margin-top:5px;letter-spacing:.06em">12 pieces · 2 on loan · 3 lent this year</p>
+        </div>
+        <div style="padding:0 24px 14px">
+          <div class="chiprow">
+            <span class="chip on">All</span><span class="chip">Bags</span><span class="chip">Jewellery</span><span class="chip">Watches</span><span class="chip">Available</span><span class="chip">Borrowed</span>
+          </div>
+        </div>
+        <div class="scrollpad" style="padding-bottom:0">
+          <div class="pgrid">
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80&auto=format&fit=crop" alt="Hermès Birkin 30"></div>
+              <div class="body">
+                <div class="brand">Hermès</div>
+                <div class="model">Birkin 30 · Togo, Gold&nbsp;HW</div>
+                <div class="rowx" style="justify-content:flex-end"><span class="badge avail"><span class="dot"></span>Available</span></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&q=80&auto=format&fit=crop" alt="Chanel Classic Flap"></div>
+              <div class="body">
+                <div class="brand">Chanel</div>
+                <div class="model">Classic Flap · Medium, Caviar</div>
+                <div class="rowx" style="justify-content:flex-end"><span class="badge borrowed"><span class="dot"></span>Borrowed</span></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80&auto=format&fit=crop" alt="Cartier Love Bracelet"></div>
+              <div class="body">
+                <div class="brand">Cartier</div>
+                <div class="model">Love Bracelet · Yellow Gold</div>
+                <div class="rowx" style="justify-content:flex-end"><span class="badge avail"><span class="dot"></span>Available</span></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=800&q=80&auto=format&fit=crop" alt="Rolex Submariner"></div>
+              <div class="body">
+                <div class="brand">Rolex</div>
+                <div class="model">Submariner Date · Oystersteel</div>
+                <div class="rowx" style="justify-content:flex-end"><span class="badge avail"><span class="dot"></span>Available</span></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80&auto=format&fit=crop" alt="Van Cleef & Arpels Alhambra necklace"></div>
+              <div class="body">
+                <div class="brand">Van Cleef</div>
+                <div class="model">Vintage Alhambra · Onyx</div>
+                <div class="rowx" style="justify-content:flex-end"><span class="badge avail"><span class="dot"></span>Available</span></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=800&q=80&auto=format&fit=crop" alt="Cartier Tank"></div>
+              <div class="body">
+                <div class="brand">Cartier</div>
+                <div class="model">Tank Louis · Small, Leather</div>
+                <div class="rowx" style="justify-content:flex-end"><span class="badge borrowed"><span class="dot"></span>Borrowed</span></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=800&q=80&auto=format&fit=crop" alt="Christian Louboutin pumps"></div>
+              <div class="body">
+                <div class="brand">Louboutin</div>
+                <div class="model">So Kate 120 · Patent Nude</div>
+                <div class="rowx" style="justify-content:flex-end"><span class="badge avail"><span class="dot"></span>Available</span></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1591348278863-a8fb3887e2aa?w=800&q=80&auto=format&fit=crop" alt="Hermès silk scarf"></div>
+              <div class="body">
+                <div class="brand">Hermès</div>
+                <div class="model">Carré 90 · Silk Twill</div>
+                <div class="rowx" style="justify-content:flex-end"><span class="badge avail"><span class="dot"></span>Available</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab on">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+            Collection
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 8L9 4l-3 8H2"/></svg>
+            Activity
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10.5" stroke="rgba(201,169,97,.55)" stroke-width="1" fill="none"/><path d="M12 7.75v8.5M7.75 12h8.5"/></svg>
+            Add
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Circle
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate IX · Application</div>
+      <h3>Home — Collection</h3>
+      <p>Editorial two-column grid, real photography with a warm gradient veil; cards rise in a <b>staggered reveal</b>. Brand set in Playfair, spec line in light Jost, status badges in muted olive and amber.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE X — ITEM DETAIL ════════ -->
+  <section class="plate" id="p10">
+    <div class="phone">
+      <div class="screen">
+        <div style="position:relative;height:340px;flex:none">
+          <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80&auto=format&fit=crop" alt="Hermès Birkin 30 hero" style="width:100%;height:100%;object-fit:cover">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(26,23,21,.42) 0%,rgba(26,23,21,0) 32%,rgba(250,247,242,0) 72%,#FAF7F2 100%)"></div>
+          <div class="status" style="position:absolute;top:0;left:0;right:0;color:#fff">
+            <span>9:41</span>
+            <span style="display:flex;gap:6px;align-items:center">
+              <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+              <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+          <button aria-label="Back" style="position:absolute;top:64px;left:24px;width:38px;height:38px;border-radius:50%;background:rgba(26,23,21,.45);backdrop-filter:blur(6px);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <span class="badge avail" style="position:absolute;top:70px;right:24px"><span class="dot"></span>Available</span>
+        </div>
+        <div class="scrollpad">
+          <div class="kicker">Handbags · Added March 2026</div>
+          <h2 class="h-display" style="font-size:34px;margin:8px 0 2px">Hermès</h2>
+          <p style="font-size:14px;font-weight:300;color:var(--ink2);letter-spacing:.03em">Birkin 30 · Togo Leather · Gold Hardware</p>
+
+          <div style="display:flex;gap:0;margin:20px 0;border:1px solid var(--hair);border-radius:var(--rm);background:var(--card-grad);box-shadow:var(--sh)">
+            <div style="flex:1;padding:14px 16px">
+              <div style="font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3)">Est. value</div>
+              <div class="price" style="font-size:19px;margin-top:3px">$24,000</div>
+            </div>
+            <div style="width:1px;background:var(--hair)"></div>
+            <div style="flex:1;padding:14px 16px">
+              <div style="font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3)">Purchased ’23</div>
+              <div class="price" style="font-size:19px;margin-top:3px">$19,800</div>
+            </div>
+            <div style="width:1px;background:var(--hair)"></div>
+            <div style="flex:1;padding:14px 16px">
+              <div style="font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3)">Condition</div>
+              <div class="serif" style="font-style:italic;font-size:16px;margin-top:5px;color:var(--gold-deep)">Excellent</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;padding:4px 0 16px">
+            <div class="av" style="width:40px;height:40px;font-size:16px">M</div>
+            <div>
+              <div style="font-size:14px;font-weight:500">Mariam Al Falasi</div>
+              <div style="font-size:11px;color:var(--ink3);font-weight:300;letter-spacing:.08em">Owner · The Dubai Atelier Circle</div>
+            </div>
+          </div>
+
+          <button class="btn btn-dark" style="height:52px">Request to Borrow</button>
+
+          <div class="kicker" style="margin:20px 0 8px">Notes</div>
+          <p style="font-size:13px;font-weight:300;line-height:1.65;color:var(--ink2)">Kept in its dust bag with box and receipt. Prefer hand-carry only — no shoulder straps, no rain.</p>
+
+          <div class="kicker" style="margin:20px 0 8px">Identified by Trésor</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">
+            <span class="chip" style="font-size:10.5px">Togo leather</span>
+            <span class="chip" style="font-size:10.5px">Gold-plated HW</span>
+            <span class="chip" style="font-size:10.5px">Stamp U · 2022</span>
+          </div>
+
+          <div class="kicker" style="margin:20px 0 8px">Borrow History</div>
+          <div class="tl" style="margin-bottom:20px">
+            <div class="tlrow done"><span class="nd"></span><div class="st">Returned by Noor Haddad</div><div class="sd">May 2026 · 8 days</div></div>
+            <div class="tlrow done"><span class="nd"></span><div class="st">Borrowed by Layla Al Sayegh</div><div class="sd">February 2026 · 3 days</div></div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab on">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+            Collection
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 8L9 4l-3 8H2"/></svg>
+            Activity
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10.5" stroke="rgba(201,169,97,.55)" stroke-width="1" fill="none"/><path d="M12 7.75v8.5M7.75 12h8.5"/></svg>
+            Add
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Circle
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate X · Application</div>
+      <h3>Item Detail</h3>
+      <p>Full-bleed hero dissolving into cream — the Net-a-Porter product-page register. Value triptych in hairline rules, owner row, AI provenance chips, borrow history as a timeline.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE XI — ADD ITEM ════════ -->
+  <section class="plate" id="p11">
+    <div class="phone dark">
+      <div class="status" style="color:var(--cream-text)">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen">
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;padding:8px 24px 12px">
+          <div style="text-align:center;margin-bottom:12px">
+            <div class="kicker" style="color:var(--gold)">New Acquisition</div>
+          </div>
+          <div style="display:flex;background:var(--charcoal-soft);border-radius:var(--rs);padding:3px;margin-bottom:16px">
+            <button style="flex:1;height:38px;border:none;border-radius:8px;background:rgba(201,169,97,.16);color:var(--gold-bright);font-family:'Jost';font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Camera</button>
+            <button style="flex:1;height:38px;border:none;border-radius:8px;background:transparent;color:rgba(245,240,232,.45);font-family:'Jost';font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Paste Link</button>
+            <button style="flex:1;height:38px;border:none;border-radius:8px;background:transparent;color:rgba(245,240,232,.45);font-family:'Jost';font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Manual</button>
+          </div>
+
+          <div style="position:relative;border-radius:var(--rl);overflow:hidden;aspect-ratio:39/34;flex:none">
+            <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80&auto=format&fit=crop" alt="Leather goods in the viewfinder" style="width:100%;height:100%;object-fit:cover">
+            <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(26,23,21,0) 42%,rgba(26,23,21,.45) 100%)"></div>
+            <!-- corner brackets -->
+            <svg style="position:absolute;inset:26px" width="calc(100% - 52px)" height="calc(100% - 52px)" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none" stroke="#E8D5A3" stroke-width="1">
+              <path d="M0 12 V2 Q0 0 2 0 H12" vector-effect="non-scaling-stroke" stroke-width="1.5"/>
+              <path d="M88 0 H98 Q100 0 100 2 V12" vector-effect="non-scaling-stroke" stroke-width="1.5"/>
+              <path d="M100 88 V98 Q100 100 98 100 H88" vector-effect="non-scaling-stroke" stroke-width="1.5"/>
+              <path d="M12 100 H2 Q0 100 0 98 V88" vector-effect="non-scaling-stroke" stroke-width="1.5"/>
+            </svg>
+            <div style="position:absolute;left:0;right:0;bottom:16px;text-align:center">
+              <span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(245,240,232,.85);background:rgba(26,23,21,.5);backdrop-filter:blur(4px);padding:7px 14px;border-radius:999px">Centre the piece — Trésor identifies it</span>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:center;margin:18px 0 6px">
+            <button aria-label="Capture" style="width:66px;height:66px;border-radius:50%;background:transparent;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer">
+              <span style="width:50px;height:50px;border-radius:50%;background:var(--gold-grad);display:block"></span>
+            </button>
+          </div>
+          <p style="text-align:center;font-size:11px;font-weight:300;color:rgba(245,240,232,.5);letter-spacing:.08em">Brand, model and value — identified automatically</p>
+
+          <div style="margin-top:auto">
+            <div class="kicker" style="color:var(--gold);margin-bottom:10px">Recently Added</div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:1">
+                <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1615655406736-b37c4fabf923?w=800&q=80&auto=format&fit=crop" alt="Perfume bottle" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;border:1px solid rgba(201,169,97,.3)">
+                <div style="font-size:10px;font-weight:300;color:rgba(245,240,232,.6);margin-top:6px;letter-spacing:.06em">MFK Baccarat</div>
+              </div>
+              <div style="flex:1">
+                <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80&auto=format&fit=crop" alt="Diamond ring" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;border:1px solid rgba(201,169,97,.3)">
+                <div style="font-size:10px;font-weight:300;color:rgba(245,240,232,.6);margin-top:6px;letter-spacing:.06em">Solitaire 1.2 ct</div>
+              </div>
+              <div style="flex:1">
+                <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80&auto=format&fit=crop" alt="Luxury watch" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;border:1px solid rgba(201,169,97,.3)">
+                <div style="font-size:10px;font-weight:300;color:rgba(245,240,232,.6);margin-top:6px;letter-spacing:.06em">Royal Oak</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+            Collection
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 8L9 4l-3 8H2"/></svg>
+            Activity
+          </div>
+          <div class="tab on">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10.5" stroke="rgba(201,169,97,.55)" stroke-width="1" fill="none"/><path d="M12 7.75v8.5M7.75 12h8.5"/></svg>
+            Add
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Circle
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate XI · Application</div>
+      <h3>Add Item — AI Capture</h3>
+      <p>Dark-room capture: gold corner brackets frame the viewfinder; camera is primary with link and manual entry as quiet alternates. Recent additions confirm the AI loop.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE XII — ACTIVITY FEED ════════ -->
+  <section class="plate" id="p12">
+    <div class="phone">
+      <div class="status">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center;color:var(--ink)">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen">
+        <div style="padding:16px 24px 8px">
+          <div class="kicker">The Dubai Atelier Circle</div>
+          <h2 class="h-display" style="font-size:32px;margin-top:8px">Activity</h2>
+        </div>
+        <div class="scrollpad">
+          <div class="datediv"><span>Today</span><i></i></div>
+
+          <div class="evt">
+            <div class="av v4" style="width:40px;height:40px;font-size:15px">L</div>
+            <div class="txt"><b>Layla Al Sayegh</b> borrowed the <span class="it">Cartier Love Bracelet</span>.<div class="when">1 hour ago · recorded by you, in person</div></div>
+            <img class="thumb" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80&auto=format&fit=crop" alt="Love Bracelet thumbnail">
+          </div>
+          <div class="hairline"></div>
+          <div class="evt">
+            <div class="av v2" style="width:40px;height:40px;font-size:15px">N</div>
+            <div class="txt"><b>Noor Haddad</b> requested to borrow the <span class="it">Hermès Birkin 30</span> for the Atlantis gala.<div class="when">2 hours ago · awaiting your reply</div></div>
+            <img class="thumb" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80&auto=format&fit=crop" alt="Birkin 30 thumbnail">
+          </div>
+          <div class="hairline"></div>
+          <div class="evt">
+            <div class="av v3" style="width:40px;height:40px;font-size:15px">F</div>
+            <div class="txt"><b>Fatima Al Rashid</b> added the <span class="it">Cartier Love Bracelet</span>.<div class="when">5 hours ago</div></div>
+            <img class="thumb" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80&auto=format&fit=crop" alt="Love Bracelet thumbnail">
+          </div>
+
+          <div class="datediv"><span>Yesterday</span><i></i></div>
+          <div class="evt">
+            <div class="av v4" style="width:40px;height:40px;font-size:15px">L</div>
+            <div class="txt"><b>Layla Al Sayegh</b> returned the <span class="it">Chanel Classic Flap</span> — “in perfect condition, thank you.”<div class="when">Yesterday, 19:40</div></div>
+            <img class="thumb" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&q=80&auto=format&fit=crop" alt="Classic Flap thumbnail">
+          </div>
+          <div class="hairline"></div>
+          <div class="evt">
+            <div class="av v5" style="width:40px;height:40px;font-size:15px">S</div>
+            <div class="txt"><b>Sara Al Maktoum</b> added the <span class="it">Rolex Submariner</span>.<div class="when">Yesterday, 11:05</div></div>
+            <img class="thumb" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=800&q=80&auto=format&fit=crop" alt="Submariner thumbnail">
+          </div>
+          <div class="hairline"></div>
+          <div class="evt">
+            <div style="width:40px;height:40px;border-radius:50%;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold-deep);flex:none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+            </div>
+            <div class="txt"><b>Farah Osman</b> joined the circle by invitation of Mariam.<div class="when">Yesterday, 09:12</div></div>
+          </div>
+
+          <div class="datediv"><span>This Week</span><i></i></div>
+          <div class="evt">
+            <div class="av v3" style="width:40px;height:40px;font-size:15px">F</div>
+            <div class="txt"><b>Fatima Al Rashid</b> added a <span class="it">1.2 ct Solitaire Ring</span>.<div class="when">Tuesday</div></div>
+            <img class="thumb" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80&auto=format&fit=crop" alt="Solitaire ring thumbnail">
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+            Collection
+          </div>
+          <div class="tab on">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 8L9 4l-3 8H2"/></svg>
+            Activity
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10.5" stroke="rgba(201,169,97,.55)" stroke-width="1" fill="none"/><path d="M12 7.75v8.5M7.75 12h8.5"/></svg>
+            Add
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Circle
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate XII · Application</div>
+      <h3>Activity Feed</h3>
+      <p>A social ledger, not a notification dump: item names in Playfair italic, thumbnails on every material event, letterpress date rules between days.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE XIII — THE CIRCLE · MEMBERS ════════ -->
+  <section class="plate" id="p13">
+    <div class="phone">
+      <div class="status">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center;color:var(--ink)">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen">
+        <div style="padding:16px 24px 8px;text-align:center;background:linear-gradient(180deg,#F4EEE2,#FAF7F2)">
+          <div style="width:38px;height:38px;border-radius:50%;border:1px solid var(--hair-gold);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+            <span class="serif" style="font-style:italic;font-size:16px;color:var(--gold-deep)">T·</span>
+          </div>
+          <h2 class="h-display" style="font-size:25px">The Dubai Atelier Circle</h2>
+          <p style="font-size:10.5px;font-weight:300;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);margin-top:5px">Est. January 2026 · By invitation</p>
+          <div style="display:flex;margin-top:13px;border:1px solid var(--hair);border-radius:var(--rm);background:var(--card-grad);box-shadow:var(--sh)">
+            <div style="flex:1;padding:10px 6px">
+              <div class="price" style="font-size:19px">128</div>
+              <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-top:3px">Pieces</div>
+            </div>
+            <div style="width:1px;background:var(--hair)"></div>
+            <div style="flex:1;padding:10px 6px">
+              <div class="price" style="font-size:19px;color:var(--gold-deep)">6</div>
+              <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-top:3px">Members</div>
+            </div>
+            <div style="width:1px;background:var(--hair)"></div>
+            <div style="flex:1;padding:10px 6px">
+              <div class="price" style="font-size:19px">4</div>
+              <div style="font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3);margin-top:3px">On loan</div>
+            </div>
+          </div>
+        </div>
+        <div class="scrollpad">
+          <div class="kicker" style="margin:12px 0 10px">The Members · Six Tastes</div>
+          <div class="memgrid">
+            <div class="memcard me">
+              <div class="av" style="width:40px;height:40px;font-size:16px">M</div>
+              <div class="nm">Mariam Al Falasi</div>
+              <div class="taste">The Dior Devotee<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--gold-deep)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-left:4px" role="img" aria-label="Edit your taste label"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></div>
+              <img class="hl" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80&auto=format&fit=crop" alt="Hermès Birkin 30 — Mariam's collection highlight">
+              <div class="act">You · Admin · 3 lends</div>
+            </div>
+            <div class="memcard">
+              <div class="av v2" style="width:40px;height:40px;font-size:16px">N</div>
+              <div class="nm">Noor Haddad</div>
+              <div class="taste">The Horologist</div>
+              <img class="hl" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80&auto=format&fit=crop" alt="A dress watch — Noor's collection highlight">
+              <div class="act">2 lends · 4 borrows</div>
+            </div>
+            <div class="memcard">
+              <div class="av v3" style="width:40px;height:40px;font-size:16px">F</div>
+              <div class="nm">Fatima Al Rashid</div>
+              <div class="taste">Hermès Loyalist</div>
+              <img class="hl" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&q=80&auto=format&fit=crop" alt="Hermès Kelly 25 — Fatima's collection highlight">
+              <div class="act">5 lends · 2 borrows</div>
+            </div>
+            <div class="memcard">
+              <div class="av v4" style="width:40px;height:40px;font-size:16px">L</div>
+              <div class="nm">Layla Al Sayegh</div>
+              <div class="taste">The Curator</div>
+              <img class="hl" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&q=80&auto=format&fit=crop" alt="Chanel Classic Flap — Layla's collection highlight">
+              <div class="act">4 lends · 8 borrows</div>
+            </div>
+            <div class="memcard">
+              <div class="av v5" style="width:40px;height:40px;font-size:16px">S</div>
+              <div class="nm">Sara Al Maktoum</div>
+              <div class="taste">The Risk Taker</div>
+              <img class="hl" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=800&q=80&auto=format&fit=crop" alt="Rolex Submariner — Sara's collection highlight">
+              <div class="act">1 lend · 6 borrows</div>
+            </div>
+            <div class="memcard">
+              <div class="av v2" style="width:40px;height:40px;font-size:16px">F</div>
+              <div class="nm">Farah Osman</div>
+              <div class="taste">Eclectic Collector</div>
+              <img class="hl" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80&auto=format&fit=crop" alt="Van Cleef Alhambra — Farah's collection highlight">
+              <div class="act">New this week</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:10px 24px 12px">
+          <button class="btn btn-ghost" style="height:48px;font-size:12px">Extend an Invitation · 2 Remaining</button>
+        </div>
+        <div class="tabbar">
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+            Collection
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 8L9 4l-3 8H2"/></svg>
+            Activity
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10.5" stroke="rgba(201,169,97,.55)" stroke-width="1" fill="none"/><path d="M12 7.75v8.5M7.75 12h8.5"/></svg>
+            Add
+          </div>
+          <div class="tab on">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Circle
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate XIII · Application</div>
+      <h3>The Circle — The Members</h3>
+      <p>The circle as a private register, two cards to a row — monogram, name, and a <b>taste label</b> in place of statistics: <em>The Horologist</em>, not "24 pieces". Each member shows one collection highlight; your own label carries a small gold pencil.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE XIV — BORROW FLOW ════════ -->
+  <section class="plate" id="p14">
+    <div class="phone">
+      <div class="status">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center;color:var(--ink)">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="backbar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Item</span>
+      </div>
+      <div class="screen" style="padding:14px 24px 28px">
+        <div class="kicker">Borrow Request</div>
+        <h2 class="h-display" style="font-size:28px;margin:8px 0 18px">The Birkin, <span class="serif" style="font-style:italic;color:var(--gold-deep)">for the Gala</span></h2>
+
+        <div style="display:flex;gap:14px;align-items:center;background:var(--card-grad);border:1px solid var(--hair);border-radius:var(--rm);padding:12px;box-shadow:var(--sh)">
+          <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80&auto=format&fit=crop" alt="Hermès Birkin 30" style="width:64px;height:64px;object-fit:cover;border-radius:10px">
+          <div style="flex:1">
+            <div class="serif" style="font-weight:600;font-size:16px">Hermès Birkin 30</div>
+            <div style="font-size:11.5px;font-weight:300;color:var(--ink3);margin-top:2px">Togo · Gold HW</div>
+          </div>
+          <span class="badge avail"><span class="dot"></span>Available</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin:20px 0">
+          <div style="display:flex;align-items:center;gap:9px;flex:1">
+            <div class="av v2" style="width:34px;height:34px;font-size:13px">N</div>
+            <div><div style="font-size:12.5px;font-weight:500">Noor</div><div style="font-size:10px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase">Borrower</div></div>
+          </div>
+          <svg width="26" height="16" viewBox="0 0 26 16" fill="none" stroke="#C9A961" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8h22M17 2l6 6-6 6"/></svg>
+          <div style="display:flex;align-items:center;gap:9px;flex:1;justify-content:flex-end;text-align:right">
+            <div><div style="font-size:12.5px;font-weight:500">Mariam</div><div style="font-size:10px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase">Owner</div></div>
+            <div class="av" style="width:34px;height:34px;font-size:13px">M</div>
+          </div>
+        </div>
+
+        <div class="kicker" style="margin-bottom:8px">A Note to Mariam</div>
+        <div style="background:var(--card-grad);border:1px solid var(--hair);border-radius:var(--rm);padding:14px 16px;box-shadow:var(--sh)">
+          <p style="font-size:13.5px;font-weight:300;line-height:1.6;color:var(--ink)">Would love to wear it to the gala at Atlantis on the 21st — hand-carry only, I promise.<span style="display:inline-block;width:1.5px;height:15px;background:var(--gold);vertical-align:-2px;margin-left:1px;border-radius:2px"></span></p>
+        </div>
+
+        <div class="kicker" style="margin:20px 0 8px">Duration</div>
+        <div style="display:flex;gap:8px">
+          <span class="chip">3 days</span>
+          <span class="chip on">1 week</span>
+          <span class="chip">2 weeks</span>
+          <span class="chip serif" style="font-style:italic">Custom</span>
+        </div>
+
+        <button class="btn btn-dark" style="height:52px;margin-top:24px">Send Request</button>
+
+        <div class="kicker" style="margin:20px 0 8px">How a Borrow Unfolds</div>
+        <div class="tl">
+          <div class="tlrow done"><span class="nd"></span><div class="st">Requested</div><div class="sd">You ask, with a note and dates</div></div>
+          <div class="tlrow done"><span class="nd"></span><div class="st">Accepted</div><div class="sd">The owner approves and you arrange handover</div></div>
+          <div class="tlrow now"><span class="nd"></span><div class="st">Active</div><div class="sd">The piece is in your care</div></div>
+          <div class="tlrow"><span class="nd"></span><div class="st">Returned</div><div class="sd">Condition confirmed, history recorded</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate XIV · Application</div>
+      <h3>Borrow Flow</h3>
+      <p>Borrower and owner face each other across a gold arrow; the four-state timeline (Requested → Accepted → <b>Active</b> → Returned) is written as etiquette, not system status — the current state glows gold.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE XV — RECORD A BORROW · OFFLINE ════════ -->
+  <section class="plate" id="p15">
+    <div class="phone">
+      <div class="status">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center;color:var(--ink)">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="backbar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span>Item</span>
+      </div>
+      <div class="screen" style="padding:14px 24px 28px">
+        <div class="kicker">Record a Borrow</div>
+        <h2 class="h-display" style="font-size:27px;margin:8px 0 14px">The <span class="serif" style="font-style:italic;color:var(--gold-deep)">Cartier Love Bracelet</span></h2>
+
+        <div style="display:flex;gap:14px;align-items:center;background:var(--card-grad);border:1px solid var(--hair);border-radius:var(--rm);padding:12px;box-shadow:var(--sh)">
+          <img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&q=80&auto=format&fit=crop" alt="Cartier Love Bracelet" style="width:56px;height:56px;object-fit:cover;border-radius:10px">
+          <div style="flex:1">
+            <div class="serif" style="font-weight:600;font-size:15.5px">Cartier Love Bracelet</div>
+            <div style="font-size:11.5px;font-weight:300;color:var(--ink3);margin-top:2px">Yellow Gold · Size 17</div>
+          </div>
+          <span class="badge avail"><span class="dot"></span>Available</span>
+        </div>
+
+        <div class="kicker" style="margin:16px 0 8px">Who Is Borrowing?</div>
+        <div style="display:flex;gap:16px;overflow-x:auto;padding:3px 3px 2px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:none">
+            <div class="av v2" style="width:46px;height:46px;font-size:18px;opacity:.55">N</div>
+            <span style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)">Noor</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:none">
+            <div class="av v3" style="width:46px;height:46px;font-size:18px;opacity:.55">F</div>
+            <span style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)">Fatima</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:none">
+            <div class="av v4" style="width:46px;height:46px;font-size:18px;box-shadow:0 0 0 2.5px var(--cream),0 0 0 4px var(--gold),0 8px 20px rgba(201,169,97,.35)">L</div>
+            <span style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-deep);font-weight:500">Layla</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:none">
+            <div class="av v5" style="width:46px;height:46px;font-size:18px;opacity:.55">S</div>
+            <span style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)">Sara</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:none">
+            <div class="av v2" style="width:46px;height:46px;font-size:18px;opacity:.55">F</div>
+            <span style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)">Farah</span>
+          </div>
+        </div>
+        <p style="font-size:12px;font-weight:300;color:var(--ink2);margin-top:8px">Lending to <b style="font-weight:500;color:var(--ink)">Layla Al Sayegh</b> · <span class="taste">The Curator</span></p>
+
+        <div class="kicker" style="margin:16px 0 8px">A Note (Optional)</div>
+        <div style="background:var(--card-grad);border:1px solid var(--hair);border-radius:var(--rm);padding:14px 16px;box-shadow:var(--sh)">
+          <p style="font-size:13px;font-weight:300;color:#B9AE9C">For the gala, handed over at dinner…<span style="display:inline-block;width:1.5px;height:14px;background:var(--gold);vertical-align:-2px;margin-left:1px;border-radius:2px"></span></p>
+        </div>
+
+        <div class="kicker" style="margin:16px 0 8px">Expected Return</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <span class="chip on">No set date</span>
+          <span class="chip">3 days</span>
+          <span class="chip">1 week</span>
+          <span class="chip">2 weeks</span>
+          <span class="chip serif" style="font-style:italic">Custom</span>
+        </div>
+
+        <button class="btn btn-dark" style="height:52px;margin-top:18px">Record Borrow</button>
+        <p style="text-align:center;margin-top:9px;font-size:10.5px;font-weight:300;color:var(--ink3);letter-spacing:.04em">The piece is marked as borrowed immediately. Mark it returned at any time.</p>
+
+        <div class="kicker" style="margin:16px 0 8px">How It Unfolds</div>
+        <div class="tl">
+          <div class="tlrow now"><span class="nd"></span><div class="st">Active</div><div class="sd">The piece is in Layla's care</div></div>
+          <div class="tlrow"><span class="nd"></span><div class="st">Returned</div><div class="sd">Condition confirmed, history recorded</div></div>
+        </div>
+        <p style="font-size:10.5px;font-weight:300;color:var(--ink3);margin-top:8px;letter-spacing:.03em">No approval needed — an offline lend, recorded for your own register.</p>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate XV · Application</div>
+      <h3>Record a Borrow — Offline</h3>
+      <p>The second lending mode: the piece changed hands at dinner, so the owner simply <b>records it</b>. Choose the borrower, add a note if you like — no request, no approval, and a two-state timeline in place of four.</p>
+    </div>
+  </section>
+
+  <!-- ════════ PLATE XVI — WISHLIST · BROWSE ════════ -->
+  <section class="plate" id="p16">
+    <div class="phone">
+      <div class="status">
+        <span>9:41</span>
+        <span style="display:flex;gap:6px;align-items:center;color:var(--ink)">
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="14" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M23.5 4v4" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+      <div class="screen">
+        <div style="padding:16px 24px 8px">
+          <div class="kicker">Someday, Certainly</div>
+          <h2 class="h-display" style="font-size:32px;margin-top:8px">Wishlist</h2>
+          <div class="field" style="height:46px;margin-top:12px;border-radius:12px;padding:0 15px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B9AE9C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span class="ph" style="font-size:14.5px">Search your wishlist</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+            <span style="font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3)">12 pieces</span>
+            <div class="wfilters">
+              <a href="#p16">Brand<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+              <a href="#p16">Colour<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></a>
+              <a href="#p16">Sort · Recent</a>
+            </div>
+          </div>
+        </div>
+        <div style="padding:0 24px 14px">
+          <div class="chiprow">
+            <span class="chip on">All</span><span class="chip">Bags</span><span class="chip">Jewellery</span><span class="chip">Watches</span><span class="chip">Shoes</span><span class="chip">Accessories</span>
+          </div>
+        </div>
+        <div class="scrollpad">
+          <div class="pgrid">
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&q=80&auto=format&fit=crop" alt="Hermès Kelly 25 in Epsom leather"></div>
+              <div class="body">
+                <div class="brand">Hermès</div>
+                <div class="model">Kelly 25 · Sellier · <span class="price" style="font-size:11px">$19,400</span></div>
+                <div class="prog" style="margin-bottom:7px"><i style="width:65%"></i></div>
+                <div class="rowx"><span class="badge goldb">Saving 65%</span><a class="wact" href="#p16"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7M7.5 8a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>Hint</a></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80&auto=format&fit=crop" alt="Cartier Ballon Bleu wristwatch"></div>
+              <div class="body">
+                <div class="brand">Cartier</div>
+                <div class="model">Ballon Bleu 36 · <span class="price" style="font-size:11px;color:var(--gold-deep)">$9,850</span> <s style="color:var(--ink3);font-size:10px">$10,700</s></div>
+                <div class="rowx"><span class="badge goldb">Price down 8%</span><a class="wact" href="#p16"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7M7.5 8a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>Hint</a></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80&auto=format&fit=crop" alt="Bulgari Serpenti diamond ring"></div>
+              <div class="body">
+                <div class="brand">Bulgari</div>
+                <div class="model">Serpenti Ring · Rose Gold · <span class="price" style="font-size:11px">$3,750</span></div>
+                <div class="prog" style="margin-bottom:7px"><i style="width:32%"></i></div>
+                <div class="rowx"><span class="badge goldb">Saving 32%</span><a class="wact" href="#p16"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7M7.5 8a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>Hint</a></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=800&q=80&auto=format&fit=crop" alt="Christian Louboutin Pigalle pumps"></div>
+              <div class="body">
+                <div class="brand">Louboutin</div>
+                <div class="model">Pigalle 100 · Patent · <span class="price" style="font-size:11px">$795</span></div>
+                <div class="rowx"><span class="badge avail"><span class="dot"></span>New</span><a class="wact" href="#p16"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7M7.5 8a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>Hint</a></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1591348278863-a8fb3887e2aa?w=800&q=80&auto=format&fit=crop" alt="Hermès Carré 90 silk scarf"></div>
+              <div class="body">
+                <div class="brand">Hermès</div>
+                <div class="model">Carré 90 · Silk Twill · <span class="price" style="font-size:11px">$585</span></div>
+                <div class="rowx"><span class="badge goldb">Hint sent</span><a class="wact" href="#p16"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7M7.5 8a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>Resend</a></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&q=80&auto=format&fit=crop" alt="Chanel Classic Flap bag"></div>
+              <div class="body">
+                <div class="brand">Chanel</div>
+                <div class="model">Classic Flap · Caviar · <span class="price" style="font-size:11px">$8,200</span></div>
+                <div class="prog" style="margin-bottom:7px"><i style="width:45%"></i></div>
+                <div class="rowx"><span class="badge goldb">Group gift 45%</span><a class="wact" href="#p16">Pledge</a></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=800&q=80&auto=format&fit=crop" alt="Steel sports watch on dark ground"></div>
+              <div class="body">
+                <div class="brand">Patek Philippe</div>
+                <div class="model">Nautilus 7118 · Steel · <span class="price" style="font-size:11px">$38,500</span></div>
+                <div class="prog" style="margin-bottom:7px"><i style="width:12%"></i></div>
+                <div class="rowx"><span class="badge goldb">Saving 12%</span><a class="wact" href="#p16"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7M7.5 8a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>Hint</a></div>
+              </div>
+            </div>
+            <div class="pcard">
+              <div class="imgwrap"><img onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22800%22%20height=%221000%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22g%22%20x1=%220%22%20y1=%220%22%20x2=%221%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23F3EDE3%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23E3D9C8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%221000%22%20fill=%22url(%23g)%22/%3E%3C/svg%3E'" src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80&auto=format&fit=crop" alt="Van Cleef Alhambra jewellery"></div>
+              <div class="body">
+                <div class="brand">Van Cleef</div>
+                <div class="model">Alhambra Bracelet · <span class="price" style="font-size:11px;color:var(--gold-deep)">$4,150</span> <s style="color:var(--ink3);font-size:10px">$4,350</s></div>
+                <div class="rowx"><span class="badge goldb">Price down 5%</span><a class="wact" href="#p16"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7M7.5 8a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 1 1 0 5"/></svg>Hint</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="tab on">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>
+            Collection
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 8L9 4l-3 8H2"/></svg>
+            Activity
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10.5" stroke="rgba(201,169,97,.55)" stroke-width="1" fill="none"/><path d="M12 7.75v8.5M7.75 12h8.5"/></svg>
+            Add
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Circle
+          </div>
+          <div class="tab">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">
+      <div class="pl-no">Plate XVI · Application</div>
+      <h3>Wishlist — Browse</h3>
+      <p>From checklist to boutique: search, category chips and brand / colour / sort filters over an <b>image-forward grid</b>. Savings bars, price alerts, hints and group-gift pledges ride along as quiet badges — prices live here and on the owner's item detail only.</p>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer class="colophon">
+  <span><b>Trésor</b> · Full application mockup v4 · Warm Atelier · Sixteen plates</span>
+  <span>Playfair Display &amp; Jost · Gold #C9A961 · Frames 390 × 844</span>
+  <span>Muaath · research: design-inspiration-v3.md · mark: the Provenance Seal</span>
+</footer>
+
+</body>
+</html>

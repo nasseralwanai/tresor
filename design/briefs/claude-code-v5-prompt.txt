@@ -1,0 +1,68 @@
+You are updating a luxury app mockup HTML file. The project is at the current working directory.
+
+TASK: Create design/full-app-mockup-v5.html from design/full-app-mockup-v4.html with THREE fixes. Read design/full-app-mockup-v4.html first to understand the full file. Also read design/logo-vault-arch-v8.html for the logo SVG reference.
+
+FIX 1 — WISHLIST NAVIGATION:
+The bottom tab bar currently has 5 tabs: Collection, Activity, Add, Circle, Profile. Replace "Profile" with "Wishlist" in ALL tab bar instances (there are 6 instances in the file). Use this icon for the Wishlist tab:
+<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+On the Wishlist plate (Plate XVI), mark Wishlist as the active tab instead of Collection. Profile remains accessible via the avatar in the Collection header. Update the tab label text to "Wishlist".
+
+FIX 2 — IMAGE QUALITY:
+Replace ALL image src URLs. Current images use w=800 and q=80 (low quality). Replace every Unsplash URL:
+- Change the query parameters from w=800 and q=80 to w=1200 and q=85
+- Keep the same photo IDs (they already return HTTP 200 and are relevant)
+- Do NOT use WebSearch or WebFetch — just update the URL parameters in place
+- After writing the file, use Bash to run curl -sI on a few sample URLs to verify they still return HTTP 200 with the new parameters
+- Keep the onerror fallback SVG gradients exactly as they are
+
+FIX 3 — LOGO: Replace the "Provenance Seal" SVG symbol with "The Ironwork" (Door Cut 2 from logo-vault-arch-v8.html).
+
+In the SVG defs block at the top of the body, replace the existing mark-provenance-seal symbol with these two new symbols:
+
+<symbol id="mark-ironwork" viewBox="0 0 100 100">
+  <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M28 88 L28 46 A22 22 0 0 1 72 46 L72 88" fill="url(#grad-vermeil)" fill-opacity="0.15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M34 88 L34 46 A16 16 0 0 1 66 46 L66 88" fill="none" stroke="currentColor" stroke-width="0.75" opacity="0.45"/>
+  <line x1="50" y1="24" x2="50" y2="88" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+  <line x1="16" y1="88" x2="84" y2="88" stroke="var(--ironwork-sill, #E8D5A3)" stroke-width="1.75" stroke-linecap="round"/>
+</symbol>
+
+<symbol id="mark-ironwork-sm" viewBox="0 0 100 100">
+  <path d="M22 88 L22 46 A28 28 0 0 1 78 46 L78 88" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M28 88 L28 46 A22 22 0 0 1 72 46 L72 88" fill="url(#grad-vermeil)" fill-opacity="0.18" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="14" y1="88" x2="86" y2="88" stroke="var(--ironwork-sill, #E8D5A3)" stroke-width="2.25" stroke-linecap="round"/>
+</symbol>
+
+Make sure the grad-vermeil linearGradient definition is present in the file (it should already exist — if not, add it):
+<linearGradient id="grad-vermeil" x1="0%" y1="0%" x2="100%" y2="100%">
+  <stop offset="0%" stop-color="#E8D5A3"/>
+  <stop offset="42%" stop-color="#C9A961"/>
+  <stop offset="100%" stop-color="#9A7E4A"/>
+</linearGradient>
+
+Replace ALL uses of href="#mark-provenance-seal" with href="#mark-ironwork". The logo appears on:
+- Welcome screen (Plate I): gold on charcoal, 48px — use style="color:#C9A961" (the --ironwork-sill defaults to #E8D5A3 which is correct for dark)
+- Collection header (Plate IX): ink on cream, 28px — use style="color:#1A1715;--ironwork-sill:#9A7E4A" (this makes the sill gold-deep on light backgrounds)
+- Any other place the seal appeared — use the appropriate color variant based on background
+
+Update aria-labels from "Trésor — the Provenance Seal" to "Trésor — The Ironwork".
+
+CONSTRAINTS:
+- NO emoji anywhere in the file
+- NO people in any image
+- Keep ALL v4 improvements: pricing privacy (prices only on item detail and wishlist), taste labels on circle members, offline record-a-borrow, circle redesign, alignment
+- Keep all 16 plates
+- Keep the gallery presentation format (catalogue plates, captions, platenav)
+- Keep the Warm Atelier design system (colors, typography, spacing)
+- Output must be valid HTML
+- Write the final file to design/full-app-mockup-v5.html
+- Work efficiently — read the v4 file once, make all changes, write v5 once
+
+After writing the file, run these verification commands:
+1. echo "ironwork count:" && grep -c "mark-ironwork" design/full-app-mockup-v5.html
+2. echo "old seal count (should be 0):" && grep -c "mark-provenance-seal" design/full-app-mockup-v5.html
+3. echo "wishlist count:" && grep -c "Wishlist" design/full-app-mockup-v5.html
+4. echo "w=1200 count:" && grep -c "w=1200" design/full-app-mockup-v5.html
+5. echo "w=800 count (should be 0):" && grep -c "w=800" design/full-app-mockup-v5.html
+6. echo "file size:" && wc -c design/full-app-mockup-v5.html
+7. curl -sI "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=1200&q=85&auto=format&fit=crop" | head -1

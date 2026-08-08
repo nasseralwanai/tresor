@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import { Platform, View, Text, StyleSheet, ColorValue } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
+import { IronworkMark } from '@/components/IronworkMark';
 
 type TabIconProps = { focused: boolean; color: ColorValue; size: number };
 
@@ -54,6 +55,11 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'My Trésor',
+          headerLeft: () => (
+            <View style={{ marginLeft: spacing.md }}>
+              <IronworkMark size={26} variant="ink-on-light" />
+            </View>
+          ),
           tabBarIcon: (props: TabIconProps) => <TabIcon name="treasure-chest" color={props.color} />,
         }}
       />

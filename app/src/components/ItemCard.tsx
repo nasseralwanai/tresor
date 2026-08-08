@@ -1,6 +1,9 @@
 /**
  * ItemCard — featured carousel card (large) for the home screen.
- * Shows brand letter placeholder, brand name, model, value, and status badge.
+ * Shows brand letter placeholder, brand name, model, and status badge.
+ *
+ * PRICING PRIVACY: No price is shown on item cards (migration 0016).
+ * Prices are only visible on the item detail screen to owners/co-owners.
  */
 
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
@@ -55,18 +58,9 @@ export function ItemCard({ item, onPress }: ItemCardProps) {
         <Text style={[styles.model, { color: colors.textPrimary }]} numberOfLines={1}>
           {item.model_name || '—'}
         </Text>
-        <Text style={[styles.price, { color: colors.textSecondary }]}>
-          {formatValue(item.estimated_value, item.currency)}
-        </Text>
       </View>
     </TouchableOpacity>
   );
-}
-
-function formatValue(value: number | null, currency: string): string {
-  if (value == null) return '—';
-  const symbol = currency === 'AED' ? 'AED ' : `${currency} `;
-  return `${symbol}${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 }
 
 const styles = StyleSheet.create({
@@ -117,10 +111,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     lineHeight: 18,
-  },
-  price: {
-    ...typography.caption1,
-    fontSize: 11,
-    marginTop: 2,
   },
 });

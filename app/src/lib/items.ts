@@ -26,7 +26,7 @@ export type ItemWithPhotos = ItemUI & { item_photos?: ItemPhoto[] };
  */
 export async function getItems(circleId: string): Promise<ItemUI[]> {
   const { data, error } = await supabase
-    .from('items')
+    .from('items_visible')
     .select('*, profiles!items_owner_id_fkey(display_name)')
     .eq('circle_id', circleId)
     .order('created_at', { ascending: false })
@@ -44,7 +44,7 @@ export async function getItems(circleId: string): Promise<ItemUI[]> {
  */
 export async function getItem(id: string): Promise<ItemWithPhotos | null> {
   const { data, error } = await supabase
-    .from('items')
+    .from('items_visible')
     .select('*, item_photos(*), profiles!items_owner_id_fkey(display_name)')
     .eq('id', id)
     .maybeSingle();
@@ -100,7 +100,7 @@ export async function deleteItem(id: string): Promise<void> {
  */
 export async function getMyItems(userId: string): Promise<ItemUI[]> {
   const { data, error } = await supabase
-    .from('items')
+    .from('items_visible')
     .select('*, profiles!items_owner_id_fkey(display_name)')
     .eq('owner_id', userId)
     .order('created_at', { ascending: false })
@@ -121,7 +121,7 @@ export async function getUserItems(
   onlyLendable = false
 ): Promise<ItemUI[]> {
   let query = supabase
-    .from('items')
+    .from('items_visible')
     .select('*, profiles!items_owner_id_fkey(display_name)')
     .eq('owner_id', userId)
     .order('created_at', { ascending: false })

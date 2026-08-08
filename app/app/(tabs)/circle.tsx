@@ -1,10 +1,15 @@
 /**
- * Circle Screen - member list with avatars, item counts.
- * Tap a member to see their items in a grid.
- * Filter toggle: "Only show lendable"
+ * Circle Screen — member cards with taste labels (Plate XIII).
+ *
+ * Changes from v4:
+ * - Member cards show taste labels instead of "N items"
+ * - NO monetary values anywhere (pricing privacy)
+ * - Non-financial stats: Pieces, Members, On loan
+ * - Collection highlight image per member
+ * - Logo in header (Ironwork mark)
  */
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, FlatList,
   ActivityIndicator, RefreshControl, Alert,
@@ -15,11 +20,11 @@ import { useThemeColors, typography, spacing, radius } from "@/theme";
 import { Card } from "@/components/Card";
 import { Avatar } from "@/components/Avatar";
 import { ItemPhotoPlaceholder } from "@/components/ItemPhotoPlaceholder";
+import { IronworkMark } from "@/components/IronworkMark";
 import { Skeleton } from "@/components/Skeleton";
 import { hapticLight } from "@/lib/haptics";
 import { getCircleMembers, getMyCircle } from "@/lib/circle";
 import { getUserItems } from "@/lib/items";
-import { formatCurrencyCompact, capitalize } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
 import type { CircleMemberWithItems } from "@/lib/circle";
 import type { Item } from "@/types/items";
@@ -32,6 +37,7 @@ export default function CircleScreen() {
   const colors = useThemeColors();
   const { user } = useAuth();
   const [members, setMembers] = useState<CircleMemberWithItems[]>([]);
+  const [circleInfo, setCircleInfo] = useState<{ id: string; name: string } | null>(null);
   const [selectedMember, setSelectedMember] = useState<CircleMemberWithItems | null>(null);
   const [memberItems, setMemberItems] = useState<Item[]>([]);
   const [onlyLendable, setOnlyLendable] = useState(false);
@@ -45,8 +51,12 @@ export default function CircleScreen() {
     if (!user?.id) { setLoading(false); return; }
     try {
       setError(null);
-      const data = await getCircleMembers(user.id);
+      const [data, circle] = await Promise.all([
+        getCircleMembers(user.id),
+        getMyCircle(user.id),
+      ]);
       setMembers(data);
+      setCircleInfo(circle);
     } catch (e: unknown) {
       console.error('[circle] loadMembers error:', e);
       setError(classifyError(e));
@@ -104,22 +114,17 @@ export default function CircleScreen() {
     }
   }, [selectedMember, onlyLendable]);
 
-  const displayItems = useMemo(() => {
-    let result = memberItems;
-    if (onlyLendable) {
-      result = result.filter((i) => i.is_lendable && !i.is_private);
-    }
+  const displayItems = memberItems.filter((i) => {
+    if (onlyLendable && (!i.is_lendable || i.is_private)) return false;
     const q = searchQuery.trim().toLowerCase();
     if (q) {
-      result = result.filter((i) => {
-        const brand = (i.brand ?? "").toLowerCase();
-        const model = (i.model_name ?? "").toLowerCase();
-        const category = (i.category ?? "").toLowerCase();
-        return brand.includes(q) || model.includes(q) || category.includes(q);
-      });
+      const brand = (i.brand ?? "").toLowerCase();
+      const model = (i.model_name ?? "").toLowerCase();
+      const category = (i.category ?? "").toLowerCase();
+      if (!brand.includes(q) && !model.includes(q) && !category.includes(q)) return false;
     }
-    return result;
-  }, [memberItems, onlyLendable, searchQuery]);
+    return true;
+  });
 
   const handleItemPress = (item: Item) => { router.push(`/item/${item.id}` as any); };
 
@@ -146,7 +151,10 @@ export default function CircleScreen() {
               <Avatar name={selectedMember.display_name ?? 'Unknown'} size="lg" />
               <View style={{ flex: 1, marginLeft: spacing.md }}>
                 <Text style={[styles.memberName, { color: colors.textPrimary }]}>{selectedMember.display_name ?? 'Unknown'}</Text>
-                <Text style={[styles.memberCount, { color: colors.textSecondary }]}>{selectedMember.item_count} items in collection</Text>
+                {selectedMember.taste_label && (
+                  <Text style={[styles.memberTaste, { color: colors.accent }]}>{selectedMember.taste_label}</Text>
+                )}
+                <Text style={[styles.memberCount, { color: colors.textSecondary }]}>{selectedMember.item_count} pieces</Text>
               </View>
             </View>
             <View style={styles.searchWrap}>
@@ -175,7 +183,6 @@ export default function CircleScreen() {
                   <View style={styles.gridInfo}>
                     <Text style={[styles.gridBrand, { color: colors.accent }]} numberOfLines={1}>{item.brand.toUpperCase()}</Text>
                     <Text style={[styles.gridModel, { color: colors.textPrimary }]} numberOfLines={1}>{item.model_name || "—"}</Text>
-                    <Text style={[styles.gridPrice, { color: colors.textSecondary }]}>{formatCurrencyCompact(item.estimated_value, item.currency)}</Text>
                   </View>
                 </TouchableOpacity>
               )} />
@@ -192,6 +199,14 @@ export default function CircleScreen() {
       <Stack.Screen options={{ title: "Circle" }} />
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}>
+          {/* Circle header with logo */}
+          {circleInfo && (
+            <View style={styles.circleHeader}>
+              <IronworkMark size={32} variant="ink-on-light" style={styles.headerLogo} />
+              <Text style={[styles.circleName, { color: colors.textPrimary }]}>{circleInfo.name}</Text>
+              <Text style={[styles.circleMeta, { color: colors.textSecondary }]}>By invitation</Text>
+            </View>
+          )}
           {members.length === 0 ? (
             <EmptyState icon="account-group-outline" title="Your Circle Is Empty" subtitle="Invite friends to start sharing your collections" />
           ) : (
@@ -203,7 +218,11 @@ export default function CircleScreen() {
                       <Avatar name={member.display_name ?? 'Unknown'} size="md" />
                       <View style={{ flex: 1 }}>
                         <Text style={[styles.memberListName, { color: colors.textPrimary }]}>{member.display_name ?? 'Unknown'}</Text>
-                        <Text style={[styles.memberListCount, { color: colors.textSecondary }]}>{member.item_count} items</Text>
+                        {member.taste_label ? (
+                          <Text style={[styles.memberListTaste, { color: colors.accent }]}>{member.taste_label}</Text>
+                        ) : (
+                          <Text style={[styles.memberListCount, { color: colors.textSecondary }]}>{member.item_count} pieces</Text>
+                        )}
                       </View>
                       <MaterialCommunityIcons name="chevron-right" size={22} color={colors.textSecondary} />
                     </View>
@@ -221,21 +240,25 @@ export default function CircleScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  circleHeader: { alignItems: "center", paddingTop: spacing.lg, paddingBottom: spacing.md, gap: 4 },
+  headerLogo: { marginBottom: 4 },
+  circleName: { ...typography.title2, fontSize: 22, textAlign: "center" },
+  circleMeta: { ...typography.caption2, fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase" },
   listWrap: { paddingHorizontal: spacing.lg + 6, paddingTop: spacing.md, gap: spacing.sm },
   memberCard: { padding: spacing.md },
   memberListName: { ...typography.bodyEmphasized, fontSize: 16 },
+  memberListTaste: { ...typography.caption1, fontSize: 12, marginTop: 2, fontStyle: "italic" },
   memberListCount: { ...typography.caption1, marginTop: 2 },
   memberHeader: { flexDirection: "row", alignItems: "center", paddingHorizontal: spacing.lg + 6, paddingTop: spacing.sm, paddingBottom: spacing.md, gap: spacing.md },
   backBtn: { width: 44, height: 44, alignItems: "center", justifyContent: "center", marginLeft: -spacing.sm },
   memberName: { ...typography.title3, fontSize: 18 },
+  memberTaste: { ...typography.caption1, fontSize: 13, fontStyle: "italic", marginTop: 2 },
   memberCount: { ...typography.caption1, marginTop: 2 },
   filterToggle: { flexDirection: "row", alignItems: "center", gap: spacing.sm, paddingHorizontal: spacing.md, paddingVertical: 10, borderRadius: radius.pill, borderWidth: 0.5, marginHorizontal: spacing.lg + 6, marginBottom: spacing.md, alignSelf: "flex-start" },
   searchWrap: { paddingHorizontal: spacing.lg + 6, marginBottom: spacing.md },
   filterText: { ...typography.footnote, fontSize: 13 },
   grid: { paddingHorizontal: spacing.lg + 6, gap: 10 },
   gridLoading: { paddingVertical: spacing.xl, alignItems: "center" },
-  emptyGrid: { paddingVertical: spacing.xxl, alignItems: "center", gap: spacing.md },
-  emptyGridText: { ...typography.body },
   gridCard: { flex: 1 / 2, borderRadius: radius.lg, borderWidth: 0.5, overflow: "hidden", maxWidth: "50%" },
   gridPhoto: { width: "100%", height: 150, borderRadius: 0 },
   gridBadgeRow: { position: "absolute", top: 8, left: 8, right: 8, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
@@ -245,6 +268,5 @@ const styles = StyleSheet.create({
   gridInfo: { padding: spacing.md - 2, gap: 1 },
   gridBrand: { ...typography.caption2, fontSize: 9, fontWeight: "500", letterSpacing: 1.2 },
   gridModel: { ...typography.body, fontSize: 14, fontWeight: "500", lineHeight: 18 },
-  gridPrice: { ...typography.caption1, fontSize: 11, marginTop: 2 },
   skeletonCard: { padding: spacing.md },
 });

@@ -3,7 +3,7 @@
 **Author:** Muaath (Designer)
 **Date:** August 8, 2026
 **Status:** Proposed — for Nasser's review
-**Companion file:** `design/full-app-mockup-v2.html` (all 12 screens, live imagery)
+**Companion files:** `design/full-app-mockup-v3.html` (all 15 screens, live imagery) · `design/logo-concepts.html` (mark exploration A · B · C)
 
 ---
 
@@ -69,6 +69,106 @@ right shoulder (where the É would carry it):
 
 - Clearspace: the height of the R on all sides.
 - Minimum width: 96px for the wordmark; below that, use the monogram.
+
+### 1.5 Logo Mark — The Provenance Seal
+
+The identity is a **three-part system with defined roles**: the *wordmark* (§1.1) for
+headers and the welcome moment, the *monogram* (§1.2) for the app icon and avatars, and
+the **Provenance Seal** — Concept C of the exploration in `design/logo-concepts.html` —
+for ceremonial moments: ledger stamps, borrow certificates, photography watermarks,
+printed circle invitations, and the brand mark inside the product itself.
+
+**Why Concept C won.** Three marks were proofed in both mandatory colorways:
+
+- **Concept A — The Vault Arch:** a single unbroken line drawing the doorway of a
+  private vault. Quiet and architectural, but a spatial idea, not a personal one — it
+  says *where*, never *whose* — and arches are common currency in boutique-hotel
+  identities. Rejected: it would introduce a second primary symbol the system never
+  asked for.
+- **Concept B — The Ledger Monogram:** T and E interlocked on one shared crossbar.
+  The ruled-line construction genuinely encodes the ledger idea, but it competes with
+  the existing italic-T monogram for the same jobs (app icon, avatar) rather than
+  adding a new register. Rejected for redundancy.
+- **Concept C — The Provenance Seal (chosen):** extends the identity instead of
+  replacing it. It takes the monogram we already own and gives it a ceremonial frame —
+  a stamp, not a badge. It matches the wax-seal role circular marks play across current
+  luxury identity systems (see §8, Behance luxury-identity canon) and makes the
+  "Provenance Ledger" idea literally visible.
+
+**Construction**
+
+- A **double hairline ring** (outer ring r=46, inner ring r=32 on a 100-unit grid, both
+  0.75-unit strokes; the inner ring at 70% opacity).
+- A **letterspaced circumscription** running the channel between the rings, set in Jost
+  500 small caps: `TRÉSOR · LE CERCLE · PROVENANCE`.
+- The existing **italic-T monogram** (Playfair Display Italic 500) at center, with its
+  **accent aigu floating above the right shoulder — always gold**, never ink.
+
+**Color variants**
+
+| Ground | Rings + T + circumscription | Accent aigu |
+|---|---|---|
+| Dark `#1a1715` | Gold `#C9A961` | Gold-bright `#E8D5A3` |
+| Light `#FAF7F2` | Ink/charcoal `#1a1715` | Gold-deep `#9A7E4A` |
+
+The aigu is **always gold** in every variant (bright on dark, deep on light per the
+small-gold-on-light contrast rule in §2.1). The seal is never filled, never gradiented,
+never boxed — hairlines only, at the same whisper volume as the ledger rules.
+
+**Clearspace & minimum size**
+
+- Clearspace: **the height of the seal's diameter on all sides** — the seal is
+  ceremonial and must never crowd or be crowded.
+- Minimum size: **64px** for the full seal with circumscription. Below 64px the
+  circumscription becomes illegible: **retire the rings and fall back to the bare
+  italic-T monogram** (§1.2), which holds down to **24px**. No new asset is needed at
+  favicon scale.
+
+**Where it appears**
+
+| Placement | Size | Variant |
+|---|---|---|
+| Welcome screen (above the wordmark) | 48px* | Gold on dark |
+| App header (Collection screen, beside the circle kicker) | 28px* | Ink on light |
+| Loading screen | 96px | Gold on dark, slow fade |
+| Favicon / app icon | 24px+ | Bare monogram fallback |
+| Ledger stamps, borrow certificates, watermarks | ≥64px | Ground-appropriate |
+
+\* The two in-app placements sit below the 64px threshold, so in the mockup they render
+the seal at reduced size as a *brand gesture* in a controlled, high-DPI context; in
+production these placements use the bare monogram fallback or a simplified seal without
+circumscription — never illegible micro-text.
+
+**Inline SVG (the canonical mark)**
+
+```svg
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="mark-provenance-seal" viewBox="0 0 100 100">
+      <defs>
+        <path id="seal-arc" d="M50 50 m -39.5 0 a 39.5 39.5 0 1 1 79 0 a 39.5 39.5 0 1 1 -79 0"/>
+      </defs>
+      <!-- hairline double ring -->
+      <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="0.75"/>
+      <circle cx="50" cy="50" r="32" fill="none" stroke="currentColor" stroke-width="0.75" opacity="0.7"/>
+      <!-- circumscription, letterspaced small caps -->
+      <text font-family="Jost, sans-serif" font-size="6.4" font-weight="500" letter-spacing="2.6" fill="currentColor">
+        <textPath href="#seal-arc" startOffset="0">TRÉSOR&#160;&#160;·&#160;&#160;LE CERCLE&#160;&#160;·&#160;&#160;PROVENANCE&#160;&#160;·&#160;&#160;</textPath>
+      </text>
+      <!-- emblem: the brand monogram — italic T with its floating aigu -->
+      <text x="47" y="61" text-anchor="middle" font-family="'Playfair Display', serif"
+            font-style="italic" font-weight="500" font-size="34" fill="currentColor">T</text>
+      <line x1="56" y1="36" x2="61" y2="30"
+            stroke="var(--aigu,#E8D5A3)" stroke-width="1.75" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- Usage: main strokes ride on currentColor; the aigu on --aigu -->
+<svg width="48" height="48" viewBox="0 0 100 100"
+     style="color:#C9A961;--aigu:#E8D5A3" role="img"
+     aria-label="Trésor — the Provenance Seal"><use href="#mark-provenance-seal"/></svg>
+```
 
 ---
 
@@ -307,3 +407,78 @@ canon for implementation:
 - French only where it belongs to the brand's structure (*La Collection*, *Le Cercle*,
   *Nº*) — never in actions, errors, or body copy.
 - Errors are concierge-calm: "That code didn't match. A new one is on its way."
+- Spelling is British throughout in-app copy — *catalogue, jewellery, organise,
+  centre* — matching the UAE market and the house's editorial register.
+
+---
+
+## 8. Design References
+
+The v3 design decisions are grounded in the research file
+`design/research/design-inspiration-v3.md` (Dribbble, Mobbin, Behance — August 2026).
+The references below are the ones that directly shaped what shipped in
+`design/full-app-mockup-v3.html`.
+
+### 8.1 Ounass — Onboarding Luxury Experience (Dribbble, Manuj G)
+**URL:** https://dribbble.com/shots/10881486-Onboarding-Luxury-Experience-for-Ounass
+**Influence:** Our closest regional comp (Al Tayer's luxury house, Dubai). Validated
+the "each screen is a complete calm room" rule — no progress bars anywhere in
+onboarding (§6.6) — and the one-Playfair-line value statement on the welcome plate
+instead of a wordy carousel. When we did add three arrival plates in v3, each was
+kept skippable, single-statement, and self-contained rather than a forced tour.
+
+### 8.2 Luxury Car App — Onboarding & Login (Dribbble, Sk Nahid Hasan)
+**URL:** https://dribbble.com/shots/25443745-Luxury-Car-App-Onboarding-Login-Pages
+**Influence:** The template for all four dark arrival plates (Welcome, What Is Trésor,
+What You Can Do, Who It Is For): full-bleed hero photography under a charcoal scrim,
+minimal editorial copy, controls floated in the bottom third — and the deliberate
+"vault → atelier" transition from dark photographic onboarding into quiet cream forms.
+
+### 8.3 UNXD — Digital Luxury & Culture Marketplace (Dribbble, Exo Ape)
+**URL:** https://dribbble.com/shots/16629248-UNXD-Digital-Luxury-and-Culture-NFT-Marketplace
+**Influence:** The strongest conceptual comp for the Provenance Ledger. UNXD proves
+"ownership + authenticity + history" can be an entire visual identity: dark ground,
+hairline rules, serial numbering, certificate-like layouts. It underwrites our `Nº 007`
+serial device, the borrow-history-as-provenance timeline, and ultimately the
+circumscribed Provenance Seal itself. We stole the confidence, not the crypto.
+
+### 8.4 POSHHAUS — Luxury Bag Marketplace (Dribbble, Odama)
+**URL:** https://dribbble.com/shots/21416191-POSHHAUS-Luxury-Bag-Marketplace-Website
+**Influence:** "Curated collection" framing — large portrait product imagery with tiny
+meta text instead of dense commerce grids. Reinforced our 4:5 portrait item card
+(brand in Playfair, spec line in light Jost) and pushed us from curation language
+("handpicked") to provenance language ("carried by Layla, March 2026").
+
+### 8.5 Mobbin — Tab Bar Element Gallery & Glossary
+**URLs:** https://mobbin.com/explore/mobile/ui-elements/tab-bar ·
+https://mobbin.com/glossary/tab-bar
+**Influence:** Mobbin's study of 3,200+ real tab bars set the rules for our navigation:
+five destinations maximum, labels retained (small-caps 9px — "Circle" is not a
+universally understood glyph), active state as a colour shift on a line icon rather
+than a filled glyph. This is also what justified **demoting the Add action** from a
+raised gold orb to a standard centred tab (position 3 of 5) with a hairline gold ring
+— restrained where a floating action button reads consumer.
+
+### 8.6 Mobbin — Shop / Storefront Screen Patterns
+**URL:** https://mobbin.com/explore/mobile/screens/shop-storefront
+**Influence:** The Net-a-Porter / SSENSE-class storefronts in Mobbin's 400k-screen
+gallery share edge-to-edge imagery, editorial modules over inventory grids, and top
+navigation held to a wordmark plus at most two glyphs. Our Collection header (seal +
+circle kicker + Playfair title + avatar, nothing else) and the two-up editorial grid
+follow this pattern directly.
+
+### 8.7 Behance — Luxury Brand Identity Canon (AURELIA, NOARÉ, AUREXIA, HOOMIA)
+**URL:** https://www.behance.net/search/projects/luxury%20brand%20identity
+**Influence:** The consistent vocabulary across the top luxury identity projects —
+high-contrast serif wordmarks with wide tracking, exactly one metallic accent against
+cream/charcoal, hairline geometric emblems rather than filled marks, and a
+**wordmark + monogram + seal three-part logo system** where the seal serves stamps and
+packaging — is precisely the system Trésor adopted. The Provenance Seal (§1.5) is our
+seal register in that canon: hairline, circumscribed, ceremonial.
+
+### 8.8 Behance — "Vault" eCommerce App Case Study (fashion app UI family)
+**URL:** https://www.behance.net/search/projects/fashion%20app%20ui
+**Influence:** The strongest fashion-app case studies reserve one moment per screen
+for pure photography rather than filling every screen with cards. Our item detail hero
+— full-bleed image dissolving into cream with no box around it — is that one
+"pure photography" moment, kept sacred on every screen that carries an image.

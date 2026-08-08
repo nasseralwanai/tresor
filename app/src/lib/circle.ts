@@ -7,9 +7,10 @@
 import { supabase } from '@/lib/supabase';
 import type { CircleMemberPreview } from '@/types';
 
-/** A circle member with their item count (for UI display). */
+/** A circle member with their item count and taste label (for UI display). */
 export interface CircleMemberWithItems extends CircleMemberPreview {
   item_count: number;
+  taste_label: string | null;
 }
 
 /** Fetch the current user's circle info. */
@@ -44,11 +45,11 @@ export async function getCircleMembers(userId: string): Promise<CircleMemberWith
   if (memberError) throw memberError;
   if (!membership) return [];
 
-  // 2. Get all members of this circle with their profiles
+  // 2. Get all members of this circle with their profiles (including taste labels)
   const { data: members, error: membersError } = await supabase
     .from('circle_members')
     .select(
-      'user_id, profiles!circle_members_user_id_fkey(id, display_name, avatar_url)'
+      'user_id, profiles!circle_members_user_id_fkey(id, display_name, avatar_url, taste_label)'
     )
     .eq('circle_id', membership.circle_id)
     .limit(50);
@@ -57,8 +58,9 @@ export async function getCircleMembers(userId: string): Promise<CircleMemberWith
 
   // 3. Fetch all non-private items in this circle in a single query,
   //    then count per-member client-side (avoids N+1 queries).
+  //    Uses items_visible view (pricing privacy — migration 0016).
   const { data: itemRows, error: itemError } = await supabase
-    .from('items')
+    .from('items_visible')
     .select('owner_id, id')
     .eq('circle_id', membership.circle_id)
     .eq('is_private', false)
@@ -82,6 +84,7 @@ export async function getCircleMembers(userId: string): Promise<CircleMemberWith
       display_name: profile.display_name ?? 'Unknown',
       avatar_url: profile.avatar_url,
       item_count: countByOwner.get(profile.id) ?? 0,
+      taste_label: profile.taste_label ?? null,
     });
   }
 

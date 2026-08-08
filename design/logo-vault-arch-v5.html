@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trésor — Vault Arch V5 · The Moderate Middle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #141110;
+    --plate: #1A1715;
+    --cream: #FAF7F2;
+    --ink: #1A1715;
+    --gold: #C9A961;
+    --gold-bright: #E8D5A3;
+    --gold-deep: #9A7E4A;
+    --text: #E8E2D8;
+    --text-dim: #A89F92;
+    --text-faint: #8A8074;
+    --hairline: rgba(201, 169, 97, 0.16);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--page);
+    color: var(--text);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 40;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .sheet {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 88px 40px 72px;
+  }
+
+  /* ---------- Masthead ---------- */
+
+  .kicker {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: clamp(28px, 4vw, 40px);
+    letter-spacing: 0.01em;
+    margin: 18px 0 22px;
+    color: var(--text);
+  }
+
+  h1 .sep { color: var(--gold-deep); }
+
+  .lede {
+    max-width: 60ch;
+    font-size: 16px;
+    color: var(--text-dim);
+  }
+
+  .lede em {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+  }
+
+  .masthead {
+    padding-bottom: 52px;
+    border-bottom: 1px solid var(--hairline);
+    margin-bottom: 64px;
+  }
+
+  /* ---------- Plates ---------- */
+
+  .plate {
+    background: var(--plate);
+    border: 1px solid var(--hairline);
+    padding: 52px 56px 44px;
+    margin-bottom: 56px;
+  }
+
+  .plate-head {
+    display: flex;
+    align-items: baseline;
+    gap: 22px;
+    margin-bottom: 10px;
+  }
+
+  .plate-no {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--gold-deep);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  .plate-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 26px;
+    color: var(--text);
+  }
+
+  .plate-concept {
+    max-width: 66ch;
+    font-size: 14.5px;
+    color: var(--text-dim);
+    margin-bottom: 40px;
+  }
+
+  /* ---------- Proof grid ---------- */
+
+  .proofs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .proof { text-align: center; }
+
+  .tile {
+    height: 188px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--hairline);
+  }
+
+  .tile.dark  { background: #1A1715; }
+  .tile.light { background: var(--cream); border-color: rgba(26, 23, 21, 0.12); }
+
+  .tile.dark {
+    --line: var(--gold);
+    --joint: var(--gold);
+    --key: var(--gold-bright);
+  }
+
+  .tile.light {
+    --line: var(--ink);
+    --joint: var(--ink);
+    --key: var(--gold-deep);
+  }
+
+  .proof figcaption {
+    margin-top: 12px;
+    font-size: 10.5px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  /* ---------- Wordmark row ---------- */
+
+  .wm-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  .wm {
+    height: 104px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--hairline);
+  }
+
+  .wm.dark  { background: #1A1715; }
+  .wm.light { background: var(--cream); border-color: rgba(26, 23, 21, 0.12); }
+
+  .wordmark {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 28px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    text-indent: 0.24em; /* optically re-centers the tracked text */
+  }
+
+  .wm.dark  .wordmark { color: var(--gold); }
+  .wm.light .wordmark { color: var(--ink); }
+
+  .ea { position: relative; }
+
+  .acc {
+    position: absolute;
+    top: -0.36em;
+    left: 0.16em;
+    font-size: 0.82em;
+    letter-spacing: 0;
+    line-height: 1;
+  }
+
+  .wm.dark  .acc { color: var(--gold-bright); }
+  .wm.light .acc { color: var(--gold-deep); }
+
+  /* ---------- Construction notes ---------- */
+
+  .notes {
+    border-top: 1px solid var(--hairline);
+    padding-top: 24px;
+  }
+
+  .notes-title {
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold-deep);
+    margin-bottom: 14px;
+  }
+
+  .notes ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 40px;
+  }
+
+  .notes li {
+    font-size: 13px;
+    color: var(--text-faint);
+    padding-left: 18px;
+    position: relative;
+  }
+
+  .notes li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--gold-deep);
+  }
+
+  /* ---------- Footer ---------- */
+
+  footer {
+    margin-top: 24px;
+    padding-top: 28px;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  /* ---------- Responsive ---------- */
+
+  @media (max-width: 860px) {
+    .sheet { padding: 64px 22px 48px; }
+    .plate { padding: 36px 26px 32px; }
+    .proofs { grid-template-columns: 1fr 1fr; }
+    .notes ul { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 520px) {
+    .wm-row { grid-template-columns: 1fr; }
+    .plate-head { flex-direction: column; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============================================================
+     Shared geometry. One drawing, three treatments.
+     Arch center (50,40) · outer r 20 · inner r 14 · crown y 20
+     Piers x 30 / 70 · base y 90 · seven voussoirs incl. keystone
+     ============================================================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="vermeil-dark" gradientUnits="userSpaceOnUse" x1="30" y1="20" x2="70" y2="90">
+      <stop offset="0"   stop-color="#E8D5A3"/>
+      <stop offset="0.5" stop-color="#C9A961"/>
+      <stop offset="1"   stop-color="#9A7E4A"/>
+    </linearGradient>
+    <linearGradient id="vermeil-light" gradientUnits="userSpaceOnUse" x1="30" y1="20" x2="70" y2="90">
+      <stop offset="0" stop-color="#C9A961"/>
+      <stop offset="1" stop-color="#9A7E4A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- V1 · The Arched Doorway · 128 px -->
+  <symbol id="v1-lg" viewBox="0 0 100 100">
+    <g style="fill:none;stroke:var(--line);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round">
+      <path d="M30,90 L30,40 A20,20 0 0,1 70,40 L70,90"/>
+      <path d="M25,90 L75,90"/>
+    </g>
+    <g style="fill:none;stroke:var(--joint);stroke-width:1.5;stroke-linecap:round">
+      <path d="M37.4,33.9 L32.0,31.3"/>
+      <path d="M41.3,29.1 L37.5,24.4"/>
+      <path d="M58.7,29.1 L62.5,24.4"/>
+      <path d="M62.6,33.9 L68.0,31.3"/>
+    </g>
+    <path d="M45.5,20.5 L54.5,20.5 L53.1,26.4 L46.9,26.4 Z" style="fill:var(--key)"/>
+  </symbol>
+
+  <!-- V1 · 32 px · heavier stroke, diamond keystone, outer joints only -->
+  <symbol id="v1-sm" viewBox="0 0 100 100">
+    <g style="fill:none;stroke:var(--line);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round">
+      <path d="M30,90 L30,40 A20,20 0 0,1 70,40 L70,90"/>
+      <path d="M25,90 L75,90"/>
+    </g>
+    <g style="fill:none;stroke:var(--joint);stroke-width:2.5;stroke-linecap:round">
+      <path d="M37.4,33.9 L32.0,31.3"/>
+      <path d="M62.6,33.9 L68.0,31.3"/>
+    </g>
+    <path d="M50,18.8 L53.8,23.4 L50,28 L46.2,23.4 Z" style="fill:var(--key)"/>
+  </symbol>
+
+  <!-- V2 · The Double Line · 128 px -->
+  <symbol id="v2-lg" viewBox="0 0 100 100">
+    <g style="fill:none;stroke:var(--line);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round">
+      <path d="M30,90 L30,40 A20,20 0 0,1 70,40 L70,90"/>
+      <path d="M25,90 L75,90"/>
+    </g>
+    <path d="M36,40 A14,14 0 0,1 64,40" style="fill:none;stroke:var(--line);stroke-width:1.5;stroke-linecap:round"/>
+    <g style="fill:none;stroke:var(--joint);stroke-width:1.5;stroke-linecap:round">
+      <path d="M37.4,33.9 L32.0,31.3"/>
+      <path d="M41.3,29.1 L37.5,24.4"/>
+      <path d="M58.7,29.1 L62.5,24.4"/>
+      <path d="M62.6,33.9 L68.0,31.3"/>
+    </g>
+    <path d="M45.5,20.5 L54.5,20.5 L53.1,26.4 L46.9,26.4 Z" style="fill:var(--key)"/>
+  </symbol>
+
+  <!-- V2 · 32 px -->
+  <symbol id="v2-sm" viewBox="0 0 100 100">
+    <g style="fill:none;stroke:var(--line);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round">
+      <path d="M30,90 L30,40 A20,20 0 0,1 70,40 L70,90"/>
+      <path d="M25,90 L75,90"/>
+    </g>
+    <path d="M36,40 A14,14 0 0,1 64,40" style="fill:none;stroke:var(--line);stroke-width:2.5;stroke-linecap:round"/>
+    <g style="fill:none;stroke:var(--joint);stroke-width:2.5;stroke-linecap:round">
+      <path d="M37.4,33.9 L32.0,31.3"/>
+      <path d="M62.6,33.9 L68.0,31.3"/>
+    </g>
+    <path d="M50,18.8 L53.8,23.4 L50,28 L46.2,23.4 Z" style="fill:var(--key)"/>
+  </symbol>
+
+  <!-- V3 · The Filled Arch · dark colorway · 128 px -->
+  <symbol id="v3-dark-lg" viewBox="0 0 100 100">
+    <g style="fill:url(#vermeil-dark)">
+      <path d="M30,40 A20,20 0 0,1 70,40 L64,40 A14,14 0 0,0 36,40 Z"/>
+      <path d="M30,40 L30,90 L36,90 L36,40 Z"/>
+      <path d="M64,40 L64,90 L70,90 L70,40 Z"/>
+    </g>
+    <g style="fill:none;stroke:#9A7E4A;stroke-width:1.5;stroke-linecap:round">
+      <path d="M37.4,33.9 L32.0,31.3"/>
+      <path d="M41.3,29.1 L37.5,24.4"/>
+      <path d="M58.7,29.1 L62.5,24.4"/>
+      <path d="M62.6,33.9 L68.0,31.3"/>
+    </g>
+    <path d="M45.5,20.5 L54.5,20.5 L53.1,26.4 L46.9,26.4 Z"
+          style="fill:#E8D5A3;stroke:#9A7E4A;stroke-width:1.2;stroke-linejoin:round"/>
+    <path d="M25,90 L75,90" style="fill:none;stroke:#9A7E4A;stroke-width:2.2;stroke-linecap:round"/>
+  </symbol>
+
+  <!-- V3 · dark colorway · 32 px -->
+  <symbol id="v3-dark-sm" viewBox="0 0 100 100">
+    <g style="fill:url(#vermeil-dark)">
+      <path d="M30,40 A20,20 0 0,1 70,40 L64,40 A14,14 0 0,0 36,40 Z"/>
+      <path d="M30,40 L30,90 L36,90 L36,40 Z"/>
+      <path d="M64,40 L64,90 L70,90 L70,40 Z"/>
+    </g>
+    <g style="fill:none;stroke:#9A7E4A;stroke-width:2.5;stroke-linecap:round">
+      <path d="M37.4,33.9 L32.0,31.3"/>
+      <path d="M62.6,33.9 L68.0,31.3"/>
+    </g>
+    <path d="M50,18.8 L53.8,23.4 L50,28 L46.2,23.4 Z"
+          style="fill:#E8D5A3;stroke:#9A7E4A;stroke-width:1.6;stroke-linejoin:round"/>
+    <path d="M25,90 L75,90" style="fill:none;stroke:#9A7E4A;stroke-width:3.5;stroke-linecap:round"/>
+  </symbol>
+
+  <!-- V3 · light colorway · 128 px -->
+  <symbol id="v3-light-lg" viewBox="0 0 100 100">
+    <g style="fill:url(#vermeil-light)">
+      <path d="M30,40 A20,20 0 0,1 70,40 L64,40 A14,14 0 0,0 36,40 Z"/>
+      <path d="M30,40 L30,90 L36,90 L36,40 Z"/>
+      <path d="M64,40 L64,90 L70,90 L70,40 Z"/>
+    </g>
+    <g style="fill:none;stroke:rgba(26,23,21,0.4);stroke-width:1.5;stroke-linecap:round">
+      <path d="M37.4,33.9 L32.0,31.3"/>
+      <path d="M41.3,29.1 L37.5,24.4"/>
+      <path d="M58.7,29.1 L62.5,24.4"/>
+      <path d="M62.6,33.9 L68.0,31.3"/>
+    </g>
+    <path d="M45.5,20.5 L54.5,20.5 L53.1,26.4 L46.9,26.4 Z"
+          style="fill:#C9A961;stroke:rgba(26,23,21,0.4);stroke-width:1.2;stroke-linejoin:round"/>
+    <path d="M25,90 L75,90" style="fill:none;stroke:rgba(26,23,21,0.4);stroke-width:2.2;stroke-linecap:round"/>
+  </symbol>
+
+  <!-- V3 · light colorway · 32 px -->
+  <symbol id="v3-light-sm" viewBox="0 0 100 100">
+    <g style="fill:url(#vermeil-light)">
+      <path d="M30,40 A20,20 0 0,1 70,40 L64,40 A14,14 0 0,0 36,40 Z"/>
+      <path d="M30,40 L30,90 L36,90 L36,40 Z"/>
+      <path d="M64,40 L64,90 L70,90 L70,40 Z"/>
+    </g>
+    <g style="fill:none;stroke:rgba(26,23,21,0.4);stroke-width:2.5;stroke-linecap:round">
+      <path d="M37.4,33.9 L32.0,31.3"/>
+      <path d="M62.6,33.9 L68.0,31.3"/>
+    </g>
+    <path d="M50,18.8 L53.8,23.4 L50,28 L46.2,23.4 Z"
+          style="fill:#C9A961;stroke:rgba(26,23,21,0.4);stroke-width:1.6;stroke-linejoin:round"/>
+    <path d="M25,90 L75,90" style="fill:none;stroke:rgba(26,23,21,0.4);stroke-width:3.5;stroke-linecap:round"/>
+  </symbol>
+</svg>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <p class="kicker">Identity · Round 5</p>
+    <h1>Trésor <span class="sep">—</span> Vault Arch V5 <span class="sep">·</span> The Moderate Middle</h1>
+    <p class="lede">
+      Round 1 was too basic. Round 2 was too detailed. Round 4 was too minimalist.
+      This is the middle — <em>moderate architectural presence</em>, crafted and intentional.
+      One drawing, held constant across three treatments: a semicircular vault arch of seven
+      voussoirs, a true wedge keystone at the crown, and a threshold line that grounds the structure.
+    </p>
+  </header>
+
+  <!-- ================= VARIATION 1 ================= -->
+  <section class="plate">
+    <div class="plate-head">
+      <span class="plate-no">Variation I</span>
+      <h2 class="plate-name">The Arched Doorway</h2>
+    </div>
+    <p class="plate-concept">
+      Pure stroke — a confident line drawing of a bank-vault entrance. Four mortar joints
+      articulate the arch into stones; the keystone alone carries a solid fill, marking the
+      point where the structure locks.
+    </p>
+
+    <div class="proofs">
+      <figure class="proof">
+        <div class="tile dark"><svg width="128" height="128"><use href="#v1-lg"/></svg></div>
+        <figcaption>Gold on charcoal · 128&thinsp;px</figcaption>
+      </figure>
+      <figure class="proof">
+        <div class="tile dark"><svg width="32" height="32"><use href="#v1-sm"/></svg></div>
+        <figcaption>Gold on charcoal · 32&thinsp;px</figcaption>
+      </figure>
+      <figure class="proof">
+        <div class="tile light"><svg width="128" height="128"><use href="#v1-lg"/></svg></div>
+        <figcaption>Ink on cream · 128&thinsp;px</figcaption>
+      </figure>
+      <figure class="proof">
+        <div class="tile light"><svg width="32" height="32"><use href="#v1-sm"/></svg></div>
+        <figcaption>Ink on cream · 32&thinsp;px</figcaption>
+      </figure>
+    </div>
+
+    <div class="wm-row">
+      <div class="wm dark"><span class="wordmark">TR<span class="ea">E<span class="acc">´</span></span>SOR</span></div>
+      <div class="wm light"><span class="wordmark">TR<span class="ea">E<span class="acc">´</span></span>SOR</span></div>
+    </div>
+
+    <div class="notes">
+      <p class="notes-title">Construction</p>
+      <ul>
+        <li>Semicircular arch, outer radius 20 on a 100-unit grid; crown at 20&thinsp;% of cap height</li>
+        <li>Seven voussoirs — four joint lines plus the keystone's own edges</li>
+        <li>Keystone wedge: 9.0 across the top, 6.2 at the seat, correct taper</li>
+        <li>Main line 2.2 units at 128&thinsp;px; optically corrected to 3.5 at 32&thinsp;px</li>
+        <li>Joints at 1.5 units — secondary detail, kept subordinate to the outline</li>
+        <li>At 32&thinsp;px the keystone resolves to a diamond and joints reduce to the springing pair</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= VARIATION 2 ================= -->
+  <section class="plate">
+    <div class="plate-head">
+      <span class="plate-no">Variation II</span>
+      <h2 class="plate-name">The Double Line</h2>
+    </div>
+    <p class="plate-concept">
+      The same doorway with an inner intrados curve at radius 14 — a parallel line that gives
+      the vault wall thickness. The joints now bridge the two curves, and the band of masonry
+      becomes legible as a cross-section.
+    </p>
+
+    <div class="proofs">
+      <figure class="proof">
+        <div class="tile dark"><svg width="128" height="128"><use href="#v2-lg"/></svg></div>
+        <figcaption>Gold on charcoal · 128&thinsp;px</figcaption>
+      </figure>
+      <figure class="proof">
+        <div class="tile dark"><svg width="32" height="32"><use href="#v2-sm"/></svg></div>
+        <figcaption>Gold on charcoal · 32&thinsp;px</figcaption>
+      </figure>
+      <figure class="proof">
+        <div class="tile light"><svg width="128" height="128"><use href="#v2-lg"/></svg></div>
+        <figcaption>Ink on cream · 128&thinsp;px</figcaption>
+      </figure>
+      <figure class="proof">
+        <div class="tile light"><svg width="32" height="32"><use href="#v2-sm"/></svg></div>
+        <figcaption>Ink on cream · 32&thinsp;px</figcaption>
+      </figure>
+    </div>
+
+    <div class="wm-row">
+      <div class="wm dark"><span class="wordmark">TR<span class="ea">E<span class="acc">´</span></span>SOR</span></div>
+      <div class="wm light"><span class="wordmark">TR<span class="ea">E<span class="acc">´</span></span>SOR</span></div>
+    </div>
+
+    <div class="notes">
+      <p class="notes-title">Construction</p>
+      <ul>
+        <li>Intrados at radius 14 — a 6-unit band, drawn as curve only, no inner pier lines</li>
+        <li>Inner curve at 1.5 units: a secondary line suggesting depth, not a second outline</li>
+        <li>Joint lines span the full band, inner radius to outer, making the masonry read</li>
+        <li>Keystone seat meets the intrados; the wedge visibly locks the two curves</li>
+        <li>Outer structure identical to Variation I — same arch, piers, and threshold</li>
+        <li>At 32&thinsp;px both curves hold; joints reduce to the springing pair</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= VARIATION 3 ================= -->
+  <section class="plate">
+    <div class="plate-head">
+      <span class="plate-no">Variation III</span>
+      <h2 class="plate-name">The Filled Arch</h2>
+    </div>
+    <p class="plate-concept">
+      The band and piers cast as solid vermeil — a gradient running bright to deep across the
+      structure, like light falling on metal. Joints are engraved into the surface; the keystone
+      is set a shade brighter, a stone within the gold.
+    </p>
+
+    <div class="proofs">
+      <figure class="proof">
+        <div class="tile dark"><svg width="128" height="128"><use href="#v3-dark-lg"/></svg></div>
+        <figcaption>Vermeil on charcoal · 128&thinsp;px</figcaption>
+      </figure>
+      <figure class="proof">
+        <div class="tile dark"><svg width="32" height="32"><use href="#v3-dark-sm"/></svg></div>
+        <figcaption>Vermeil on charcoal · 32&thinsp;px</figcaption>
+      </figure>
+      <figure class="proof">
+        <div class="tile light"><svg width="128" height="128"><use href="#v3-light-lg"/></svg></div>
+        <figcaption>Vermeil on cream · 128&thinsp;px</figcaption>
+      </figure>
+      <figure class="proof">
+        <div class="tile light"><svg width="32" height="32"><use href="#v3-light-sm"/></svg></div>
+        <figcaption>Vermeil on cream · 32&thinsp;px</figcaption>
+      </figure>
+    </div>
+
+    <div class="wm-row">
+      <div class="wm dark"><span class="wordmark">TR<span class="ea">E<span class="acc">´</span></span>SOR</span></div>
+      <div class="wm light"><span class="wordmark">TR<span class="ea">E<span class="acc">´</span></span>SOR</span></div>
+    </div>
+
+    <div class="notes">
+      <p class="notes-title">Construction</p>
+      <ul>
+        <li>Band filled between radii 20 and 14; piers as 6-unit solids continuous with the band</li>
+        <li>Vermeil gradient in structure space — bright gold at the crown-left, deep at the base-right</li>
+        <li>On cream the gradient starts at mid-gold for contrast against the light ground</li>
+        <li>Joints engraved in deep gold on charcoal; in 40&thinsp;% ink on cream</li>
+        <li>Keystone one step brighter than the band, edged with the engraving tone</li>
+        <li>Same seven-voussoir count and threshold line as the stroked variations</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>Trésor Identity</span>
+    <span>Vault Arch · Round 5 · 2026</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

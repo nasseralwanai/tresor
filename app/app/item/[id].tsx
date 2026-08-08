@@ -184,6 +184,8 @@ export default function ItemDetailScreen() {
             <ItemPhotoPlaceholder
               letter={item.brand}
               size={320}
+              imageUrl={item.primary_image_url}
+              seed={item.id}
               style={[styles.headerPhoto, { width: '100%', height: 320 }]}
             />
             {/* Back button overlay */}

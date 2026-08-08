@@ -65,7 +65,9 @@ function StyleOfTheWeekInner({
           <ItemPhotoPlaceholder
             letter={item.brand}
             size={56}
-            style={[styles.photo, { backgroundColor: colors.surfaceElevated }]}
+            imageUrl={item.primary_image_url}
+            seed={item.id}
+            style={styles.photo}
           />
           <View style={{ flex: 1 }}>
             <Text style={[styles.intro, { color: colors.textSecondary }]}>

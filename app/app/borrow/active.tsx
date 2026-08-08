@@ -212,7 +212,7 @@ export default function ActiveBorrowScreen() {
 
                 {/* Item info */}
                 <View style={styles.itemRow}>
-                  <ItemPhotoPlaceholder letter={borrow.item_brand} size={56} style={styles.itemPhoto} />
+                  <ItemPhotoPlaceholder letter={borrow.item_brand} size={56} imageUrl={borrow.item_primary_image_url} seed={borrow.item_id} style={styles.itemPhoto} />
                   <View style={{ flex: 1 }}>
                     <Text style={[styles.itemBrand, { color: colors.accent }]}>
                       {borrow.item_brand.toUpperCase()}

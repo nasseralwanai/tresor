@@ -68,6 +68,8 @@ function RecentlyAddedCarouselInner({
                   <ItemPhotoPlaceholder
                     letter={item.brand}
                     size={130}
+                    imageUrl={item.primary_image_url}
+                    seed={item.id}
                     style={styles.photo}
                   />
                   <View

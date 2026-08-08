@@ -74,6 +74,8 @@ function PieceOfTheDayInner({
           <ItemPhotoPlaceholder
             letter={item.brand}
             size={152}
+            imageUrl={item.primary_image_url}
+            seed={item.id}
             style={styles.photo}
           />
         )}

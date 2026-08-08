@@ -86,6 +86,8 @@ function CategoryShelfInner({
                       <ItemPhotoPlaceholder
                         letter={item.brand}
                         size={100}
+                        imageUrl={item.primary_image_url}
+                        seed={item.id}
                         style={styles.photo}
                       />
                     )}

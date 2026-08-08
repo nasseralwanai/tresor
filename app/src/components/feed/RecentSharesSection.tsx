@@ -140,6 +140,8 @@ function ShareCardItem({
       <ItemPhotoPlaceholder
         letter={share.brand}
         size={300}
+        imageUrl={share.imageUrl}
+        seed={share.itemId}
         style={styles.shareImage}
       />
 

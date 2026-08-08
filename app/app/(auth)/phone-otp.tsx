@@ -181,7 +181,7 @@ export default function PhoneOtpScreen() {
           // Smooth transition before navigating
           setTimeout(() => {
             router.replace({
-              pathname: '/(auth)/profile-setup',
+              pathname: '/(auth)/invite-code',
               params: circleId ? { circleId } : {},
             });
           }, 600);

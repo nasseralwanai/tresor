@@ -107,7 +107,14 @@ create policy "feed_comments_delete_own"
   using (user_id = auth.uid());
 
 -- ── feed_votes ──
-create type if not exists public.vote_type as enum ('love', 'want', 'been_there');
+-- Use DO block for idempotency (CREATE TYPE IF NOT EXISTS not supported in all PG versions)
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'vote_type') THEN
+    CREATE TYPE public.vote_type AS ENUM ('love', 'want', 'been_there');
+  END IF;
+END
+$$;
 
 create table if not exists public.feed_votes (
   id           uuid primary key default gen_random_uuid(),

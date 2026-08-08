@@ -387,8 +387,10 @@ deno_version = 2
 
 # Cron schedules for scheduled edge functions
 # Runs daily at 09:00 UTC — checks for overdue borrows and sends nudges
+# Note: pg_cron scheduling is set up in migration 0023 via SQL
+# (config.toml does not support the schedule key in this Supabase version)
 [functions.check-overdue-borrows]
-schedule = "0 9 * * *"
+verify_jwt = false
 
 [analytics]
 enabled = true

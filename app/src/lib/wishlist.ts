@@ -7,6 +7,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { withRetry } from '@/lib/retry';
 import { addActivityEntry } from '@/lib/activity';
 import type { Wishlist, Database } from '@/types';
 import type { WishlistItem as WishlistItemUI } from '@/types/items';
@@ -166,26 +167,28 @@ export async function getCircleWishlists(circleId: string): Promise<
     profiles?: { display_name: string | null; avatar_url: string | null } | null;
   })[]
 > {
-  const { data: members, error: membersError } = await supabase
-    .from('circle_members')
-    .select('user_id')
-    .eq('circle_id', circleId)
-    .limit(50);
+  return withRetry(async () => {
+    const { data: members, error: membersError } = await supabase
+      .from('circle_members')
+      .select('user_id')
+      .eq('circle_id', circleId)
+      .limit(50);
 
-  if (membersError) throw membersError;
+    if (membersError) throw membersError;
 
-  const userIds = (members ?? []).map((m) => m.user_id);
-  if (userIds.length === 0) return [];
+    const userIds = (members ?? []).map((m) => m.user_id);
+    if (userIds.length === 0) return [];
 
-  const { data, error } = await supabase
-    .from('wishlist_items')
-    .select('*, profiles!wishlist_items_user_id_fkey(display_name, avatar_url)')
-    .in('user_id', userIds)
-    .order('created_at', { ascending: false })
-    .limit(50);
+    const { data, error } = await supabase
+      .from('wishlist_items')
+      .select('*, profiles!wishlist_items_user_id_fkey(display_name, avatar_url)')
+      .in('user_id', userIds)
+      .order('created_at', { ascending: false })
+      .limit(50);
 
-  if (error) throw error;
-  return data ?? [];
+    if (error) throw error;
+    return data ?? [];
+  });
 }
 
 /**
@@ -210,32 +213,34 @@ export async function getFriendsWishlist(
   userId: string,
   circleId: string
 ): Promise<WishlistItemUI[]> {
-  const { data: members, error: membersError } = await supabase
-    .from('circle_members')
-    .select('user_id')
-    .eq('circle_id', circleId)
-    .neq('user_id', userId)
-    .limit(50);
+  return withRetry(async () => {
+    const { data: members, error: membersError } = await supabase
+      .from('circle_members')
+      .select('user_id')
+      .eq('circle_id', circleId)
+      .neq('user_id', userId)
+      .limit(50);
 
-  if (membersError) throw membersError;
+    if (membersError) throw membersError;
 
-  const userIds = (members ?? []).map((m) => m.user_id);
-  if (userIds.length === 0) return [];
+    const userIds = (members ?? []).map((m) => m.user_id);
+    if (userIds.length === 0) return [];
 
-  const { data, error } = await supabase
-    .from('wishlist_items')
-    .select('*, profiles!wishlist_items_user_id_fkey(display_name)')
-    .in('user_id', userIds)
-    .order('created_at', { ascending: false })
-    .limit(50);
+    const { data, error } = await supabase
+      .from('wishlist_items')
+      .select('*, profiles!wishlist_items_user_id_fkey(display_name)')
+      .in('user_id', userIds)
+      .order('created_at', { ascending: false })
+      .limit(50);
 
-  if (error) throw error;
-  return (data ?? []).map((item: any) => ({
-    ...item,
-    brand: item.brand ?? '',
-    owner_name: item.profiles?.display_name ?? 'Unknown',
-    currency: 'AED',
-  }));
+    if (error) throw error;
+    return (data ?? []).map((item: any) => ({
+      ...item,
+      brand: item.brand ?? '',
+      owner_name: item.profiles?.display_name ?? 'Unknown',
+      currency: 'AED',
+    }));
+  });
 }
 
 /**

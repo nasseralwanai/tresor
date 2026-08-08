@@ -6,6 +6,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { withRetry } from '@/lib/retry';
 import type { ActivityType } from '@/types';
 import type { ActivityEntry } from '@/types/items';
 
@@ -17,20 +18,22 @@ export async function getActivityFeed(
   circleId: string,
   limit: number = 50
 ): Promise<ActivityEntry[]> {
-  const { data, error } = await supabase
-    .from('activity_feed')
-    .select('*, items!activity_feed_item_id_fkey(brand)')
-    .eq('circle_id', circleId)
-    .order('created_at', { ascending: false })
-    .limit(limit);
+  return withRetry(async () => {
+    const { data, error } = await supabase
+      .from('activity_feed')
+      .select('*, items!activity_feed_item_id_fkey(brand)')
+      .eq('circle_id', circleId)
+      .order('created_at', { ascending: false })
+      .limit(limit);
 
-  if (error) throw error;
-  return (data ?? []).map((row: any) => ({
-    ...row,
-    actor_name: row.actor_name ?? 'Unknown',
-    summary: row.summary ?? '',
-    item_brand: row.items?.brand ?? null,
-  }));
+    if (error) throw error;
+    return (data ?? []).map((row: any) => ({
+      ...row,
+      actor_name: row.actor_name ?? 'Unknown',
+      summary: row.summary ?? '',
+      item_brand: row.items?.brand ?? null,
+    }));
+  });
 }
 
 /**

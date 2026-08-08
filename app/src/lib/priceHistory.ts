@@ -6,6 +6,7 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { withRetry } from '@/lib/retry';
 import type { PriceHistory } from '@/types';
 
 /** A price_history row enriched with the item brand for display. */
@@ -20,30 +21,32 @@ export type PriceHistoryWithBrand = PriceHistory & {
 export async function getPriceHistoryForUserItems(
   userId: string
 ): Promise<PriceHistoryWithBrand[]> {
-  const { data: items, error: itemsError } = await supabase
-    .from('items')
-    .select('id')
-    .eq('owner_id', userId);
+  return withRetry(async () => {
+    const { data: items, error: itemsError } = await supabase
+      .from('items')
+      .select('id')
+      .eq('owner_id', userId);
 
-  if (itemsError) throw itemsError;
+    if (itemsError) throw itemsError;
 
-  const itemIds = (items ?? []).map((i) => i.id);
-  if (itemIds.length === 0) return [];
+    const itemIds = (items ?? []).map((i) => i.id);
+    if (itemIds.length === 0) return [];
 
-  const { data, error } = await supabase
-    .from('price_history')
-    .select(
-      `*, items!price_history_item_id_fkey(brand)`
-    )
-    .in('item_id', itemIds)
-    .order('recorded_at', { ascending: true });
+    const { data, error } = await supabase
+      .from('price_history')
+      .select(
+        `*, items!price_history_item_id_fkey(brand)`
+      )
+      .in('item_id', itemIds)
+      .order('recorded_at', { ascending: true });
 
-  if (error) throw error;
+    if (error) throw error;
 
-  return (data ?? []).map((row: any) => ({
-    ...row,
-    brand: row.items?.brand ?? 'Unknown',
-  }));
+    return (data ?? []).map((row: any) => ({
+      ...row,
+      brand: row.items?.brand ?? 'Unknown',
+    }));
+  });
 }
 
 /**

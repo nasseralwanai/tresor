@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tresor RLS Test Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1715;
+    color: #FAF7F2;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 0 60px 0;
+  }
+
+  .header {
+    padding: 32px 20px 24px;
+    border-bottom: 1px solid rgba(201, 169, 97, 0.2);
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #C9A961;
+    letter-spacing: -0.5px;
+  }
+
+  .header .subtitle {
+    font-size: 13px;
+    color: rgba(250, 247, 242, 0.5);
+    margin-top: 6px;
+  }
+
+  .summary {
+    display: flex;
+    gap: 12px;
+    padding: 20px;
+    flex-wrap: wrap;
+  }
+
+  .summary-card {
+    flex: 1;
+    min-width: 80px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(201, 169, 97, 0.15);
+    border-radius: 10px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+
+  .summary-card .number {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .summary-card .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: rgba(250, 247, 242, 0.5);
+    margin-top: 2px;
+  }
+
+  .pass .number { color: #7ab87a; }
+  .fail .number { color: #e07070; }
+  .total .number { color: #C9A961; }
+
+  .section {
+    margin: 0 20px 20px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #C9A961;
+    padding: 16px 0 10px;
+    border-bottom: 1px solid rgba(201, 169, 97, 0.1);
+    margin-bottom: 10px;
+  }
+
+  details {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+
+  details[open] {
+    border-color: rgba(201, 169, 97, 0.2);
+  }
+
+  summary {
+    padding: 12px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    list-style: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  summary::-webkit-details-marker { display: none; }
+
+  summary::after {
+    content: '+';
+    margin-left: auto;
+    color: rgba(201, 169, 97, 0.5);
+    font-size: 18px;
+    font-weight: 300;
+    transition: transform 0.2s;
+  }
+
+  details[open] summary::after {
+    content: '\2212';
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    min-width: 42px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .badge-pass {
+    background: rgba(122, 184, 122, 0.15);
+    color: #7ab87a;
+    border: 1px solid rgba(122, 184, 122, 0.3);
+  }
+
+  .badge-fail {
+    background: rgba(224, 112, 112, 0.15);
+    color: #e07070;
+    border: 1px solid rgba(224, 112, 112, 0.3);
+  }
+
+  .test-name {
+    font-size: 14px;
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .test-detail {
+    padding: 0 14px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    padding-top: 12px;
+  }
+
+  .detail-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .detail-label {
+    color: rgba(201, 169, 97, 0.7);
+    min-width: 90px;
+    flex-shrink: 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding-top: 1px;
+  }
+
+  .detail-value {
+    color: rgba(250, 247, 242, 0.85);
+    word-break: break-word;
+    flex: 1;
+  }
+
+  .detail-value code {
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+    font-size: 12px;
+    background: rgba(201, 169, 97, 0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #C9A961;
+  }
+
+  .notes-box {
+    background: rgba(224, 112, 112, 0.06);
+    border: 1px solid rgba(224, 112, 112, 0.15);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(250, 247, 242, 0.75);
+  }
+
+  .notes-box-pass {
+    background: rgba(122, 184, 122, 0.05);
+    border-color: rgba(122, 184, 122, 0.15);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 12px;
+    color: rgba(250, 247, 242, 0.3);
+    border-top: 1px solid rgba(201, 169, 97, 0.1);
+    margin-top: 20px;
+  }
+
+  .footer code {
+    font-family: 'SF Mono', Monaco, monospace;
+    color: rgba(201, 169, 97, 0.5);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Row Level Security Test Report</h1>
+  <div class="subtitle">Tresor &mdash; Local Supabase (127.0.0.1:54321) &mdash; Migrations 0001&ndash;0019</div>
+</div>
+
+<div class="summary">
+  <div class="summary-card total">
+    <div class="number">33</div>
+    <div class="label">Total Tests</div>
+  </div>
+  <div class="summary-card pass">
+    <div class="number">32</div>
+    <div class="label">Passed</div>
+  </div>
+  <div class="summary-card fail">
+    <div class="number">1</div>
+    <div class="label">Failed</div>
+  </div>
+</div>
+
+<!-- SECTION A -->
+<div class="section">
+  <div class="section-title">A. Items Table</div>
+
+  <details open>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">A1: Sarah sees her own items</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success &mdash; items returned</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">5+ items returned (Sarah's collection via items_visible view)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>items_owner_all</code> &mdash; owner_id = auth.uid()</span>
+      </div>
+      <div class="notes-box notes-box-pass">Owner can see all own items. RLS correctly grants full access to item owner.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">A2: Sarah sees co-owned items</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success &mdash; co-owned item visible</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">1 item returned (Dior Saddle Bag, co-owned by Maya/Sarah)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>items_co_owner_all</code> &mdash; is_item_co_owner(items.id, auth.uid())</span>
+      </div>
+      <div class="notes-box notes-box-pass">Co-owner visibility works via SECURITY DEFINER function is_item_co_owner().</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">A3: Maya sees circle-visible items</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success &mdash; visible item returned</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">1 item returned (Sarah's Chanel Classic Flap, is_private=false)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>items_circle_members_select</code> &mdash; circle_id IS NOT NULL AND NOT is_private AND is_circle_member</span>
+      </div>
+      <div class="notes-box notes-box-pass">Circle members can see non-private items in their circle.</div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>
+      <span class="badge badge-fail">FAIL</span>
+      <span class="test-name">A4: Maya cannot see Sarah's private items (items_visible view)</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Empty result &mdash; private item hidden from Maya</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">1 item returned &mdash; private item (is_private=true) VISIBLE to Maya</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Severity</span>
+        <span class="detail-value" style="color: #e07070; font-weight: 600;">CRITICAL &mdash; Data leakage</span>
+      </div>
+      <div class="notes-box">
+        <strong>Root cause:</strong> The <code>items_visible</code> view (migration 0016) runs as SECURITY DEFINER. The view owner is <code>supabase_admin</code> which has BYPASSRLS. When Maya queries <code>items_visible</code>, the underlying <code>SELECT ... FROM items</code> executes as <code>supabase_admin</code>, bypassing all RLS policies on the items table. Private items leak to all authenticated users.<br><br>
+        <strong>Impact:</strong> Any circle member can read private items belonging to other members through the view, including brand, model, photos, and metadata (though price columns are still correctly NULLed by the CASE/WHEN in the view definition).<br><br>
+        <strong>Fix:</strong> <code>ALTER VIEW public.items_visible SET (security_invoker = true);</code> &mdash; This makes the view execute with the privileges and RLS context of the querying user rather than the view owner.<br><br>
+        <strong>Note:</strong> Direct table access (<code>GET /rest/v1/items</code>) correctly blocks private items (see A4b). The bug is isolated to the view.
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">A4b: Maya cannot see Sarah's private items (direct items table)</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Empty result &mdash; private item hidden</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">0 items returned &mdash; private item correctly hidden</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>items_circle_members_select</code> &mdash; NOT is_private check enforced</span>
+      </div>
+      <div class="notes-box notes-box-pass">RLS on the base items table correctly blocks private items for non-owners. The bug in A4 is isolated to the items_visible view only.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">A5: Maya cannot update Sarah's items</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">403 Forbidden or empty result</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>403</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">"new row violates row-level security policy"</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>items_owner_all</code> WITH CHECK &mdash; owner_id = auth.uid()</span>
+      </div>
+      <div class="notes-box notes-box-pass">Non-owner UPDATE correctly blocked by WITH CHECK clause.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">A6: Sarah sees price on own items</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Price field present</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">estimated_value: 42000.00, currency: AED</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>is_item_owner_or_coowner()</code> returns true for owner</span>
+      </div>
+      <div class="notes-box notes-box-pass">Column-level price privacy works: owner sees full price data.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">A7: Maya cannot see price on Sarah's items</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Price null/hidden</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">estimated_value: null, purchase_price: null, currency: null</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>items_visible</code> view CASE/WHEN &mdash; is_item_owner_or_coowner() = false</span>
+      </div>
+      <div class="notes-box notes-box-pass">Price columns correctly NULLed for non-owners via CASE expression in view definition.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">A7b: Maya sees price on co-owned item (she is co-owner)</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Price field present</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">estimated_value: 9000.00 (Dior Saddle Bag)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>is_item_owner_or_coowner()</code> returns true for co-owner</span>
+      </div>
+      <div class="notes-box notes-box-pass">Co-owners see full price data on items they co-own.</div>
+    </div>
+  </details>
+</div>
+
+<!-- SECTION B -->
+<div class="section">
+  <div class="section-title">B. Item Owners Table</div>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">B1: Sarah adds co-owner to her item</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success (201 Created)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>201</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">Co-owner record created with share_percentage and amount_paid</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>item_owners_insert_owner</code> WITH CHECK &mdash; i.owner_id = auth.uid()</span>
+      </div>
+      <div class="notes-box notes-box-pass">Item owner can add co-owners. Share validation trigger enforces 100% total for co_owned items.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">B2: Maya cannot add co-owner to Sarah's item</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">403 Forbidden</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>403</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">"new row violates row-level security policy"</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>item_owners_insert_owner</code> WITH CHECK &mdash; requires i.owner_id = auth.uid()</span>
+      </div>
+      <div class="notes-box notes-box-pass">Non-owner INSERT correctly blocked. Maya is not the item owner.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">B3: Sarah removes co-owner</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success &mdash; row deleted</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">1 row deleted (confirmed via Prefer: return=representation)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value">No explicit DELETE policy. Owner deletion succeeds via database-level privileges.</span>
+      </div>
+      <div class="notes-box notes-box-pass">Item owner can remove co-owners. The share validation trigger fires AFTER DELETE to validate remaining shares.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">B4: Maya cannot remove co-owner</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Blocked &mdash; 0 rows deleted</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">0 rows deleted (return=representation returned empty array). Like still exists after attempt.</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value">No DELETE policy exists for non-owners. RLS default-deny blocks Maya's delete.</span>
+      </div>
+      <div class="notes-box notes-box-pass">Non-owner DELETE silently affects 0 rows. The co-owner record remains intact. RLS correctly prevents unauthorized deletion.</div>
+    </div>
+  </details>
+</div>
+
+<!-- SECTION C -->
+<div class="section">
+  <div class="section-title">C. Feed Tables (Likes, Comments, Votes)</div>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C1: Maya likes Sarah's activity (same circle)</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success (201 Created)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>201</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">Like record created (user_id=Maya, activity_id=Sarah's activity)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_likes_insert_circle</code> &mdash; user_id=auth.uid() AND activity in user's circle</span>
+      </div>
+      <div class="notes-box notes-box-pass">Circle members can like activities within their circle.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C2: Maya comments on Sarah's activity (same circle)</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success (201 Created)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>201</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">Comment created with comment_text="Love this!"</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_comments_insert_circle</code> &mdash; user_id=auth.uid() AND activity in circle</span>
+      </div>
+      <div class="notes-box notes-box-pass">Circle members can comment on activities within their circle. Comment length validation (1-1000 chars) enforced by CHECK constraint.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C3: Maya votes on Sarah's activity (same circle)</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success (201 Created)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>201</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">Vote created with vote_type="love"</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_votes_insert_circle</code> &mdash; user_id=auth.uid() AND activity in circle</span>
+      </div>
+      <div class="notes-box notes-box-pass">Circle members can vote on activities. Unique constraint (user_id, activity_id) prevents duplicate votes.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C4: Non-circle user cannot like</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">403 Forbidden</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>403</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">"new row violates row-level security policy"</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_likes_insert_circle</code> &mdash; outsider has no circle membership</span>
+      </div>
+      <div class="notes-box notes-box-pass">Non-circle user correctly blocked from liking activities.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C4b: Non-circle user cannot comment</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">403 Forbidden</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>403</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">"new row violates row-level security policy"</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_comments_insert_circle</code> &mdash; outsider has no circle membership</span>
+      </div>
+      <div class="notes-box notes-box-pass">Non-circle user correctly blocked from commenting.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C4c: Non-circle user cannot vote</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">403 Forbidden</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>403</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">"new row violates row-level security policy"</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_votes_insert_circle</code> &mdash; outsider has no circle membership</span>
+      </div>
+      <div class="notes-box notes-box-pass">Non-circle user correctly blocked from voting.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C5: Maya deletes her own like</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success &mdash; row deleted</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">1 row deleted (confirmed via return=representation)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_likes_delete_own</code> &mdash; user_id = auth.uid()</span>
+      </div>
+      <div class="notes-box notes-box-pass">Users can delete their own likes (unlike).</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C5b: Maya deletes her own comment</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success &mdash; row deleted</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">1 row deleted (confirmed via return=representation)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_comments_delete_own</code> &mdash; user_id = auth.uid()</span>
+      </div>
+      <div class="notes-box notes-box-pass">Users can delete their own comments.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C5c: Maya deletes her own vote</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success &mdash; row deleted</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">1 row deleted (confirmed via return=representation)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_votes_delete_own</code> &mdash; user_id = auth.uid()</span>
+      </div>
+      <div class="notes-box notes-box-pass">Users can remove their own votes (change or unvote).</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C6: Maya cannot delete Sarah's like</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Blocked &mdash; 0 rows deleted</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">0 rows deleted. Like still exists after Maya's delete attempt (verified).</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_likes_delete_own</code> &mdash; user_id (Sarah) != auth.uid() (Maya)</span>
+      </div>
+      <div class="notes-box notes-box-pass">RLS correctly prevents Maya from deleting Sarah's likes. The DELETE silently affects 0 rows.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">C6b: Maya cannot delete Sarah's comment</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Blocked &mdash; 0 rows deleted</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">0 rows deleted. Comment still exists after Maya's delete attempt (verified).</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>feed_comments_delete_own</code> &mdash; user_id (Sarah) != auth.uid() (Maya)</span>
+      </div>
+      <div class="notes-box notes-box-pass">RLS correctly prevents Maya from deleting Sarah's comments.</div>
+    </div>
+  </details>
+</div>
+
+<!-- SECTION D -->
+<div class="section">
+  <div class="section-title">D. Wishlists</div>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">D1: Sarah sees her own wishlist</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success &mdash; wishlist returned</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">1 wishlist returned (Sarah's Wishlist)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>wishlists_owner_all</code> &mdash; user_id = auth.uid()</span>
+      </div>
+      <div class="notes-box notes-box-pass">Users can always see their own wishlists regardless of privacy setting.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">D2: Sarah sees Maya's wishlist (same circle, not private)</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success &mdash; wishlist visible</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">1 wishlist returned (Maya's "Grail Pieces", is_private=false)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>wishlists_circle_members_select_nonprivate</code> &mdash; NOT is_private AND shared circle</span>
+      </div>
+      <div class="notes-box notes-box-pass">Circle members can see non-private wishlists of other members in the same circle.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">D3: Non-circle user cannot see wishlist</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Empty result</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">0 wishlists returned</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>wishlists_circle_members_select_nonprivate</code> &mdash; outsider has no circle membership</span>
+      </div>
+      <div class="notes-box notes-box-pass">Non-circle users cannot see any wishlists.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">D3b: Non-circle user cannot see private wishlist</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Empty result</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">0 wishlists returned</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value">Private wishlist + no circle membership = blocked</span>
+      </div>
+      <div class="notes-box notes-box-pass">Private wishlists are invisible to non-circle users.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">D4: Circle member cannot see private wishlist</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Empty result</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">0 wishlists returned (Aisha's "Private Wishes", is_private=true)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>wishlists_circle_members_select_nonprivate</code> &mdash; is_private=true blocks even circle members</span>
+      </div>
+      <div class="notes-box notes-box-pass">Private wishlists are invisible even to circle members. Only the owner can see them.</div>
+    </div>
+  </details>
+</div>
+
+<!-- SECTION E -->
+<div class="section">
+  <div class="section-title">E. Borrow Transactions</div>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">E1: Sarah records offline borrow on her item</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success (201 Created)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>201</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">Borrow transaction created (is_offline=true, lender_id=Sarah, borrower_id=Maya)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>borrow_insert_borrower_or_lender</code> &mdash; lender_id=auth.uid() AND i.owner_id=auth.uid()</span>
+      </div>
+      <div class="notes-box notes-box-pass">Item owner can record offline borrows. Activity feed trigger fires automatically for offline borrows.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">E2: Maya sees borrows where she is borrower</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Success &mdash; borrows returned</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">2+ borrows returned (Maya as borrower)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>borrow_select_parties_or_circle</code> &mdash; borrower_id = auth.uid()</span>
+      </div>
+      <div class="notes-box notes-box-pass">Borrowers can see their own borrow transactions.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">E3: Maya cannot see borrows she is not party to</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Empty result</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">0 borrows returned (Mona's borrow of Sarah's Cartier Tank)</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>borrow_select_parties_or_circle</code> &mdash; Maya is not borrower, lender, or co-owner</span>
+      </div>
+      <div class="notes-box notes-box-pass">Migration 0011 fixed the over-permissive circle-wide borrow visibility. Now only parties (borrower, lender, co-owners) can see borrows.</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>
+      <span class="badge badge-pass">PASS</span>
+      <span class="test-name">E3b: Non-circle user cannot see any borrows</span>
+    </summary>
+    <div class="test-detail">
+      <div class="detail-row">
+        <span class="detail-label">Expected</span>
+        <span class="detail-value">Empty result</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">HTTP</span>
+        <span class="detail-value"><code>200</code></span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Result</span>
+        <span class="detail-value">0 borrows returned</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Policy</span>
+        <span class="detail-value"><code>borrow_select_parties_or_circle</code> &mdash; outsider is not party to any borrow</span>
+      </div>
+      <div class="notes-box notes-box-pass">Non-circle users see zero borrow transactions.</div>
+    </div>
+  </details>
+</div>
+
+<div class="footer">
+  Generated by Sonny (Backend Engineer) &mdash; Tresor RLS Test Suite<br>
+  Tested against <code>127.0.0.1:54321</code> &mdash; Supabase v2.195.0<br>
+  Users: Sarah (owner), Maya (circle member), Outsider (non-circle)<br>
+  33 tests &mdash; 32 passed &mdash; 1 failed
+</div>
+
+</body>
+</html>

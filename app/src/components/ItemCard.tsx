@@ -34,6 +34,9 @@ export function ItemCard({ item, onPress }: ItemCardProps) {
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.85}
+      accessibilityRole="button"
+      accessibilityLabel={`${item.brand} ${item.model_name || 'item'}`}
+      accessibilityHint="View item details"
       style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
     >
       <View style={styles.photoWrap}>

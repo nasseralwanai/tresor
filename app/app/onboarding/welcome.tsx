@@ -1,62 +1,21 @@
 /**
- * Welcome screen — full-screen editorial luxury entry point.
+ * Onboarding Screen 1 — Welcome
  *
- * Warm Atelier dark background, large serif "Trésor" wordmark,
- * staggered moti entrance (logo fade → tagline slide → button rise).
- * "Get Started" routes to onboarding for first-time users (stored via
- * AsyncStorage), or phone-otp for returning users.
- * Subtle "Invitation only" text below the CTA.
+ * Ironwork logo, "Your private circle for luxury collections"
+ * Dark editorial aesthetic. "Get Started" goes to How It Works.
  */
 
-import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { MotiView } from 'moti';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DarkThemeColors, serifFont, bodyFont, spacing } from '@/theme';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { IronworkMark } from '@/components/IronworkMark';
 
-const ONBOARDING_KEY = 'onboarding_complete';
-
-// Welcome is always dark editorial — ignore system scheme
 const colors = DarkThemeColors;
 
-export default function WelcomeScreen() {
-  const [checking, setChecking] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const completed = await AsyncStorage.getItem(ONBOARDING_KEY);
-        setChecking(false);
-      } catch {
-        setChecking(false);
-      }
-    })();
-  }, []);
-
-  const handleGetStarted = () => {
-    // Check if onboarding has been completed
-    AsyncStorage.getItem(ONBOARDING_KEY).then((completed) => {
-      if (completed === 'true') {
-        // Returning user — go straight to phone auth
-        router.push('/(auth)/phone-otp' as any);
-      } else {
-        // First-time user — show onboarding
-        router.push('/onboarding/welcome' as any);
-      }
-    });
-  };
-
-  if (checking) {
-    return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-        <ActivityIndicator color={colors.gold} />
-      </SafeAreaView>
-    );
-  }
-
+export default function OnboardingWelcomeScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Top hairline accent */}
@@ -70,16 +29,14 @@ export default function WelcomeScreen() {
       </MotiView>
 
       <View style={styles.content}>
-        {/* Logo mark — minimalist gold diamond */}
+        {/* Ironwork logo */}
         <MotiView
           from={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'spring', damping: 15, stiffness: 100, delay: 100 }}
         >
           <View style={styles.logoWrap}>
-            <View style={[styles.logoInner, { borderColor: colors.gold }]}>
-              <Text style={styles.logoMark}>T</Text>
-            </View>
+            <IronworkMark size={80} variant="gold-on-dark" />
           </View>
         </MotiView>
 
@@ -89,10 +46,10 @@ export default function WelcomeScreen() {
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 600, delay: 400 }}
         >
-          <Text style={styles.wordmark}>Trésor</Text>
+          <Text style={styles.wordmark}>Tresor</Text>
         </MotiView>
 
-        {/* Hairline divider under wordmark */}
+        {/* Hairline divider */}
         <MotiView
           from={{ opacity: 0, scaleX: 0 }}
           animate={{ opacity: 0.4, scaleX: 1 }}
@@ -114,7 +71,7 @@ export default function WelcomeScreen() {
         </MotiView>
       </View>
 
-      {/* Footer — CTA + invitation note */}
+      {/* Footer — CTA */}
       <MotiView
         from={{ opacity: 0, translateY: 30 }}
         animate={{ opacity: 1, translateY: 0 }}
@@ -123,11 +80,10 @@ export default function WelcomeScreen() {
       >
         <PrimaryButton
           label="Get Started"
-          onPress={handleGetStarted}
-          accessibilityLabel="Get started"
+          onPress={() => router.push('/onboarding/how-it-works' as any)}
+          accessibilityLabel="Get started with onboarding"
           accessibilityRole="button"
         />
-        <Text style={styles.inviteNote}>Invitation only</Text>
       </MotiView>
 
       {/* Bottom hairline accent */}
@@ -164,20 +120,6 @@ const styles = StyleSheet.create({
   logoWrap: {
     marginBottom: spacing.xl,
   },
-  logoInner: {
-    width: 72,
-    height: 72,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    transform: [{ rotate: '45deg' }],
-  },
-  logoMark: {
-    fontFamily: serifFont,
-    fontSize: 28,
-    color: colors.gold,
-    transform: [{ rotate: '-45deg' }],
-  },
   wordmark: {
     fontFamily: serifFont,
     fontSize: 52,
@@ -206,14 +148,7 @@ const styles = StyleSheet.create({
   footer: {
     paddingBottom: spacing.xxl,
     alignItems: 'center',
-    gap: spacing.md,
-  },
-  inviteNote: {
-    fontFamily: serifFont,
-    fontSize: 13,
-    fontStyle: 'italic',
-    color: colors.textSecondary,
-    letterSpacing: 1,
+    minWidth: '100%',
   },
   bottomAccent: {
     alignItems: 'center',

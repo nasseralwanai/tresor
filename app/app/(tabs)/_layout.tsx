@@ -61,6 +61,7 @@ export default function TabLayout() {
             </View>
           ),
           tabBarIcon: (props: TabIconProps) => <TabIcon name="treasure-chest" color={props.color} />,
+          tabBarAccessibilityLabel: 'Your Collection tab',
         }}
       />
       <Tabs.Screen
@@ -68,6 +69,7 @@ export default function TabLayout() {
         options={{
           title: 'Circle',
           tabBarIcon: (props: TabIconProps) => <TabIcon name="account-group-outline" color={props.color} />,
+          tabBarAccessibilityLabel: 'Circle members tab',
         }}
       />
       <Tabs.Screen
@@ -75,6 +77,7 @@ export default function TabLayout() {
         options={{
           title: 'Add',
           tabBarIcon: (props: TabIconProps) => <TabIcon name="plus" color={props.color} />,
+          tabBarAccessibilityLabel: 'Add a new item',
           tabBarButton: () => (
             <View style={styles.centerButtonWrapper}>
               <AddTabButton color={colors.accent} />
@@ -88,6 +91,7 @@ export default function TabLayout() {
         options={{
           title: 'Wishlist',
           tabBarIcon: (props: TabIconProps) => <TabIcon name="heart-outline" color={props.color} />,
+          tabBarAccessibilityLabel: 'Wishlist tab',
         }}
       />
       <Tabs.Screen
@@ -95,6 +99,7 @@ export default function TabLayout() {
         options={{
           title: 'Activity',
           tabBarIcon: (props: TabIconProps) => <TabIcon name="bell-outline" color={props.color} />,
+          tabBarAccessibilityLabel: 'Activity feed tab',
         }}
       />
       <Tabs.Screen
@@ -102,6 +107,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: (props: TabIconProps) => <TabIcon name="account-circle-outline" color={props.color} />,
+          tabBarAccessibilityLabel: 'Profile tab',
         }}
       />
     </Tabs>

@@ -12,6 +12,7 @@
  */
 
 import { supabase } from './supabase';
+import { withRetry } from '@/lib/retry';
 
 export type NudgeErrorCode =
   | 'grace_period_active'
@@ -178,14 +179,16 @@ export async function getUnreadNotificationCount(): Promise<number> {
  * Get recent notifications for the current user.
  */
 export async function getNotifications(limit = 20) {
-  const { data, error } = await supabase
-    .from('notifications')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(limit);
+  return withRetry(async () => {
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
 
-  if (error) throw error;
-  return data ?? [];
+    if (error) throw error;
+    return data ?? [];
+  });
 }
 
 /**

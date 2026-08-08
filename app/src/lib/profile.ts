@@ -10,6 +10,7 @@
 
 import * as ImageManipulator from 'expo-image-manipulator';
 import { supabase } from '@/lib/supabase';
+import { withRetry } from '@/lib/retry';
 import type { Profile, ProfileResult } from '@/types';
 
 /**
@@ -49,14 +50,16 @@ export async function createProfile(params: {
  * Returns null if not found.
  */
 export async function getProfile(userId: string): Promise<Profile | null> {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .maybeSingle();
+  return withRetry(async () => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
 
-  if (error) throw error;
-  return data;
+    if (error) throw error;
+    return data;
+  });
 }
 
 /**
@@ -165,38 +168,39 @@ export async function getCollectionInsights(userId: string): Promise<{
   leastUsedItem: { brand: string; category: string | null } | null;
   itemsLent: number;
 }> {
-  const { data: items, error } = await supabase
-    .from('items')
-    .select('*')
-    .eq('owner_id', userId)
-    .limit(50);
+  return withRetry(async () => {
+    const { data: items, error } = await supabase
+      .from('items')
+      .select('*')
+      .eq('owner_id', userId)
+      .limit(50);
 
-  if (error) throw error;
+    if (error) throw error;
 
-  const myItems = items ?? [];
-  const totalValue = myItems.reduce((sum, item) => sum + (item.estimated_value ?? 0), 0);
-  const itemsLent = myItems.filter((item) => item.status === 'borrowed').length;
+    const myItems = items ?? [];
+    const totalValue = myItems.reduce((sum, item) => sum + (item.estimated_value ?? 0), 0);
+    const itemsLent = myItems.filter((item) => item.status === 'borrowed').length;
 
-  const mostValuable =
-    myItems.reduce(
-      (max, item) =>
-        (item.estimated_value ?? 0) > (max?.estimated_value ?? 0) ? item : max,
-      null as (typeof myItems)[number] | null
-    ) ?? null;
+    const mostValuable =
+      myItems.reduce(
+        (max, item) =>
+          (item.estimated_value ?? 0) > (max?.estimated_value ?? 0) ? item : max,
+        null as (typeof myItems)[number] | null
+      ) ?? null;
 
-  // Query borrow counts per item for items owned by this user
-  const { data: borrowCounts, error: borrowCountsError } = await supabase
-    .from('borrow_transactions')
-    .select('item_id')
-    .eq('lender_id', userId)
-    .limit(50);
+    // Query borrow counts per item for items owned by this user
+    const { data: borrowCounts, error: borrowCountsError } = await supabase
+      .from('borrow_transactions')
+      .select('item_id')
+      .eq('lender_id', userId)
+      .limit(50);
 
-  if (borrowCountsError) throw borrowCountsError;
+    if (borrowCountsError) throw borrowCountsError;
 
-  const borrowCountMap = new Map<string, number>();
-  for (const bt of borrowCounts ?? []) {
-    borrowCountMap.set(bt.item_id, (borrowCountMap.get(bt.item_id) ?? 0) + 1);
-  }
+    const borrowCountMap = new Map<string, number>();
+    for (const bt of borrowCounts ?? []) {
+      borrowCountMap.set(bt.item_id, (borrowCountMap.get(bt.item_id) ?? 0) + 1);
+    }
 
   const leastUsed =
     myItems
@@ -219,4 +223,5 @@ export async function getCollectionInsights(userId: string): Promise<{
       : null,
     itemsLent,
   };
+  });
 }

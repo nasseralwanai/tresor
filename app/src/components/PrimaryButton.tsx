@@ -44,6 +44,9 @@ export function PrimaryButton({
       onPress={handlePress}
       disabled={isDisabled}
       activeOpacity={0.85}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: isDisabled }}
       style={[
         styles.button,
         { backgroundColor: colors.accent, opacity: isDisabled ? 0.5 : 1 },

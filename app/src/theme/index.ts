@@ -26,6 +26,12 @@ export type Typography = {
 // SF Pro on iOS, system font on Android
 const fontFamily = Platform.select({ ios: 'SF Pro Text', default: 'system' });
 
+// Warm Atelier luxury fonts
+// Georgia is iOS system serif (closest to Playfair Display without font files)
+// Jost is loaded by the existing app components as a fontFamily string
+const serifFont = Platform.select({ ios: 'Georgia', default: 'serif' });
+const bodyFont = 'Jost';
+
 export const typography: Typography = {
   largeTitle: { fontFamily, fontSize: 34, fontWeight: '700', letterSpacing: 0.37 },
   title1: { fontFamily, fontSize: 28, fontWeight: '700', letterSpacing: 0.36 },
@@ -61,3 +67,5 @@ export function useThemeColors(): ThemeColors {
   const scheme = useColorScheme();
   return scheme === 'dark' ? DarkThemeColors : LightThemeColors;
 }
+
+export { serifFont, bodyFont, DarkThemeColors, LightThemeColors };

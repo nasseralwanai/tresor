@@ -1,7 +1,12 @@
 /**
- * Profile Setup screen — name input + avatar upload.
- * Avatar selection via expo-image-picker (camera or library).
- * 'Complete Setup' button calls createProfile, navigates to circle-preview.
+ * Profile Setup screen — name + avatar, luxury editorial feel.
+ *
+ * Per Muaath's research §5: lightweight, respect user's time.
+ * - Large circular avatar placeholder with gold border
+ * - Tap to add photo (camera icon)
+ * - Name input with serif placeholder
+ * - "Complete Setup" button
+ * - moti staggered entrance
  */
 
 import { useState } from 'react';
@@ -17,9 +22,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
+import { MotiView } from 'moti';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useThemeColors, typography, spacing, radius } from '@/theme';
+import { useThemeColors, serifFont, bodyFont, spacing, radius } from '@/theme';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { createProfile, uploadAvatar } from '@/lib/profile';
 import { joinCircle } from '@/lib/invite';
@@ -96,7 +102,6 @@ export default function ProfileSetupScreen() {
         try {
           await joinCircle(circleId, userId);
         } catch (e) {
-          // 23505 = already a member — that's fine, continue
           console.warn('[profile-setup] joinCircle failed:', e);
         }
       }
@@ -110,6 +115,14 @@ export default function ProfileSetupScreen() {
     }
   };
 
+  // Initials from name for avatar placeholder
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w.charAt(0).toUpperCase())
+    .join('');
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView
@@ -117,75 +130,107 @@ export default function ProfileSetupScreen() {
         style={styles.inner}
       >
         <View style={styles.body}>
-          {/* Avatar picker */}
-          <View style={styles.avatarSection}>
-            {avatarUri ? (
-              <Image source={{ uri: avatarUri }} style={styles.avatar} />
-            ) : (
-              <View style={[styles.avatarPlaceholder, { backgroundColor: colors.surface }]}>
-                <MaterialCommunityIcons
-                  name="account-outline"
-                  size={48}
-                  color={colors.textSecondary}
-                />
-              </View>
-            )}
+          <MotiView
+            from={{ opacity: 0, translateY: 16 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: 'timing', duration: 500 }}
+          >
+            <Text style={[styles.title, { color: colors.textPrimary }]}>
+              Your Profile
+            </Text>
+            <Text style={[styles.description, { color: colors.textSecondary }]}>
+              Just your name and a photo — that's all we need.
+            </Text>
+          </MotiView>
 
-            <View style={styles.avatarActions}>
-              <TouchableOpacity
-                style={[styles.avatarButton, { backgroundColor: colors.surface }]}
-                onPress={pickAvatar}
-              >
-                <MaterialCommunityIcons name="image-multiple" size={20} color={colors.accent} />
-                <Text style={[styles.avatarButtonText, { color: colors.textPrimary }]}>
-                  Library
-                </Text>
-              </TouchableOpacity>
+          {/* Avatar picker — gold-bordered circle */}
+          <MotiView
+            from={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring', damping: 14, stiffness: 100, delay: 120 }}
+            style={styles.avatarSection}
+          >
+            <TouchableOpacity
+              onPress={pickAvatar}
+              activeOpacity={0.85}
+              style={styles.avatarTouchable}
+            >
+              {avatarUri ? (
+                <View style={[styles.avatarOuter, { borderColor: colors.gold }]}>
+                  <Image source={{ uri: avatarUri }} style={styles.avatar} />
+                </View>
+              ) : (
+                <View style={[styles.avatarOuter, { borderColor: colors.gold }]}>
+                  <View
+                    style={[styles.avatarPlaceholder, { backgroundColor: colors.surface }]}
+                  >
+                    {initials ? (
+                      <Text style={[styles.avatarInitials, { color: colors.accent }]}>
+                        {initials}
+                      </Text>
+                    ) : (
+                      <MaterialCommunityIcons
+                        name="camera-outline"
+                        size={36}
+                        color={colors.textSecondary}
+                      />
+                    )}
+                  </View>
+                </View>
+              )}
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                style={[styles.avatarButton, { backgroundColor: colors.surface }]}
-                onPress={takePhoto}
-              >
-                <MaterialCommunityIcons name="camera-outline" size={20} color={colors.accent} />
-                <Text style={[styles.avatarButtonText, { color: colors.textPrimary }]}>
-                  Camera
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+            <TouchableOpacity onPress={pickAvatar} style={styles.addPhotoText}>
+              <Text style={[styles.addPhotoLabel, { color: colors.accent }]}>
+                {avatarUri ? 'Change photo' : 'Add photo'}
+              </Text>
+            </TouchableOpacity>
+          </MotiView>
 
           {/* Name input */}
-          <Text style={[styles.label, { color: colors.textSecondary }]}>Your name</Text>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                backgroundColor: colors.surface,
-                color: colors.textPrimary,
-                borderColor: colors.border,
-              },
-            ]}
-            placeholder="Enter your full name"
-            placeholderTextColor={colors.textSecondary}
-            value={name}
-            onChangeText={setName}
-            autoCorrect={false}
-            returnKeyType="done"
-            onSubmitEditing={handleComplete}
-          />
+          <MotiView
+            from={{ opacity: 0, translateY: 20 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: 'timing', duration: 500, delay: 240 }}
+          >
+            <View style={styles.inputWrap}>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    color: colors.textPrimary,
+                    borderBottomColor: name ? colors.gold : colors.border,
+                  },
+                ]}
+                placeholder="Your name"
+                placeholderTextColor={colors.textSecondary}
+                value={name}
+                onChangeText={setName}
+                autoCorrect={false}
+                returnKeyType="done"
+                onSubmitEditing={handleComplete}
+              />
+            </View>
 
-          {error && (
-            <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
-          )}
+            {error && (
+              <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+            )}
+          </MotiView>
         </View>
 
         <View style={styles.footer}>
-          <PrimaryButton
-            label="Complete Setup"
-            loading={loading}
-            disabled={!name.trim()}
-            onPress={handleComplete}
-          />
+          <MotiView
+            from={{ opacity: 0, translateY: 20 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={{ type: 'spring', damping: 18, stiffness: 80, delay: 360 }}
+          >
+            <PrimaryButton
+              label="Complete Setup"
+              loading={loading}
+              disabled={!name.trim()}
+              onPress={handleComplete}
+            />
+          </MotiView>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -196,54 +241,76 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   inner: { flex: 1, paddingHorizontal: spacing.xl },
   body: { flex: 1, paddingTop: spacing.xl },
-  avatarSection: {
-    alignItems: 'center',
+  title: {
+    fontFamily: serifFont,
+    fontSize: 30,
+    fontWeight: '400',
+    letterSpacing: 0.5,
+    marginBottom: spacing.sm,
+  },
+  description: {
+    fontFamily: bodyFont,
+    fontSize: 15,
+    fontWeight: '300',
+    lineHeight: 22,
     marginBottom: spacing.xxl,
   },
-  avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: spacing.md,
+  // Avatar
+  avatarSection: {
+    alignItems: 'center',
+    marginBottom: spacing.xxl + spacing.md,
   },
-  avatarPlaceholder: {
+  avatarTouchable: {
+    padding: spacing.sm,
+  },
+  avatarOuter: {
     width: 120,
     height: 120,
     borderRadius: 60,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.md,
   },
-  avatarActions: {
-    flexDirection: 'row',
-    gap: spacing.md,
+  avatar: {
+    width: 104,
+    height: 104,
+    borderRadius: 52,
   },
-  avatarButton: {
-    flexDirection: 'row',
+  avatarPlaceholder: {
+    width: 104,
+    height: 104,
+    borderRadius: 52,
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    borderRadius: radius.pill,
+    justifyContent: 'center',
   },
-  avatarButtonText: {
-    ...typography.footnote,
+  avatarInitials: {
+    fontFamily: serifFont,
+    fontSize: 36,
+    fontWeight: '400',
+  },
+  addPhotoText: {
+    marginTop: spacing.md,
+  },
+  addPhotoLabel: {
+    fontFamily: bodyFont,
+    fontSize: 14,
     fontWeight: '500',
+    letterSpacing: 0.3,
   },
-  label: {
-    ...typography.caption1,
-    marginBottom: spacing.sm,
-    marginLeft: 4,
+  // Input
+  inputWrap: {
+    marginTop: spacing.md,
   },
   input: {
-    ...typography.body,
-    height: 56,
-    borderRadius: radius.md,
-    borderWidth: 0.5,
-    paddingHorizontal: spacing.md,
+    fontFamily: serifFont,
+    fontSize: 22,
+    fontWeight: '400',
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
   },
   errorText: {
-    ...typography.footnote,
+    fontFamily: bodyFont,
+    fontSize: 13,
     marginTop: spacing.sm,
   },
   footer: {

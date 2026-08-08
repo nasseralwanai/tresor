@@ -1,40 +1,103 @@
 /**
- * Welcome screen — elegant entry point to the onboarding flow.
- * Full-screen with logo, tagline, and CTA.
+ * Welcome screen — full-screen editorial luxury entry point.
+ *
+ * Warm Atelier dark background, large serif "Trésor" wordmark,
+ * staggered moti entrance (logo fade → tagline slide → button rise).
+ * "Get Started" routes to phone-otp (phone-first auth, not invite-code).
+ * Subtle "Invitation only" text below the CTA.
  */
 
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useThemeColors, typography, spacing } from '@/theme';
+import { MotiView } from 'moti';
+import { DarkThemeColors, serifFont, bodyFont, spacing } from '@/theme';
 import { PrimaryButton } from '@/components/PrimaryButton';
 
-export default function WelcomeScreen() {
-  const colors = useThemeColors();
+// Welcome is always dark editorial — ignore system scheme
+const colors = DarkThemeColors;
 
+export default function WelcomeScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
-        <View style={[styles.logoWrap, { backgroundColor: colors.surface }]}>
-          <MaterialCommunityIcons name="treasure-chest" size={56} color={colors.accent} />
-        </View>
+      {/* Top hairline accent */}
+      <MotiView
+        from={{ opacity: 0, scaleX: 0 }}
+        animate={{ opacity: 1, scaleX: 1 }}
+        transition={{ type: 'timing', duration: 800, delay: 200 }}
+        style={styles.topAccent}
+      >
+        <View style={[styles.hairline, { backgroundColor: colors.gold }]} />
+      </MotiView>
 
-        <Text style={[styles.title, { color: colors.textPrimary }]}>Trésor</Text>
-        <Text style={[styles.tagline, { color: colors.textSecondary }]}>
-          Your private circle for{'\n'}luxury collections.
-        </Text>
+      <View style={styles.content}>
+        {/* Logo mark — minimalist gold diamond */}
+        <MotiView
+          from={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', damping: 15, stiffness: 100, delay: 100 }}
+        >
+          <View style={styles.logoWrap}>
+            <View style={[styles.logoInner, { borderColor: colors.gold }]}>
+              <Text style={styles.logoMark}>T</Text>
+            </View>
+          </View>
+        </MotiView>
+
+        {/* Wordmark */}
+        <MotiView
+          from={{ opacity: 0, translateY: 20 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: 'timing', duration: 600, delay: 400 }}
+        >
+          <Text style={styles.wordmark}>Trésor</Text>
+        </MotiView>
+
+        {/* Hairline divider under wordmark */}
+        <MotiView
+          from={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: 0.4, scaleX: 1 }}
+          transition={{ type: 'timing', duration: 600, delay: 600 }}
+          style={styles.dividerWrap}
+        >
+          <View style={[styles.hairlineSmall, { backgroundColor: colors.gold }]} />
+        </MotiView>
+
+        {/* Tagline */}
+        <MotiView
+          from={{ opacity: 0, translateY: 16 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ type: 'timing', duration: 500, delay: 700 }}
+        >
+          <Text style={styles.tagline}>
+            Your private circle for{'\n'}luxury collections.
+          </Text>
+        </MotiView>
       </View>
 
-      <View style={styles.footer}>
+      {/* Footer — CTA + invitation note */}
+      <MotiView
+        from={{ opacity: 0, translateY: 30 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        transition={{ type: 'spring', damping: 18, stiffness: 80, delay: 900 }}
+        style={styles.footer}
+      >
         <PrimaryButton
           label="Get Started"
-          onPress={() => router.push('/(auth)/invite-code')}
+          onPress={() => router.push('/(auth)/phone-otp')}
         />
-        <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-          Invitation only · Join your circle
-        </Text>
-      </View>
+        <Text style={styles.inviteNote}>Invitation only</Text>
+      </MotiView>
+
+      {/* Bottom hairline accent */}
+      <MotiView
+        from={{ opacity: 0, scaleX: 0 }}
+        animate={{ opacity: 1, scaleX: 1 }}
+        transition={{ type: 'timing', duration: 800, delay: 1000 }}
+        style={styles.bottomAccent}
+      >
+        <View style={[styles.hairline, { backgroundColor: colors.gold }]} />
+      </MotiView>
     </SafeAreaView>
   );
 }
@@ -44,37 +107,75 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: spacing.xl,
   },
+  topAccent: {
+    alignItems: 'center',
+    paddingTop: spacing.md,
+  },
+  hairline: {
+    width: 60,
+    height: 1,
+  },
   content: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   logoWrap: {
-    width: 120,
-    height: 120,
-    borderRadius: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: spacing.xl,
   },
-  title: {
-    ...typography.largeTitle,
-    fontSize: 40,
-    letterSpacing: 2,
-    marginBottom: spacing.md,
+  logoInner: {
+    width: 72,
+    height: 72,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    transform: [{ rotate: '45deg' }],
+  },
+  logoMark: {
+    fontFamily: serifFont,
+    fontSize: 28,
+    color: colors.gold,
+    transform: [{ rotate: '-45deg' }],
+  },
+  wordmark: {
+    fontFamily: serifFont,
+    fontSize: 52,
+    fontWeight: '400',
+    letterSpacing: 6,
+    color: colors.cream,
+    textAlign: 'center',
+  },
+  dividerWrap: {
+    marginTop: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  hairlineSmall: {
+    width: 40,
+    height: 1,
   },
   tagline: {
-    ...typography.body,
-    fontSize: 18,
-    textAlign: 'center',
+    fontFamily: bodyFont,
+    fontSize: 16,
+    fontWeight: '300',
     lineHeight: 26,
+    letterSpacing: 0.5,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
   footer: {
-    paddingBottom: spacing.xl,
+    paddingBottom: spacing.xxl,
+    alignItems: 'center',
     gap: spacing.md,
   },
-  footerText: {
-    ...typography.footnote,
-    textAlign: 'center',
+  inviteNote: {
+    fontFamily: serifFont,
+    fontSize: 13,
+    fontStyle: 'italic',
+    color: colors.textSecondary,
+    letterSpacing: 1,
+  },
+  bottomAccent: {
+    alignItems: 'center',
+    paddingBottom: spacing.md,
   },
 });

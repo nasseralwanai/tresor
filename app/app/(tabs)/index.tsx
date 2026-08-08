@@ -9,7 +9,7 @@
  * system body font for labels.
  */
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,7 @@ import {
   RefreshControl,
   FlatList,
 } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useFocusEffect } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View as MotiView } from 'moti';
 import { useThemeColors, typography, spacing, radius } from '@/theme';
@@ -153,14 +153,13 @@ export default function YourCollectionScreen() {
     }
   }, [user?.id, circleId]);
 
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      if (!cancelled) await loadData();
-    };
-    load();
-    return () => { cancelled = true; };
-  }, [loadData]);
+  // Reload data whenever the Home tab gains focus (e.g. after adding an item).
+  // This replaces the plain useEffect so returning from another tab refreshes.
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [loadData])
+  );
 
   const onRefresh = useCallback(() => {
     hapticLight();
@@ -174,7 +173,7 @@ export default function YourCollectionScreen() {
 
   const handleAddItem = useCallback(() => {
     hapticLight();
-    router.push('/(tabs)/activity' as any);
+    router.push('/(tabs)/add' as any);
   }, []);
 
   const handleSeeAllActivity = useCallback(() => {
@@ -411,13 +410,13 @@ export default function YourCollectionScreen() {
             <TouchableOpacity
               onPress={handleAddItem}
               accessibilityRole="button"
-              accessibilityLabel="View activity feed"
-              accessibilityHint="See circle activity and notifications"
+              accessibilityLabel="Add a new piece"
+              accessibilityHint="Open the add item screen"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               style={[styles.iconButton, { backgroundColor: colors.surface }]}
             >
               <MaterialCommunityIcons
-                name="bell-outline"
+                name="plus"
                 size={18}
                 color={colors.textPrimary}
               />

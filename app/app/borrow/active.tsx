@@ -27,9 +27,10 @@ import { Card } from '@/components/Card';
 import { Avatar } from '@/components/Avatar';
 import { ItemPhotoPlaceholder } from '@/components/ItemPhotoPlaceholder';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { NudgeButton } from '@/components/NudgeButton';
 import { ErrorView } from '@/components/ErrorView';
 import { classifyError, type AppError } from '@/lib/errors';
-import { hapticLight, hapticSuccess, hapticError } from '@/lib/haptics';
+import { hapticSuccess, hapticError } from '@/lib/haptics';
 import {
   getActiveBorrows,
   acceptBorrow,
@@ -126,11 +127,6 @@ export default function ActiveBorrowScreen() {
     } finally {
       setPendingAction(null);
     }
-  };
-
-  const handleNudge = async (_borrowId: string) => {
-    hapticLight();
-    Alert.alert('Coming Soon', 'Push notifications for nudges will be available in a future update.', [{ text: 'OK' }]);
   };
 
   if (loading) {
@@ -280,15 +276,11 @@ export default function ActiveBorrowScreen() {
 
                 {status === 'active' && (
                   isLender ? (
-                    <TouchableOpacity
-                      onPress={() => handleNudge(borrow.id)}
-                      style={[styles.nudgeBtn, { borderColor: colors.border }]}
-                    >
-                      <MaterialCommunityIcons name="bell-outline" size={16} color={colors.textPrimary} />
-                      <Text style={[styles.nudgeBtnText, { color: colors.textPrimary }]}>
-                        Nudge {borrow.borrower_name}
-                      </Text>
-                    </TouchableOpacity>
+                    <NudgeButton
+                      borrowId={borrow.id}
+                      borrowerName={borrow.borrower_name}
+                      style={styles.nudgeBtn as any}
+                    />
                   ) : (
                     <PrimaryButton
                       label="Mark Returned"
@@ -494,10 +486,6 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: radius.pill,
     borderWidth: 0.5,
-  },
-  nudgeBtnText: {
-    ...typography.bodyEmphasized,
-    fontSize: 14,
   },
   emptyText: {
     ...typography.title3,

@@ -23,7 +23,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { MotiView, AnimatePresence } from 'moti';
+import { MotiView } from 'moti';
 import { useThemeColors, serifFont, bodyFont, spacing, radius } from '@/theme';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { validateInviteCode } from '@/lib/invite';
@@ -131,12 +131,10 @@ export default function InviteCodeScreen() {
           </MotiView>
 
           {/* Circle preview card — appears on validation */}
-          <AnimatePresence>
             {validation?.valid && validation.circle && (
               <MotiView
                 from={{ opacity: 0, translateY: 24, scale: 0.96 }}
                 animate={{ opacity: 1, translateY: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ type: 'spring', damping: 18, stiffness: 120 }}
                 style={[
                   styles.previewCard,
@@ -185,7 +183,6 @@ export default function InviteCodeScreen() {
                 </View>
               </MotiView>
             )}
-          </AnimatePresence>
         </View>
 
         <View style={styles.footer}>

@@ -22,7 +22,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { AnimatePresence } from 'moti';
 import { useThemeColors, spacing, radius } from '@/theme';
 import { Avatar } from '@/components/Avatar';
 import { Card } from '@/components/Card';
@@ -274,7 +273,6 @@ function CoOwnersPanelInner({ item, userId }: CoOwnersPanelProps) {
       />
 
       {/* Custody transfer confirmation sheet */}
-      <AnimatePresence>
         {custodyTarget && (
           <CustodyTransfer
             itemId={item.id}
@@ -287,7 +285,6 @@ function CoOwnersPanelInner({ item, userId }: CoOwnersPanelProps) {
             onSuccess={handleCustodySuccess}
           />
         )}
-      </AnimatePresence>
     </>
   );
 }

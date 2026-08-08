@@ -34,7 +34,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
-import { MotiView, AnimatePresence } from 'moti';
+import { MotiView } from 'moti';
 import Svg, { Rect } from 'react-native-svg';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useThemeColors, serifFont, bodyFont, spacing, radius } from '@/theme';
@@ -582,12 +582,10 @@ export default function PhoneOtpScreen() {
           </MotiView>
 
           {/* Success checkmark */}
-          <AnimatePresence>
             {otpSuccess && (
               <MotiView
                 from={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
                 transition={{ type: 'spring', damping: 12, stiffness: 120 }}
                 style={styles.successWrap}
               >
@@ -599,7 +597,6 @@ export default function PhoneOtpScreen() {
                 </Text>
               </MotiView>
             )}
-          </AnimatePresence>
 
           {error && !otpSuccess && (
             <Text style={[styles.errorText, { color: colors.error, textAlign: 'center' }]}>

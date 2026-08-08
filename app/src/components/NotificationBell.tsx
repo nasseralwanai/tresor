@@ -21,7 +21,7 @@ import {
 } from 'react-native';
 import { BottomSheet } from '@expo/ui';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { View as MotiView, AnimatePresence } from 'moti';
+import { View as MotiView } from 'moti';
 import { useThemeColors, spacing, radius } from '@/theme';
 import { hapticLight, hapticSuccess } from '@/lib/haptics';
 import { formatRelativeTime } from '@/lib/format';
@@ -132,12 +132,10 @@ function NotificationBellInner({ size = 30, style }: NotificationBellProps) {
           color={colors.textPrimary}
         />
         {/* Unread badge with moti animation */}
-        <AnimatePresence>
           {unreadCount > 0 && (
             <MotiView
               from={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 300, damping: 15 }}
               style={[
                 styles.badge,
@@ -149,7 +147,6 @@ function NotificationBellInner({ size = 30, style }: NotificationBellProps) {
               </Text>
             </MotiView>
           )}
-        </AnimatePresence>
       </TouchableOpacity>
 
       {/* Notifications bottom sheet */}
